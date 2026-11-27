@@ -2,7 +2,21 @@
 
 **Live backend: https://trutrace-production.up.railway.app** (health: `/health`)
 Railway project: https://railway.com/project/7fe4bdac-d2a5-4a5c-806f-897ab4f05011
-Deployed 27 Nov 2026 from this repo's `main` branch; every push to `main` redeploys.
+First deployed 27 Nov 2026. **Deployment mechanics, as verified
+27 Nov 2026: the service has NO GitHub repo trigger** (checked via
+the Railway API: `repoTriggers` is empty), so pushes to `main` do
+NOT auto-deploy; creating a trigger fails with "no one in the
+project has access to it" because Railway's GitHub app is not
+authorized on the repo — authorizing it is Diwakar's step in the
+Railway dashboard. Until then, deploys are `railway up` uploads of
+this repo's tree (`.railwayignore` excludes `.venv/`, caches and
+`.git/`). Two upload gotchas, both hit and fixed on 27 Nov: the
+Railpack builder needs the repo's `Procfile` to find the start
+command (railway.json's Nixpacks start command is not read by
+Railpack), and a service variable whose name contains a dot (a
+stray `openrouter.ai` variable) breaks every Railpack build with
+"failed to solve: secret openrouter not found" — variable names
+must stay plain identifiers.
 `OPENROUTER_API_KEY` is set in the Railway dashboard by Diwakar; without it only the
 offline provider runs.
 
