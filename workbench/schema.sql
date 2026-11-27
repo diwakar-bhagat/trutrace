@@ -10,8 +10,12 @@
 -- here match the JSON records exactly so no API or UI change is
 -- needed. Not executed in this slice: no PostgreSQL server is
 -- available on the build machine.
+--
+-- Every statement uses IF NOT EXISTS, so the script is idempotent:
+-- it runs cleanly against a fresh Railway Postgres and can be
+-- re-run after a partial provisioning without erroring.
 
-CREATE TABLE prompt_versions (
+CREATE TABLE IF NOT EXISTS prompt_versions (
     key            TEXT PRIMARY KEY,          -- "<name>@<version>"
     name           TEXT NOT NULL,
     version        TEXT NOT NULL,
@@ -27,7 +31,7 @@ CREATE TABLE prompt_versions (
     UNIQUE (name, version)                    -- versions are immutable: insert only
 );
 
-CREATE TABLE runs (
+CREATE TABLE IF NOT EXISTS runs (
     run_id        TEXT PRIMARY KEY,
     created_at    TIMESTAMPTZ NOT NULL,
     prompt_key    TEXT NOT NULL REFERENCES prompt_versions(key),
@@ -42,7 +46,7 @@ CREATE TABLE runs (
     error         JSONB
 );
 
-CREATE TABLE case_traces (
+CREATE TABLE IF NOT EXISTS case_traces (
     trace_id       TEXT PRIMARY KEY,          -- uuid, Langfuse-shaped record id
     run_id         TEXT NOT NULL REFERENCES runs(run_id),
     case_id        TEXT NOT NULL,
@@ -61,5 +65,5 @@ CREATE TABLE case_traces (
     UNIQUE (run_id, case_id)
 );
 
-CREATE INDEX idx_case_traces_run ON case_traces(run_id);
-CREATE INDEX idx_runs_prompt ON runs(prompt_key);
+CREATE INDEX IF NOT EXISTS idx_case_traces_run ON case_traces(run_id);
+CREATE INDEX IF NOT EXISTS idx_runs_prompt ON runs(prompt_key);

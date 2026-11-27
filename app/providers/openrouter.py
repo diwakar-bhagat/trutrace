@@ -1,10 +1,19 @@
 """The OpenRouter provider.
 
-Talks to OpenRouter through the registered connection's helper
+Two transports, one wire format:
+
+Local development (default): talks to OpenRouter through the
+registered connection's helper
 (~/workspace/custom-connectors/custom.openrouter/bin/or_call.py): the
 payload goes in on stdin, the full response JSON comes back on stdout,
 including token usage and a measured latency. No API key ever touches
 this process.
+
+Hosted runs (OPENROUTER_API_KEY set in the environment, e.g. Railway,
+where the helper does not exist): POSTs directly to the OpenRouter
+API. The key is read from the environment at call time and placed
+only in the Authorization header; it is never logged, printed, or
+persisted anywhere.
 
 Two models are benchmarked (see evals/): openai/gpt-4o-mini and
 google/gemini-2.0-flash-001. The model is a constructor argument, so a
@@ -15,6 +24,8 @@ import json
 import os
 import subprocess
 import time
+import urllib.error
+import urllib.request
 
 from ..context_builder import ExtractionContext
 from ..prompts import build_prompt
@@ -30,6 +41,8 @@ from .base import ProviderError, ProviderResult
 HELPER = os.path.expanduser(
     "~/workspace/custom-connectors/custom.openrouter/bin/or_call.py"
 )
+
+API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 DEFAULT_MODELS = ["openai/gpt-4o-mini", "google/gemini-2.0-flash-001"]
 
@@ -54,6 +67,56 @@ class OpenRouterProvider:
         self.model = model
         self.temperature = temperature
 
+    def _send(self, payload: dict) -> dict:
+        """Send one chat payload to OpenRouter; return the response dict.
+
+        Uses the direct API when OPENROUTER_API_KEY is set in the
+        environment (hosted runs), and the local helper subprocess
+        otherwise. See the module docstring for the key-handling rules.
+        """
+        api_key = os.environ.get("OPENROUTER_API_KEY")
+        if api_key:
+            request = urllib.request.Request(
+                API_URL,
+                data=json.dumps(payload).encode("utf-8"),
+                headers={
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json",
+                },
+                method="POST",
+            )
+            try:
+                with urllib.request.urlopen(request, timeout=180) as resp:
+                    return json.loads(resp.read().decode("utf-8"))
+            except urllib.error.HTTPError as exc:
+                body = exc.read().decode("utf-8", "replace")[:500]
+                raise OpenRouterError(
+                    f"OpenRouter HTTP {exc.code} for model "
+                    f"{self.model}: {body}"
+                ) from exc
+            except (urllib.error.URLError, TimeoutError) as exc:
+                raise OpenRouterError(
+                    f"OpenRouter request failed for model "
+                    f"{self.model}: {exc}"
+                ) from exc
+        proc = subprocess.run(
+            [HELPER, "chat"],
+            input=json.dumps(payload),
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+        if proc.returncode != 0:
+            stderr = proc.stderr.strip()
+            last_line = stderr.splitlines()[-1] if stderr else ""
+            raise OpenRouterError(
+                f"or_call.py chat failed for model {self.model}: {last_line}"
+            )
+        try:
+            return json.loads(proc.stdout)
+        except json.JSONDecodeError as exc:
+            raise OpenRouterError(f"helper returned non-JSON output: {exc}")
+
     def extract(
         self, context: ExtractionContext, transcript: str, prompt_version: str
     ) -> ProviderResult:
@@ -64,24 +127,8 @@ class OpenRouterProvider:
             "temperature": self.temperature,
         }
         start = time.perf_counter()
-        proc = subprocess.run(
-            [HELPER, "chat"],
-            input=json.dumps(payload),
-            capture_output=True,
-            text=True,
-            timeout=180,
-        )
+        response = self._send(payload)
         latency_ms = (time.perf_counter() - start) * 1000.0
-        if proc.returncode != 0:
-            stderr = proc.stderr.strip()
-            last_line = stderr.splitlines()[-1] if stderr else ""
-            raise OpenRouterError(
-                f"or_call.py chat failed for model {self.model}: {last_line}"
-            )
-        try:
-            response = json.loads(proc.stdout)
-        except json.JSONDecodeError as exc:
-            raise OpenRouterError(f"helper returned non-JSON output: {exc}")
         if "error" in response:
             raise OpenRouterError(
                 f"OpenRouter error for model {self.model}: "

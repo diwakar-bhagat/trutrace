@@ -13,11 +13,16 @@ APIs behind it:
 
 Persistence in this slice is the repo itself (prompts/ and runs/ as
 files); workbench/schema.sql holds the PostgreSQL shape those files
-map to when the store moves. Nothing here deploys anywhere: the app
-runs locally with one command.
+map to when the store moves.
+
+The app runs locally with one command:
 
   .venv/bin/python -m workbench.server            # 127.0.0.1:8765
   TRUTRACE_PORT=9000 .venv/bin/python -m workbench.server
+
+The same entrypoint serves hosted deployments (see DEPLOY.md and
+railway.json): when the platform sets PORT, the app binds 0.0.0.0 on
+that port instead. GET /health is the platform healthcheck.
 
 Provider status is explicit, by design: gpt-4o-mini is verified
 (recorded benchmark and load runs), Gemini is failed / not verified
@@ -86,6 +91,23 @@ PROVIDER_STATUS = [
 @app.get("/")
 def index():
     return FileResponse(os.path.join(HERE, "workbench.html"))
+
+
+@app.get("/health")
+def health():
+    """Platform healthcheck (railway.json points here).
+
+    Reports the service as up plus the same explicit provider status
+    as /api/status: gpt-4o-mini verified, Gemini failed / not
+    verified, Langfuse not connected. Nothing is probed live and
+    nothing is upgraded on paper.
+    """
+    return {
+        "status": "ok",
+        "service": "trutrace-workbench",
+        "providers": PROVIDER_STATUS,
+        "langfuse": runner.LANGFUSE_STATUS,
+    }
 
 
 @app.get("/api/status")
@@ -198,6 +220,11 @@ def run_case(run_id: str, case_id: str):
 def main() -> None:
     import uvicorn
 
+    if os.environ.get("PORT"):
+        # Hosted (Railway and similar): the platform assigns the port
+        # and routes external traffic to it, so bind every interface.
+        uvicorn.run(app, host="0.0.0.0", port=int(os.environ["PORT"]))
+        return
     port = int(os.environ.get("TRUTRACE_PORT", "8765"))
     uvicorn.run(app, host="127.0.0.1", port=port)
 
