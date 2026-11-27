@@ -1,0 +1,163 @@
+{
+  "run_id": "20261127-151328_verify_openai-gpt-4o-mini_ee2a0b",
+  "kind": "verify",
+  "created_at": "2026-11-27T15:13:33+00:00",
+  "provider": "openrouter",
+  "model": "openai/gpt-4o-mini",
+  "prompt_version": "trutrace-1.0.0",
+  "profile": {
+    "name": "campaign",
+    "fields": [
+      "price",
+      "currency",
+      "availability",
+      "quantity_or_stock",
+      "delivery_or_pickup",
+      "timing",
+      "contact_next_step"
+    ]
+  },
+  "input": {
+    "transcript": "[00:00] Customer: Hi, this is the billing lead at our company. I am calling about invoice FP-1042 for October. The total looks higher than last month and I want to go through it line by line.\n[00:14] Support: Of course, let me pull it up. For the October cycle, the count is 1842300 billable events metered on your Growth plan.\n[00:20] Customer: How many events do you have on record for us in October?\n[00:23] Support: We have 1842300 events on record for October. That is the count the invoice is built on.\n[00:26] Customer: And what did the usage come to before anything else?\n[00:31] Support: Your metered usage came to $1,540. A platform credit of $300 was applied to this invoice, so the invoice total is $1,240.\n[00:44] Customer: How much credit do we have left after that?\n[00:49] Support: I can see the credit was applied, but I do not have the remaining credit balance in front of me on this screen. It is not stated on the invoice either.\n[01:02] Customer: And overage, what are we paying beyond the included volume?\n[01:08] Support: Overage beyond your included volume is billed at $0.40 per thousand events, and that rate is fixed for this cycle.\n[01:19] Customer: One more thing. Does our plan include the advanced analytics entitlement? Our team wants to turn it on.\n[01:27] Support: Advanced analytics is usually included on Growth, I believe. I would need to double-check your plan before I promise it.\n[01:38] Customer: And the adjustment for the duplicate events from last week, when does that land?\n[01:46] Support: The adjustment should show up probably in three to five business days.\n[01:55] Customer: So what happens now?\n[02:00] Support: I will escalate this to our billing team and call you back with the corrected invoice.",
+    "candidate": {
+      "availability": "in_stock",
+      "contact_next_step": "I will escalate this to our billing team and call you back with the corrected invoice.",
+      "credit_balance_usd": 500,
+      "currency": "USD",
+      "overage_rate_per_1000_events_usd": 0.4,
+      "price": 1540,
+      "quantity_or_stock": 1842300,
+      "timing": "three to five business days"
+    },
+    "product": "Billable events on the Flexprice Growth plan, invoice FP-1042 (October cycle)",
+    "question": "Why is the October invoice what it is, what was metered, and what happens next?"
+  },
+  "fields": {
+    "price": {
+      "claimed_value": 1540,
+      "value": 1540,
+      "verified_value": null,
+      "status": "contradictory",
+      "engine_status": "conflicting",
+      "evidence": "so the invoice total is $1,240.",
+      "reason": "call states two different prices for the same product: 1540.0, 1240.0",
+      "condition": null,
+      "candidates": [
+        1540.0,
+        1240.0
+      ],
+      "speaker": "Support",
+      "timestamp": "00:31"
+    },
+    "currency": {
+      "claimed_value": "USD",
+      "value": "USD",
+      "verified_value": "USD",
+      "status": "supported",
+      "engine_status": "confirmed",
+      "evidence": "Your metered usage came to $1,540.",
+      "reason": null,
+      "condition": null,
+      "candidates": [],
+      "speaker": "Support",
+      "timestamp": "00:31"
+    },
+    "availability": {
+      "claimed_value": "in_stock",
+      "value": "in_stock",
+      "verified_value": null,
+      "status": "unsupported",
+      "engine_status": "unconfirmed",
+      "evidence": null,
+      "reason": "availability was not established in the call",
+      "condition": null,
+      "candidates": [],
+      "speaker": null,
+      "timestamp": null
+    },
+    "quantity_or_stock": {
+      "claimed_value": 1842300,
+      "value": 1842300,
+      "verified_value": null,
+      "status": "unsupported",
+      "engine_status": "unconfirmed",
+      "evidence": null,
+      "reason": "quantity_or_stock was not established in the call",
+      "condition": null,
+      "candidates": [],
+      "speaker": null,
+      "timestamp": null
+    },
+    "delivery_or_pickup": {
+      "claimed_value": null,
+      "value": null,
+      "verified_value": null,
+      "status": "not_claimed",
+      "engine_status": "unconfirmed",
+      "evidence": null,
+      "reason": "the submitted extraction does not provide this field",
+      "condition": null,
+      "candidates": [],
+      "speaker": null,
+      "timestamp": null
+    },
+    "timing": {
+      "claimed_value": "three to five business days",
+      "value": "three to five business days",
+      "verified_value": "three to five business days",
+      "status": "uncertain",
+      "engine_status": "uncertain",
+      "evidence": "The adjustment should show up probably in three to five business days.",
+      "reason": "hedged in the call ('probably'); not a confirmed fact",
+      "condition": null,
+      "candidates": [],
+      "speaker": "Support",
+      "timestamp": "01:46"
+    },
+    "contact_next_step": {
+      "claimed_value": "I will escalate this to our billing team and call you back with the corrected invoice.",
+      "value": "I will escalate this to our billing team and call you back with the corrected invoice.",
+      "verified_value": "I will escalate this to our billing team and call you back with the corrected invoice.",
+      "status": "supported",
+      "engine_status": "confirmed",
+      "evidence": "I will escalate this to our billing team and call you back with the corrected invoice.",
+      "reason": null,
+      "condition": null,
+      "candidates": [],
+      "speaker": "Support",
+      "timestamp": "02:00"
+    }
+  },
+  "unverified": {
+    "credit_balance_usd": {
+      "claimed_value": 500,
+      "reason": "the engine has no checks for this field"
+    },
+    "overage_rate_per_1000_events_usd": {
+      "claimed_value": 0.4,
+      "reason": "the engine has no checks for this field"
+    }
+  },
+  "summary": {
+    "supported": 2,
+    "uncertain": 1,
+    "unsupported": 2,
+    "contradictory": 1,
+    "not_claimed": 1,
+    "total": 7
+  },
+  "labels_status": "User-submitted input: the transcript and the candidate JSON were supplied by the caller and carry no gold labels. Each field is verified against the submitted transcript itself, not against an annotation.",
+  "usage": {
+    "prompt_tokens": 823,
+    "completion_tokens": 262,
+    "total_tokens": 1085,
+    "reported_cost_usd": 0.00028065
+  },
+  "latency_ms": 4570.01,
+  "langfuse": {
+    "connected": false,
+    "status": "not connected",
+    "note": "No Langfuse account or keys are configured. Traces are records in the workbench store (cases.jsonl files locally, eval_results rows when PostgreSQL is the store), modelled on Langfuse's trace shape (trace id, prompt version, model, input, output, latency, token usage, evaluation outcomes)."
+  },
+  "error": null
+}

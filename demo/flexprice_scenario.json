@@ -1,0 +1,25 @@
+{
+ "candidate": {
+  "availability": "in_stock",
+  "contact_next_step": "I will escalate this to our billing team and call you back with the corrected invoice.",
+  "credit_balance_usd": 500,
+  "currency": "USD",
+  "overage_rate_per_1000_events_usd": 0.4,
+  "price": 1540,
+  "quantity_or_stock": 1842300,
+  "timing": "three to five business days"
+ },
+ "field_gloss": {
+  "availability": "Advanced analytics entitlement",
+  "contact_next_step": "Next step",
+  "currency": "Currency",
+  "delivery_or_pickup": "Corrected invoice arrives by",
+  "price": "Invoice total",
+  "quantity_or_stock": "Events metered this cycle",
+  "timing": "Adjustment lands"
+ },
+ "note": "Scenario written for this pitch page: a fictional Flexprice support call about a disputed invoice, and the extraction an AI agent produced from it. The transcript and candidate are the input; the verdicts on the page come from the recorded verification run in flexprice_run.json, not from this file.",
+ "product": "Billable events on the Flexprice Growth plan, invoice FP-1042 (October cycle)",
+ "question": "Why is the October invoice what it is, what was metered, and what happens next?",
+ "transcript": "[00:00] Customer: Hi, this is the billing lead at our company. I am calling about invoice FP-1042 for October. The total looks higher than last month and I want to go through it line by line.\n[00:14] Support: Of course, let me pull it up. For the October cycle, the count is 1842300 billable events metered on your Growth plan.\n[00:20] Customer: How many events do you have on record for us in October?\n[00:23] Support: We have 1842300 events on record for October. That is the count the invoice is built on.\n[00:26] Customer: And what did the usage come to before anything else?\n[00:31] Support: Your metered usage came to $1,540. A platform credit of $300 was applied to this invoice, so the invoice total is $1,240.\n[00:44] Customer: How much credit do we have left after that?\n[00:49] Support: I can see the credit was applied, but I do not have the remaining credit balance in front of me on this screen. It is not stated on the invoice either.\n[01:02] Customer: And overage, what are we paying beyond the included volume?\n[01:08] Support: Overage beyond your included volume is billed at $0.40 per thousand events, and that rate is fixed for this cycle.\n[01:19] Customer: One more thing. Does our plan include the advanced analytics entitlement? Our team wants to turn it on.\n[01:27] Support: Advanced analytics is usually included on Growth, I believe. I would need to double-check your plan before I promise it.\n[01:38] Customer: And the adjustment for the duplicate events from last week, when does that land?\n[01:46] Support: The adjustment should show up probably in three to five business days.\n[01:55] Customer: So what happens now?\n[02:00] Support: I will escalate this to our billing team and call you back with the corrected invoice."
+}

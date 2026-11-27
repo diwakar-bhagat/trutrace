@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TruTrace for Flexprice — every billing number carries its evidence</title>
+<style>
+:root {
+  --blue:#0066cc; --blue-dark:#2997ff; --focus:#0071e3;
+  --ink:#1d1d1f;
+  --label:rgba(0,0,0,0.85); --label-2:rgba(0,0,0,0.5); --label-3:rgba(0,0,0,0.26);
+  --d-label:rgba(255,255,255,0.85); --d-label-2:rgba(255,255,255,0.55);
+  --d-label-3:rgba(255,255,255,0.25);
+  --fill:rgba(0,0,0,0.1); --fill-2:rgba(0,0,0,0.08); --fill-3:rgba(0,0,0,0.05);
+  --fill-4:rgba(0,0,0,0.03);
+  --d-fill:rgba(255,255,255,0.1); --d-fill-2:rgba(255,255,255,0.08);
+  --d-fill-3:rgba(255,255,255,0.05);
+  --canvas:#ffffff; --parchment:#f5f5f7; --pearl:#fafafc;
+  --tile-1:#272729; --tile-2:#2a2a2c; --tile-3:#252527; --black:#000000;
+  --separator:rgba(0,0,0,0.05); --border:rgba(0,0,0,0.1);
+  --d-separator:rgba(255,255,255,0.05); --d-border:rgba(255,255,255,0.1);
+  --glass:rgba(255,255,255,0.82);
+  --material:rgba(246,246,246,0.8);
+  --glass-shadow:0 0 0 0.5px rgba(0,0,0,0.08), 0 8px 15px rgba(0,0,0,0.04);
+  --popover-shadow:0 0 0 0.5px rgba(0,0,0,0.1), 0 8px 48px rgba(0,0,0,0.2);
+  --window-shadow:0 0 1px rgba(0,0,0,0.8), 0 18px 54px rgba(0,0,0,0.3);
+  --verified:#007d48; --conflicting:#d30005;
+  --r-group:12px; --r-window:16px; --r-popover:20px; --r-item:8px;
+  --font:-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro",
+    "Helvetica Neue", "Segoe UI", Inter, system-ui, sans-serif;
+  --mono:ui-monospace, "SF Mono", SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:var(--font); color:var(--label); background:var(--parchment);
+  font-size:17px; line-height:1.47; letter-spacing:-0.374px;
+  -webkit-font-smoothing:antialiased; }
+button { font:inherit; color:inherit; background:none; border:0; cursor:pointer; }
+button:focus-visible, a:focus-visible { outline:2px solid var(--focus); outline-offset:2px; }
+.icon { flex:none; display:block; }
+
+header.site { background:var(--black); color:#fff; padding:56px 24px 48px; }
+.site-inner { max-width:1180px; margin:0 auto; }
+.wordmark { font-size:17px; font-weight:600; letter-spacing:-0.374px; }
+.wordmark span { color:var(--d-label-2); font-weight:400; }
+header.site h1 { font-size:56px; font-weight:600; line-height:1.07;
+  letter-spacing:-0.28px; margin-top:40px; max-width:820px; }
+header.site .sub { font-size:21px; line-height:1.35; color:var(--d-label-2);
+  max-width:680px; margin-top:16px; }
+header.site .sub b { color:#fff; font-weight:600; }
+
+main { max-width:1180px; margin:0 auto; padding:24px 24px 8px; }
+.grid { display:grid; grid-template-columns:repeat(12, 1fr); gap:20px; }
+.tile { border-radius:var(--r-window); padding:28px; background:var(--canvas);
+  border:1px solid var(--border); min-width:0; }
+.tile--glass { background:var(--material); backdrop-filter:blur(30px) saturate(1.6);
+  -webkit-backdrop-filter:blur(30px) saturate(1.6);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.5); }
+.tile--dark { background:var(--tile-1); color:var(--d-label); border-color:transparent; }
+.tile--dark3 { background:var(--tile-3); color:var(--d-label); border-color:transparent; }
+.s4 { grid-column:span 4; } .s5 { grid-column:span 5; } .s6 { grid-column:span 6; }
+.s7 { grid-column:span 7; } .s8 { grid-column:span 8; } .s12 { grid-column:span 12; }
+
+.tile-head { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+.tile-head .icon { color:var(--label-2); }
+.tile--dark .tile-head .icon, .tile--dark3 .tile-head .icon { color:var(--d-label-2); }
+.kicker { font-size:12px; font-weight:600; color:var(--label-2);
+  text-transform:uppercase; letter-spacing:0.06em; }
+.tile--dark .kicker, .tile--dark3 .kicker { color:var(--d-label-2); }
+.tile h2 { font-size:28px; font-weight:600; line-height:1.14; letter-spacing:0.196px; }
+.tile-copy { font-size:17px; margin-bottom:16px; }
+.tile-copy .cont { color:var(--label-2); }
+.tile--dark .tile-copy .cont, .tile--dark3 .tile-copy .cont { color:var(--d-label-2); }
+.big { font-size:40px; font-weight:600; line-height:1.1; letter-spacing:-0.01em; }
+.big .of { color:var(--label-3); }
+.tile--dark .big .of { color:var(--d-label-3); }
+.fine { font-size:12px; line-height:1.45; color:var(--label-2); margin-top:16px; }
+
+/* try trutrace entry point */
+.trycta { display:inline-block; background:var(--blue); color:#fff;
+  font-weight:600; font-size:17px; padding:11px 28px; border-radius:9999px;
+  text-decoration:none; margin-top:2px; }
+.trycta:active { opacity:0.85; }
+.gold-actions { display:flex; flex-wrap:wrap; gap:12px 18px;
+  align-items:center; }
+.gold-actions .wslink { font-weight:600; white-space:nowrap; }
+.tile--dark .fine, .tile--dark3 .fine { color:var(--d-label-2); }
+.legend { display:flex; gap:20px; font-size:14px; color:var(--label-2); margin-top:10px; }
+.tile--dark .legend { color:var(--d-label-2); }
+.sw { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:7px; }
+.chart { width:100%; height:auto; display:block; margin-top:14px; }
+.chart text { font-family:var(--font); }
+.chart .cv { font-size:12.5px; font-weight:600; text-anchor:middle; }
+.chart .cvv { font-size:13.5px; font-weight:600; text-anchor:end; }
+.chart .cl { font-size:12px; text-anchor:middle; }
+.chart .cll { font-size:12.5px; }
+
+/* segmented control, macOS pattern */
+.seg { display:inline-flex; background:var(--fill-3); border-radius:9px;
+  padding:2px; gap:2px; margin:4px 0 18px; }
+.tile--dark .seg { background:var(--d-fill-2); }
+.seg button { min-height:24px; padding:3px 14px; border-radius:7px;
+  font-size:14px; color:var(--label-2); }
+.tile--dark .seg button { color:var(--d-label-2); }
+.seg button[aria-pressed="true"] { background:#fff; color:var(--label);
+  box-shadow:var(--glass-shadow); font-weight:600; }
+.tile--dark .seg button[aria-pressed="true"] { background:#323435; color:#fff; }
+.panel[hidden] { display:none; }
+
+/* transcript case tiles */
+.transcript { font-family:var(--mono); font-size:13px; line-height:1.65;
+  background:var(--canvas); border:1px solid var(--border);
+  border-radius:var(--r-group); padding:14px 16px; margin-bottom:16px; }
+.transcript--hero { box-shadow:var(--window-shadow); border-color:transparent; }
+.tline { padding:3px 8px; border-radius:6px; color:var(--label); }
+.tline.hl { background:rgba(0,102,204,0.12); }
+.frow { display:flex; align-items:center; gap:12px; width:100%; text-align:left;
+  padding:10px 12px; border-radius:var(--r-item); border:1px solid transparent; }
+.frow:hover { background:var(--fill-4); }
+.frow[aria-pressed="true"] { background:rgba(0,102,204,0.08);
+  border-color:rgba(0,102,204,0.35); }
+.fname { font-weight:600; width:96px; flex:none; font-size:15px; }
+.fvalue { flex:1; font-size:15px; }
+.chip { flex:none; background:var(--fill-3); border-radius:9999px;
+  padding:3px 11px; font-size:12px; font-weight:600; }
+.detail { margin-top:14px; background:var(--glass); border-radius:var(--r-group);
+  box-shadow:var(--glass-shadow); padding:14px 16px; }
+.detail-head { display:flex; justify-content:space-between; align-items:baseline; }
+.dlabel { font-size:12px; font-weight:600; text-transform:uppercase;
+  letter-spacing:0.06em; color:var(--label-2); }
+.dstatus { font-size:13px; font-weight:600; }
+.devidence { font-family:var(--mono); font-size:13px; line-height:1.6;
+  margin-top:8px; color:var(--label); }
+.dreason { font-size:14px; color:var(--label-2); margin-top:6px; }
+.notest { font-size:14px; color:var(--label-2); margin-top:12px; }
+
+/* provider rows */
+.prow { display:flex; gap:12px; padding:13px 0; border-bottom:1px solid var(--separator); }
+.prow:last-child { border-bottom:0; }
+.prow .pbody { flex:1; }
+.prow .pname { font-weight:600; font-size:16px; }
+.prow .pnote { font-size:14px; color:var(--label-2); line-height:1.43; }
+.pstatus { flex:none; font-size:12px; font-weight:600; padding:3px 11px;
+  border-radius:9999px; background:var(--fill-3); height:fit-content; }
+.pstatus.ok { color:var(--verified); }
+.pstatus.down { color:var(--conflicting); }
+
+/* degradation */
+.deg-row { display:flex; justify-content:space-between; align-items:baseline;
+  padding:10px 0 4px; font-size:16px; }
+.deg-row span:last-child { font-weight:600; }
+.units { display:flex; gap:6px; padding:6px 0 12px; }
+.unit { width:26px; height:26px; border-radius:7px; background:var(--fill-3); }
+.unit.u-primary { background:var(--ink); }
+.unit.u-fallback { background:var(--blue); }
+.unit.u-down { background:transparent; border:1.5px solid var(--border); }
+
+/* limits */
+.limits { list-style:none; }
+.limits li { padding:11px 0; border-bottom:1px solid var(--d-separator);
+  font-size:16px; line-height:1.45; }
+.limits li:last-child { border-bottom:0; }
+.limits b { font-weight:600; }
+
+/* tables */
+table { width:100%; border-collapse:collapse; font-size:14.5px;
+  font-variant-numeric:tabular-nums; }
+th { background:var(--pearl); font-size:13.5px; font-weight:600; text-align:left;
+  padding:10px 14px; }
+td { padding:10px 14px; border-bottom:1px solid var(--separator); }
+td:not(:first-child), th:not(:first-child) { text-align:right; }
+.table-scroll { overflow-x:auto; }
+/* Inside the scroll container the table keeps a readable minimum
+   width and its cells never wrap mid token: on a phone the table
+   scrolls within its tile instead of squeezing its last columns
+   to a few pixels. On desktop the tile is wider than the minimum,
+   so nothing changes there. */
+.table-scroll table { min-width:640px; }
+.table-scroll th, .table-scroll td { white-space:nowrap; }
+.tgroup { font-size:12px; font-weight:600; color:var(--label-2);
+  text-transform:uppercase; letter-spacing:0.06em; margin:22px 0 8px; }
+.tgroup:first-of-type { margin-top:4px; }
+
+footer { padding:40px 24px 56px; }
+.footer-inner { max-width:1180px; margin:0 auto; color:var(--label-2);
+  font-size:13px; line-height:1.55; }
+.footer-inner p { max-width:860px; }
+.footer-inner .fine { margin-top:10px; }
+
+@media (max-width:1023px) {
+  .s4, .s5, .s6 { grid-column:span 6; }
+  .s7, .s8 { grid-column:span 12; }
+  header.site h1 { font-size:44px; }
+}
+@media (max-width:640px) {
+  .grid { grid-template-columns:1fr; }
+  .s4, .s5, .s6, .s7, .s8, .s12 { grid-column:span 1; }
+  header.site { padding:40px 20px 32px; }
+  header.site h1 { font-size:36px; }
+  main { padding:16px 16px 4px; }
+  .tile { padding:22px; }
+  .big { font-size:32px; }
+  .fname { width:84px; }
+  .seg button { min-height:36px; padding:6px 16px; }
+}
+
+/* flexprice.html: the ops window stage and the verdict reveal */
+.backlink { display:inline-block; margin-top:22px; color:var(--blue-dark);
+  font-size:15px; text-decoration:none; }
+.ops { background:var(--canvas); border-radius:var(--r-window);
+  box-shadow:var(--window-shadow); overflow:hidden; margin-top:18px;
+  color:var(--label); }
+.ops-bar { display:flex; align-items:center; gap:7px;
+  padding:11px 14px; background:var(--pearl);
+  border-bottom:1px solid var(--separator); }
+.ops-dot { width:11px; height:11px; border-radius:50%; background:var(--fill); }
+.ops-title { font-size:13px; font-weight:600; color:var(--label-2);
+  margin-left:8px; }
+.ops-body { padding:16px 18px 18px; }
+.ops-beat { display:flex; gap:12px; align-items:baseline; padding:9px 0 3px; }
+.ops-beat .btime { font-family:var(--mono); font-size:12px;
+  color:var(--label-3); flex:none; width:44px; }
+.ops-beat .bname { font-size:14px; font-weight:600; }
+.ops-beat .bnote { font-size:13px; color:var(--label-2); }
+.evt { display:flex; align-items:center; gap:10px; padding:6px 10px;
+  border-radius:var(--r-item); font-size:13.5px; }
+.evt .bar { height:8px; border-radius:4px; background:var(--fill-2); }
+.evt .etag { font-family:var(--mono); font-size:12px; color:var(--label-2);
+  flex:none; }
+.evt .ecount { margin-left:auto; font-variant-numeric:tabular-nums;
+  color:var(--label-2); font-size:13px; flex:none; }
+.inv { display:flex; align-items:center; gap:12px; margin-top:8px;
+  padding:12px; border:1px solid var(--border);
+  border-radius:var(--r-group); }
+.inv .iname { font-weight:600; font-size:15px; }
+.inv .inote { font-size:13px; color:var(--label-2); }
+.inv .itotal { margin-left:auto; font-size:19px; font-weight:600;
+  font-variant-numeric:tabular-nums; flex:none; }
+.dchip { flex:none; font-size:12px; font-weight:600; padding:3px 11px;
+  border-radius:9999px; background:rgba(211,0,5,0.08);
+  color:var(--conflicting); }
+.beats { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;
+  margin-top:18px; }
+.beat p { font-size:14px; line-height:1.45; color:var(--d-label-2); }
+.beat b { color:#fff; font-weight:600; display:block; font-size:15px;
+  margin-bottom:3px; }
+.replay { margin-top:16px; font-size:14px; font-weight:600;
+  color:var(--blue-dark); padding:6px 2px; }
+
+/* verdict stage */
+.stage-head { display:flex; align-items:center; gap:10px;
+  flex-wrap:wrap; margin-bottom:6px; }
+.tally { display:flex; gap:8px; flex-wrap:wrap; margin:10px 0 4px; }
+.tally .tchip { font-size:12.5px; font-weight:600; padding:4px 12px;
+  border-radius:9999px; background:var(--fill-3); color:var(--label-2);
+  font-variant-numeric:tabular-nums; }
+.tally .tchip b { color:var(--label); }
+.case-cols { display:grid; grid-template-columns:1fr 1fr; gap:22px;
+  align-items:start; }
+.frow .fst { flex:none; font-size:11px; font-weight:700; color:var(--label-3);
+  width:16px; text-align:center; }
+.frow.resolving { background:rgba(0,102,204,0.08); }
+.frow .chip.noev { border:1.5px dashed var(--border); background:transparent; }
+.runline { font-size:13px; color:var(--label-2); margin-top:14px;
+  font-variant-numeric:tabular-nums; }
+.runline .rid { font-family:var(--mono); font-size:12px; }
+.spot { padding:13px 0; border-bottom:1px solid var(--separator); }
+.spot:last-child { border-bottom:0; }
+.spot .sname { font-weight:600; font-size:16px; }
+.spot .snote { font-size:14.5px; color:var(--label-2); line-height:1.5;
+  margin-top:3px; }
+.spot .snote b { color:var(--label); font-weight:600; }
+.fitlink { color:var(--blue-dark); text-decoration:none; font-weight:600; }
+@media (prefers-reduced-motion: no-preference) {
+  .ops .evt, .ops .inv, .ops .dchip { opacity:0; }
+  .ops.play .evt { animation:fx-in 0.5s ease forwards; }
+  .ops.play .evt:nth-child(2) { animation-delay:0.15s; }
+  .ops.play .evt:nth-child(3) { animation-delay:0.3s; }
+  .ops.play .evt:nth-child(4) { animation-delay:0.45s; }
+  .ops.play .inv { animation:fx-in 0.5s ease 0.85s forwards; }
+  .ops.play .dchip { animation:fx-in 0.45s ease 1.5s forwards; }
+  .frow { transition:background 0.3s ease; }
+  .frow .chip { transition:color 0.3s ease, background 0.3s ease; }
+}
+@keyframes fx-in { from { opacity:0; transform:translateY(6px); }
+  to { opacity:1; transform:translateY(0); } }
+@media (max-width:1023px) { .case-cols { grid-template-columns:1fr; } }
+@media (max-width:640px) {
+  .beats { grid-template-columns:1fr; }
+  .inv { flex-wrap:wrap; }
+  .inv .itotal { margin-left:0; }
+}
+</style>
+</head>
+<body>
+<!-- A pitch page for Flexprice, generated by demo/build_flexprice.py.
+     The scenario is written for this page and labelled as one. The
+     verdicts are a real recorded run of the live verification
+     backend (demo/flexprice_run.json); nothing here is hand-scored.
+     Tokens: DESIGN.apple.md. Surface values: measured macOS values
+     adapted from the CupertinoUI theme CSS, as the demo page. Icons
+     are original inline SVG drawings in the SF Symbols style. -->
+<header class="site">
+  <div class="site-inner">
+    <p class="wordmark">TruTrace <span>· built for Flexprice</span></p>
+    <h1>Every number on the invoice carries its evidence, or it is not asserted.</h1>
+    <p class="sub">Flexprice meters usage and turns it into invoices
+    that customers have to trust. <b>This page runs one day of that
+    operation, and one disputed invoice, through TruTrace, the proof
+    layer for numbers an AI states out loud.</b></p>
+    <a class="backlink" href="index.html">The benchmark story</a>
+  </div>
+</header>
+<main>
+  <div class="grid">
+
+    <section class="tile tile--dark s8">
+      <div class="tile-head"><svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="6.8" rx="2"/><rect x="4" y="13.2" width="16" height="6.8" rx="2"/><path d="M7.4 7.4h.01M7.4 16.6h.01" stroke-width="2.6"/></svg><p class="kicker">A day at Flexprice · the operation</p></div>
+      <h2>Metering all morning. One dispute by afternoon.</h2>
+      <div class="ops" aria-label="A staged illustration of a day of billing operations">
+        <div class="ops-bar"><span class="ops-dot"></span><span class="ops-dot"></span><span class="ops-dot"></span><span class="ops-title">flexprice · operations</span></div>
+        <div class="ops-body">
+          <div class="evt"><span class="etag">api.call</span><span class="bar" style="width:34%"></span><span class="ecount">events streaming</span></div>
+          <div class="evt"><span class="etag">tokens</span><span class="bar" style="width:52%"></span><span class="ecount">metered</span></div>
+          <div class="evt"><span class="etag">credits</span><span class="bar" style="width:26%"></span><span class="ecount">applied</span></div>
+          <div class="evt"><span class="etag">entitlements</span><span class="bar" style="width:44%"></span><span class="ecount">checked</span></div>
+          <div class="inv"><div><p class="iname">Invoice FP-1042 · October</p><p class="inote">Growth plan · usage, credit applied</p></div><span class="itotal">$1,240</span><span class="dchip">Disputed</span></div>
+        </div>
+      </div>
+      <div class="beats">
+        <div class="beat"><b>09:00 · Metering</b><p>Usage events stream in from AI companies and are counted, priced and credited. This part Flexprice already does.</p></div>
+        <div class="beat"><b>13:00 · The invoice</b><p>FP-1042 goes out at $1,240: $1,540 of metered usage, a $300 platform credit applied.</p></div>
+        <div class="beat"><b>16:40 · The dispute</b><p>The customer calls. An AI agent takes the call and writes down what was agreed. That summary is where numbers stop carrying their evidence.</p></div>
+      </div>
+      <button type="button" class="replay" id="ops-replay">Replay the day</button>
+      <p class="fine">A staged illustration of the operation, drawn for
+      this page. The invoice figures are the scenario's, and the call
+      below is where they are tested.</p>
+    </section>
+
+    <section class="tile s4">
+      <div class="tile-head"><svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 9.5v5M8.8 6.2v11.6M13 3.8v16.4M17.2 7v10M20.8 10v4" stroke-width="2"/></svg><p class="kicker">The moment that matters</p></div>
+      <h2>The call is the contract.</h2>
+      <p class="tile-copy" style="margin-top:10px">When a customer
+      disputes an invoice, the support call is where the company's
+      position gets set: what was metered, what the total is, what was
+      promised. <span class="cont">If an AI agent summarises that call
+      and states a number the call never established, the company has
+      not saved a support ticket. It has manufactured the next
+      dispute.</span></p>
+      <div class="deg-row"><span>Claims in the agent's summary</span><span>8</span></div>
+      <div class="deg-row"><span>Verdicts against the call</span><span>6</span></div>
+      <div class="deg-row"><span>No check exists yet</span><span>2</span></div>
+      <div class="deg-row"><span>That failed or went unchecked</span><span>4</span></div>
+      <div class="deg-row"><span>Cost of checking</span><span>$0.000281</span></div>
+      <p class="fine">Counts and cost are this page's recorded run,
+      cited in full below the verdicts.</p>
+    </section>
+
+    <section class="tile tile--glass s12 vstage case">
+      <div class="tile-head"><svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.3"/><path d="m8.6 12.3 2.4 2.4 4.4-5"/></svg><p class="kicker">The dispute call · verified</p></div>
+      <h2>What the agent wrote down, checked against what was said.</h2>
+      <p class="tile-copy" style="margin-top:10px">A scenario written
+      for this page: a Flexprice support call about invoice FP-1042,
+      and the extraction an AI agent produced from it. The agent is
+      good, and it still overstates an entitlement, drops a hedge, and
+      states a credit balance the call never gives. <span class="cont">
+      Run the verification: each claim resolves into its recorded
+      verdict, with the exact line it rests on, or the absence stated.</span></p>
+      <div class="stage-head">
+        <button type="button" class="trycta" id="run-verdicts">Run verification</button>
+      </div>
+      <div class="tally"><span class="tchip" data-tally="supported">Supported <b>2</b></span><span class="tchip" data-tally="uncertain">Uncertain <b>1</b></span><span class="tchip" data-tally="contradictory">Contradictory <b>1</b></span><span class="tchip" data-tally="unsupported">Unsupported <b>2</b></span><span class="tchip" data-tally="not_claimed">Not claimed <b>1</b></span><span class="tchip" data-tally="unverified">No check <b>2</b></span></div>
+      <div class="case-cols">
+        <div class="transcript transcript--hero"><div class="tline" data-ts="00:00">[00:00] Customer: Hi, this is the billing lead at our company. I am calling about invoice FP-1042 for October. The total looks higher than last month and I want to go through it line by line.</div>
+<div class="tline" data-ts="00:14">[00:14] Support: Of course, let me pull it up. For the October cycle, the count is 1842300 billable events metered on your Growth plan.</div>
+<div class="tline" data-ts="00:20">[00:20] Customer: How many events do you have on record for us in October?</div>
+<div class="tline" data-ts="00:23">[00:23] Support: We have 1842300 events on record for October. That is the count the invoice is built on.</div>
+<div class="tline" data-ts="00:26">[00:26] Customer: And what did the usage come to before anything else?</div>
+<div class="tline" data-ts="00:31">[00:31] Support: Your metered usage came to $1,540. A platform credit of $300 was applied to this invoice, so the invoice total is $1,240.</div>
+<div class="tline" data-ts="00:44">[00:44] Customer: How much credit do we have left after that?</div>
+<div class="tline" data-ts="00:49">[00:49] Support: I can see the credit was applied, but I do not have the remaining credit balance in front of me on this screen. It is not stated on the invoice either.</div>
+<div class="tline" data-ts="01:02">[01:02] Customer: And overage, what are we paying beyond the included volume?</div>
+<div class="tline" data-ts="01:08">[01:08] Support: Overage beyond your included volume is billed at $0.40 per thousand events, and that rate is fixed for this cycle.</div>
+<div class="tline" data-ts="01:19">[01:19] Customer: One more thing. Does our plan include the advanced analytics entitlement? Our team wants to turn it on.</div>
+<div class="tline" data-ts="01:27">[01:27] Support: Advanced analytics is usually included on Growth, I believe. I would need to double-check your plan before I promise it.</div>
+<div class="tline" data-ts="01:38">[01:38] Customer: And the adjustment for the duplicate events from last week, when does that land?</div>
+<div class="tline" data-ts="01:46">[01:46] Support: The adjustment should show up probably in three to five business days.</div>
+<div class="tline" data-ts="01:55">[01:55] Customer: So what happens now?</div>
+<div class="tline" data-ts="02:00">[02:00] Support: I will escalate this to our billing team and call you back with the corrected invoice.</div></div>
+        <div>
+          <button type="button" class="frow" data-status="contradictory" data-chip="Contradictory" data-color="var(--conflicting)" data-tally-key="contradictory" data-ts="00:31" data-evidence="so the invoice total is $1,240." data-reason="call states two different prices for the same product: 1540.0, 1240.0" data-claimtext="The agent&#x27;s extraction claims invoice total is $1,540." aria-pressed="false"><span class="fname">Invoice total</span><span class="fvalue">$1,540</span><span class="chip" style="color:var(--conflicting)">Contradictory</span></button>
+<button type="button" class="frow" data-status="supported" data-chip="Supported" data-color="var(--verified)" data-tally-key="supported" data-ts="00:31" data-evidence="Your metered usage came to $1,540." data-reason="" data-claimtext="The agent&#x27;s extraction claims currency is USD." aria-pressed="false"><span class="fname">Currency</span><span class="fvalue">USD</span><span class="chip" style="color:var(--verified)">Supported</span></button>
+<button type="button" class="frow" data-status="unsupported" data-chip="Unsupported" data-color="var(--label-2)" data-tally-key="unsupported" data-ts="" data-evidence="" data-reason="quantity_or_stock was not established in the call" data-claimtext="The agent&#x27;s extraction claims events metered this cycle is 1,842,300." aria-pressed="false"><span class="fname">Events metered this cycle</span><span class="fvalue">1,842,300</span><span class="chip" style="color:var(--label-2)">Unsupported</span></button>
+<button type="button" class="frow" data-status="unsupported" data-chip="Unsupported" data-color="var(--label-2)" data-tally-key="unsupported" data-ts="" data-evidence="" data-reason="availability was not established in the call" data-claimtext="The agent&#x27;s extraction claims advanced analytics entitlement is in_stock · asserted as included." aria-pressed="false"><span class="fname">Advanced analytics entitlement</span><span class="fvalue">in_stock · asserted as included</span><span class="chip" style="color:var(--label-2)">Unsupported</span></button>
+<button type="button" class="frow" data-status="uncertain" data-chip="Uncertain" data-color="var(--label-2)" data-tally-key="uncertain" data-ts="01:46" data-evidence="The adjustment should show up probably in three to five business days." data-reason="hedged in the call (&#x27;probably&#x27;); not a confirmed fact" data-claimtext="The agent&#x27;s extraction claims adjustment lands is three to five business days." aria-pressed="false"><span class="fname">Adjustment lands</span><span class="fvalue">three to five business days</span><span class="chip" style="color:var(--label-2)">Uncertain</span></button>
+<button type="button" class="frow" data-status="supported" data-chip="Supported" data-color="var(--verified)" data-tally-key="supported" data-ts="02:00" data-evidence="I will escalate this to our billing team and call you back with the corrected invoice." data-reason="" data-claimtext="The agent&#x27;s extraction claims next step is I will escalate this to our billing team and call you back with the corrected invoice.." aria-pressed="false"><span class="fname">Next step</span><span class="fvalue">I will escalate this to our billing team and call you back with the corrected invoice.</span><span class="chip" style="color:var(--verified)">Supported</span></button>
+<button type="button" class="frow" data-status="not_claimed" data-chip="Not in the extraction" data-color="var(--label-2)" data-tally-key="not_claimed" data-ts="" data-evidence="" data-reason="the submitted extraction does not provide this field" data-claimtext="The extraction never claims corrected invoice arrives by; there is nothing to vouch for." aria-pressed="false"><span class="fname">Corrected invoice arrives by</span><span class="fvalue">—</span><span class="chip" style="color:var(--label-2)">Not in the extraction</span></button>
+          <button type="button" class="frow" data-status="unverified" data-chip="No check" data-color="var(--label-2)" data-tally-key="unverified" data-ts="" data-evidence="" data-reason="TruTrace has no check for this field, so the claim passes through unverified: the engine has no checks for this field." data-claimtext="The agent&#x27;s extraction claims credit balance is $500." aria-pressed="false"><span class="fname">Credit balance</span><span class="fvalue">$500</span><span class="chip noev" style="color:var(--label-2)">No check</span></button>
+<button type="button" class="frow" data-status="unverified" data-chip="No check" data-color="var(--label-2)" data-tally-key="unverified" data-ts="" data-evidence="" data-reason="TruTrace has no check for this field, so the claim passes through unverified: the engine has no checks for this field." data-claimtext="The agent&#x27;s extraction claims overage rate, per 1,000 events is $0.40." aria-pressed="false"><span class="fname">Overage rate, per 1,000 events</span><span class="fvalue">$0.40</span><span class="chip noev" style="color:var(--label-2)">No check</span></button>
+        </div>
+      </div>
+      <div class="detail" aria-live="polite">
+        <div class="detail-head"><span class="dlabel">Evidence</span><span class="dstatus"></span></div>
+        <p class="dclaim" style="font-size:15px;margin-top:8px"></p>
+        <p class="devidence"></p><p class="dreason"></p>
+      </div>
+      <p class="tile-copy" id="stage-summary" style="margin-top:16px"><b>2 supported, 1 uncertain, 1 contradictory, 2 unsupported, 1 not claimed, and 2 claims TruTrace has no check for and refuses to vouch for. The two money claims the agent got wrong did not pass.</b></p>
+      <p class="runline">Verdicts are one real run of the live backend,
+      not a mock: run <span class="rid">20261127-151328_verify_openai-gpt-4o-mini_ee2a0b</span> ·
+      gpt-4o-mini via OpenRouter · 4.6 s ·
+      $0.000281 for the call · inputs and outputs recorded in
+      demo/flexprice_run.json in the repository. Run it yourself in
+      <a href="try.html">the workspace</a>.</p>
+    </section>
+
+    <section class="tile s7">
+      <div class="tile-head"><svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.2 18.8 5.6v5.3c0 4.4-2.9 7.5-6.8 9.3-3.9-1.8-6.8-4.9-6.8-9.3V5.6Z"/><path d="m9.9 9.9 4.2 4.2M14.1 9.9l-4.2 4.2"/></svg><p class="kicker">The claims that fail</p></div>
+      <h2>Two of them are money.</h2>
+      <div class="spot"><p class="sname">Invoice total: claimed $1,540. Verdict: contradictory.</p>
+      <p class="snote">The call states two prices: $1,540 of usage
+      before the credit, and <b>$1,240, the invoice total</b>. The
+      agent wrote down the wrong one as the total. TruTrace asserts
+      neither and shows both, because a billing agent that picks the
+      louder number has just told a customer they owe $300 more than
+      they do.</p></div>
+      <div class="spot"><p class="sname">Credit balance: claimed $500. Verdict: no check.</p>
+      <p class="snote">Support says, in terms, that the remaining
+      balance is not in front of them and not on the invoice. The
+      agent states $500 anyway. <b>TruTrace has no balance check
+      today, so it marks the claim unchecked rather than letting it
+      pass as verified.</b> An unchecked label is honest; a silent
+      pass would be the failure.</p></div>
+      <div class="spot"><p class="sname">Advanced analytics entitlement: claimed as included. Verdict: unsupported.</p>
+      <p class="snote">Support hedges and refuses to promise it:
+      “usually included, I believe, I would need to double-check.”
+      The extraction asserts it as included. <b>An entitlement stated
+      stronger than it was said is a feature the customer now believes
+      they bought.</b></p></div>
+    </section>
+
+    <section class="tile tile--dark3 s5">
+      <div class="tile-head"><svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.3"/><path d="M12 11.2V16M12 7.9h.01" stroke-width="2"/></svg><p class="kicker">Stated limits</p></div>
+      <ul class="limits">
+        <li><b>The events count is not established.</b> The agent's
+        figure of 1,842,300 events is stated plainly in the call, and
+        the current verification profile, built on seller calls, does
+        not ground a metered-event count. It reports the claim
+        unsupported rather than guessing. A billing profile, events,
+        rates, balances, entitlements, is the named next piece of
+        work.</li>
+        <li><b>The overage rate has no check either.</b> $0.40 per
+        thousand events is stated in the call and claimed correctly,
+        and it still passes only as unchecked, because no check
+        exists for it yet.</li>
+        <li><b>The call is a scenario.</b> Written for this page, not
+        a recording, and labelled as one wherever it appears.</li>
+        <li><b>One run, not a benchmark.</b> The verdicts above are a
+        single recorded run against this scenario. The measured
+        benchmark, 32 calls and a 10 call campaign, lives on the
+        <a class="fitlink" href="index.html">main page</a>, scored
+        against gold labels drafted by an AI and pending human
+        review.</li>
+      </ul>
+    </section>
+
+    <section class="tile s6">
+      <div class="tile-head"><svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4v15.2A0.8 0.8 0 0 0 4.8 20H20"/><path d="M8.6 20v-5.4M13 20v-9.2M17.4 20v-7" stroke-width="2.4"/></svg><p class="kicker">The fit</p></div>
+      <h2>Billing is a trust product. This is the trust layer.</h2>
+      <p class="tile-copy" style="margin-top:10px">Flexprice sells the
+      numbers a company charges by. Every one of those numbers that an
+      agent later states to a customer, in support, in docs, in an AI
+      coworker, either carries the line it rests on or it is a dispute
+      waiting to happen. <span class="cont">TruTrace is that proof
+      layer: it sits behind the agents Flexprice and its customers
+      already run, and it refuses to let a claim travel further than
+      its evidence. The verification discipline is built and measured.
+      The billing profile is small, named work, and it is the work I
+      want to do with your team.</span></p>
+      <p class="tile-copy">Diwakar Bhagat · <a class="fitlink" href="https://diwakarbhagat.com">diwakarbhagat.com</a> ·
+      <a class="fitlink" href="try.html">run the workspace</a> ·
+      <a class="fitlink" href="index.html">the benchmark</a></p>
+    </section>
+
+    <section class="tile tile--glass s6">
+      <div class="tile-head"><svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13.2" r="7.4"/><path d="M12 13.2V9.4M9.6 3h4.8M12 5.8v-2"/></svg><p class="kicker">What verification costs · recorded</p></div>
+      <p class="tile-copy"><b>A second pass, priced.</b> <span class="cont">From
+      the recorded benchmark runs on gpt-4o-mini, three runs each:</span></p>
+      <div class="deg-row"><span>Naive extraction · per call, held out</span><span>$0.000071</span></div>
+      <div class="deg-row"><span>Verified · per call, held out</span><span>$0.000164</span></div>
+      <div class="deg-row"><span>Naive extraction · per call, campaign</span><span>$0.000079</span></div>
+      <div class="deg-row"><span>Verified · per call, campaign</span><span>$0.000184</span></div>
+      <div class="deg-row"><span>This page's dispute call, verified</span><span>$0.000281</span></div>
+      <div class="deg-row"><span>Whole TruTrace build, total model spend</span><span>$0.0536</span></div>
+      <p class="fine">Per call figures are computed from the recorded
+      eval summaries in evals/results; the scenario run's cost is its
+      own recorded provider usage. The total is the OpenRouter key's
+      usage record for the whole build, $0.0536 of a $100 limit, as
+      recorded on 27 Nov 2026. Verification roughly doubles the model
+      cost of an answer and stays under two hundredths of a cent a
+      call; the benchmark's accuracy and unsupported claim figures are
+      on the main page, measured against AI drafted gold labels
+      pending human review.</p>
+    </section>
+
+  </div>
+</main>
+<footer>
+  <div class="footer-inner">
+    <p>TruTrace, by Diwakar Bhagat. This page was built for Flexprice:
+    the scenario is written, the verdicts are real, and the limits are
+    stated on the page.</p>
+    <p class="fine">Composition after the Stageshow bento discipline
+    (MIT, © 2026 Benji Taylor). Design tokens from this project's
+    DESIGN.apple.md; surface values are measured macOS values adapted
+    from the CupertinoUI theme CSS, with its multi-accent system not
+    imported. Icons are original inline SVG drawings in the SF
+    Symbols style, not Apple's asset files. Generated by
+    demo/build_flexprice.py from demo/flexprice_scenario.json and the
+    recorded run demo/flexprice_run.json.</p>
+  </div>
+</footer>
+<script>
+(function () {
+  var reduce = window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // The ops window: beats light in sequence when it scrolls into
+  // view; the dispute lands last and holds. Replay restarts it.
+  var ops = document.querySelector(".ops");
+  var replay = document.getElementById("ops-replay");
+  function playOps() {
+    if (!ops || reduce) { return; }
+    ops.classList.remove("play");
+    void ops.offsetWidth;
+    ops.classList.add("play");
+  }
+  if (ops && !reduce && "IntersectionObserver" in window) {
+    var oo = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { playOps(); oo.disconnect(); }
+      });
+    }, { threshold: 0.3 });
+    oo.observe(ops);
+  }
+  if (replay) { replay.addEventListener("click", playOps); }
+
+  // The verdict stage. The page is rendered resolved (the poster
+  // frame tells the story with no script at all). With script, the
+  // stage resets to the agent's claims and the Run control resolves
+  // them one by one into the recorded verdicts: each landing row
+  // increments its tally, lights its transcript line, and fills the
+  // evidence panel, exactly the order a reviewer reads them in.
+  var stage = document.querySelector(".vstage");
+  if (!stage) { return; }
+  var rows = Array.prototype.slice.call(stage.querySelectorAll(".frow"));
+  var lines = stage.querySelectorAll(".tline");
+  var status = stage.querySelector(".dstatus");
+  var evidence = stage.querySelector(".devidence");
+  var reason = stage.querySelector(".dreason");
+  var claimEl = stage.querySelector(".dclaim");
+  var runBtn = document.getElementById("run-verdicts");
+  var summary = document.getElementById("stage-summary");
+  var tallies = {};
+  stage.querySelectorAll(".tchip[data-tally]").forEach(function (chip) {
+    tallies[chip.getAttribute("data-tally")] = chip.querySelector("b");
+  });
+  var timer = null;
+
+  function showDetail(row) {
+    rows.forEach(function (r) {
+      r.setAttribute("aria-pressed", r === row ? "true" : "false");
+    });
+    var st = row.getAttribute("data-status");
+    var label = row.getAttribute("data-chip");
+    status.textContent = row.classList.contains("resolved") || !stage._armed
+      ? label : "Claimed";
+    status.style.color = row.getAttribute("data-color") || "";
+    claimEl.textContent = row.getAttribute("data-claimtext") || "";
+    var ev = row.getAttribute("data-evidence");
+    if (st === "unverified") {
+      evidence.textContent = "No evidence is offered for a claim " +
+        "TruTrace cannot check. The claim is labelled, not passed.";
+    } else {
+      evidence.textContent = ev ||
+        "No span in the call supports this claim. The absence is the finding.";
+    }
+    var rs = row.getAttribute("data-reason");
+    reason.textContent = rs || "";
+    reason.style.display = rs ? "" : "none";
+    var ts = row.getAttribute("data-ts");
+    lines.forEach(function (line) {
+      line.classList.toggle("hl",
+        !!ts && line.getAttribute("data-ts") === ts);
+    });
+  }
+
+  function arm() {
+    stage._armed = true;
+    rows.forEach(function (row) {
+      row.classList.remove("resolved");
+      var chip = row.querySelector(".chip");
+      chip.textContent = "Claimed";
+      chip.style.color = "var(--label-2)";
+    });
+    Object.keys(tallies).forEach(function (k) {
+      tallies[k].textContent = "0";
+    });
+    if (summary) { summary.hidden = true; }
+    status.textContent = "Not run yet";
+    status.style.color = "var(--label-2)";
+    claimEl.textContent = "The agent's claims are listed as claimed. " +
+      "Run the verification and each one resolves into its recorded verdict.";
+    evidence.textContent = "";
+    reason.textContent = "";
+    lines.forEach(function (line) { line.classList.remove("hl"); });
+    runBtn.disabled = false;
+    runBtn.textContent = "Run verification";
+  }
+
+  function resolve() {
+    if (timer) { window.clearInterval(timer); }
+    arm();
+    stage._armed = false;
+    runBtn.disabled = true;
+    runBtn.textContent = "Verifying\u2026";
+    var i = 0;
+    function step() {
+      if (i > 0) { rows[i - 1].classList.remove("resolving"); }
+      if (i >= rows.length) {
+        window.clearInterval(timer);
+        timer = null;
+        if (summary) { summary.hidden = false; }
+        runBtn.disabled = false;
+        runBtn.textContent = "Replay the run";
+        return;
+      }
+      var row = rows[i];
+      row.classList.add("resolving", "resolved");
+      var chip = row.querySelector(".chip");
+      chip.textContent = row.getAttribute("data-chip");
+      chip.style.color = row.getAttribute("data-color") || "";
+      var key = row.getAttribute("data-tally-key");
+      if (key && tallies[key]) {
+        tallies[key].textContent =
+          String(parseInt(tallies[key].textContent, 10) + 1);
+      }
+      showDetail(row);
+      i += 1;
+    }
+    step();
+    timer = window.setInterval(step, 560);
+  }
+
+  rows.forEach(function (row) {
+    row.addEventListener("click", function () { showDetail(row); });
+  });
+  if (runBtn) { runBtn.addEventListener("click", resolve); }
+  if (!reduce) {
+    arm();
+    if ("IntersectionObserver" in window) {
+      var vo = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { resolve(); vo.disconnect(); }
+        });
+      }, { threshold: 0.25 });
+      vo.observe(stage);
+    }
+  } else if (rows.length) {
+    rows.forEach(function (r) { r.classList.add("resolved"); });
+    showDetail(rows[0]);
+  }
+  if (reduce && rows.length) { showDetail(rows[0]); }
+})();
+</script>
+</body>
+</html>
