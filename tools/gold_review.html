@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<!--
+  TruTrace gold-label review tool (local file, not the public site).
+
+  Storage note: this page keeps in-progress review state in
+  localStorage. That is acceptable HERE because the tool is a local
+  file opened by the reviewer on their own machine; it is not the
+  deployed product, and the durable record is the exported
+  gold_labels_v2.json, which is what gets committed and scored
+  against. Nothing on this page writes to the dataset: the frozen
+  AI drafted labels (gold-v1-ai-drafted) are embedded read only, and
+  human decisions land as a new version on export. Protocol:
+  GOLD_REVIEW.md in the project root.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TruTrace — Gold Label Review</title>
+<style>
+  :root{
+    --blue:#0066cc; --blue-dark:#2997ff;
+    --ink:#1d1d1f; --gray:#6e6e73; --faint:#86868b;
+    --bg:#f5f5f7; --panel:#ffffff; --line:rgba(0,0,0,.09);
+    --mark:#fff3bf; --mark-line:#e6c619;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:400 17px/1.5 "SF Pro Text",system-ui,-apple-system,"Inter","Segoe UI",sans-serif;}
+  header{background:var(--panel);border-bottom:1px solid var(--line);
+    padding:18px 28px 14px;}
+  header h1{font-size:28px;font-weight:600;letter-spacing:-.02em;margin:0 0 4px;}
+  header p{margin:0;color:var(--gray);font-size:15px;max-width:880px;}
+  .bar{display:flex;flex-wrap:wrap;gap:14px;align-items:center;
+    padding:12px 28px;background:var(--panel);border-bottom:1px solid var(--line);}
+  .bar label{font-size:14px;color:var(--gray);}
+  input[type=text],select,textarea{font:inherit;font-size:15px;color:var(--ink);
+    border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:#fff;}
+  button{font:inherit;font-size:15px;border:1px solid var(--line);background:#fff;
+    color:var(--ink);border-radius:980px;padding:6px 16px;cursor:pointer;}
+  button:hover{border-color:rgba(0,0,0,.25)}
+  button.primary{background:var(--blue);border-color:var(--blue);color:#fff;}
+  button:disabled{opacity:.4;cursor:default}
+  .progress{flex:1;min-width:220px;}
+  .progress .track{height:8px;border-radius:4px;background:rgba(0,0,0,.08);overflow:hidden;}
+  .progress .fill{height:100%;background:var(--blue);width:0%;}
+  .progress .nums{font-size:13px;color:var(--gray);margin-top:4px;}
+  main{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:20px 28px;max-width:1440px;margin:0 auto;}
+  @media (max-width:900px){main{grid-template-columns:1fr}}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;}
+  .panel h2{font-size:19px;font-weight:600;margin:0 0 4px;letter-spacing:-.01em;}
+  .panel .sub{color:var(--gray);font-size:14px;margin:0 0 12px;}
+  #transcript{white-space:pre-wrap;font-size:16px;line-height:1.65;
+    border:1px solid var(--line);border-radius:8px;padding:14px;background:#fbfbfd;
+    max-height:520px;overflow:auto;}
+  #transcript mark{background:var(--mark);border-bottom:2px solid var(--mark-line);
+    padding:0 1px;border-radius:2px;}
+  .hint{font-size:13px;color:var(--faint);margin-top:10px;}
+  .fieldname{font-size:22px;font-weight:600;letter-spacing:-.01em;}
+  .kv{font-size:15px;margin:8px 0;}
+  .kv .k{color:var(--gray);}
+  .chip{display:inline-block;font-size:13px;border:1px solid var(--line);
+    border-radius:980px;padding:2px 10px;color:var(--gray);}
+  .statuses{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px;}
+  .statuses button.active{background:var(--blue);border-color:var(--blue);color:#fff;}
+  #evidenceBox{border:1px solid var(--line);border-radius:8px;background:#fbfbfd;
+    padding:12px 14px;font-size:15px;min-height:56px;white-space:pre-wrap;}
+  .evmeta{font-size:13px;color:var(--faint);margin-top:6px;}
+  textarea{width:100%;min-height:74px;resize:vertical;}
+  .rowbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+  #fieldList{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+  #fieldList button{font-size:14px;padding:4px 12px;}
+  #fieldList button.done{border-color:var(--blue);color:var(--blue);}
+  #fieldList button.current{background:var(--ink);color:#fff;border-color:var(--ink);}
+  footer{padding:0 28px 28px;max-width:1440px;margin:0 auto;color:var(--gray);font-size:13px;}
+  a{color:var(--blue);text-decoration:none;}
+</style>
+</head>
+<body>
+<header>
+  <h1>Gold label review</h1>
+  <p>Reviewing the frozen AI drafted labels (<strong>gold-v1-ai-drafted</strong>) field by field.
+     Your decisions export as <strong>gold-v2-human-reviewed</strong>; the originals are never
+     overwritten. Uncertain is its own verdict: never collapse it into supported or unsupported.
+     Full protocol: GOLD_REVIEW.md.</p>
+</header>
+<div class="bar">
+  <label>Reviewer <input type="text" id="reviewer" placeholder="Your name" size="18"></label>
+  <label>Show
+    <select id="filter">
+      <option value="all">All fields</option>
+      <option value="unreviewed">Unreviewed only</option>
+      <option value="dev">Dev split</option>
+      <option value="heldout">Held out split</option>
+    </select>
+  </label>
+  <div class="progress">
+    <div class="track"><div class="fill" id="pfill"></div></div>
+    <div class="nums" id="pnums"></div>
+  </div>
+  <button id="importBtn">Import export</button>
+  <input type="file" id="importFile" accept=".json" hidden>
+  <button id="exportBtn" class="primary">Export gold_labels_v2.json</button>
+  <button id="resetBtn">Reset</button>
+</div>
+<main>
+  <section class="panel">
+    <h2 id="caseTitle">Transcript</h2>
+    <p class="sub" id="caseSub"></p>
+    <div id="transcript"></div>
+    <p class="hint">The highlighted span is the evidence currently attached to this field.
+      To change it, select text in the transcript, then choose “Use selection as evidence”.</p>
+    <div class="rowbtns">
+      <button id="useSel">Use selection as evidence</button>
+      <button id="clearEv">Clear evidence</button>
+    </div>
+    <div id="fieldList"></div>
+  </section>
+  <section class="panel">
+    <div class="fieldname" id="fName"></div>
+    <div class="kv"><span class="k">Extracted value:</span> <span id="fValue"></span></div>
+    <div class="kv"><span class="k">AI drafted status:</span> <span class="chip" id="fAi"></span>
+      <span class="k" id="fCondWrap"> · condition: <span id="fCond"></span></span></div>
+    <h2 style="margin-top:18px">Evidence span</h2>
+    <div id="evidenceBox"></div>
+    <div class="evmeta" id="evMeta"></div>
+    <h2 style="margin-top:18px">Your verdict</h2>
+    <div class="statuses" id="statusBtns">
+      <button data-status="supported">Supported</button>
+      <button data-status="uncertain">Uncertain</button>
+      <button data-status="unsupported">Unsupported</button>
+      <button data-status="contradictory">Contradictory</button>
+    </div>
+    <p class="hint" style="margin-top:0">Supported: the transcript establishes it. Uncertain: hedged or
+      ambiguous, the evidence does not settle it. Unsupported: no adequate evidence in the transcript.
+      Contradictory: the transcript contradicts it.</p>
+    <h2 style="margin-top:14px">Adjudication note</h2>
+    <textarea id="note" placeholder="For ambiguous cases: what made this hard, and how you resolved it. Kept on record."></textarea>
+    <div class="rowbtns">
+      <button id="prevBtn">← Previous field</button>
+      <button id="nextBtn" class="primary">Next field →</button>
+    </div>
+  </section>
+</main>
+<footer>
+  State is saved in this browser as you work (localStorage, local tool only). Export regularly:
+  the export is the durable record. Scores against these labels are computed by
+  evals/gold_metrics.py, which names the gold version on every report.
+</footer>
+<script>
+"use strict";
+const DATA = {"cases": [{"id": "bakery_sourdough_clean", "split": "dev", "business": "Crumb & Craft", "product": "sourdough loaf", "question": "Do you have sourdough loaves today, how much are they, and can I reserve one?", "taxonomy": "clean", "transcript": "Agent: Do you have sourdough loaves today? How much are they? Can I reserve one?\nSeller: Yes, the sourdough loaves are in stock. A sourdough loaf is $8. We baked 12 loaves this morning. You can pick it up any time today. I can reserve one under your name.", "fields": [{"name": "price", "value": 8, "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "A sourdough loaf is $8.", "ev_start": 129, "ev_end": 152}, {"name": "currency", "value": "USD", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "A sourdough loaf is $8.", "ev_start": 129, "ev_end": 152}, {"name": "availability", "value": "in_stock", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Yes, the sourdough loaves are in stock.", "ev_start": 89, "ev_end": 128}, {"name": "quantity_or_stock", "value": "12 loaves", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "We baked 12 loaves this morning.", "ev_start": 153, "ev_end": 185}, {"name": "delivery_or_pickup", "value": "pickup", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "You can pick it up any time today.", "ev_start": 186, "ev_end": 220}, {"name": "timing", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "contact_next_step", "value": "reserve", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "I can reserve one under your name.", "ev_start": 221, "ev_end": 255}]}, {"id": "bike_shop_tuneup_clean", "split": "dev", "business": "Spoke & Hub", "product": "bike tune-up", "question": "Can I book a bike tune-up this week, what does it cost, and how long does it take?", "taxonomy": "clean", "transcript": "Agent: Can I book a bike tune-up this week? What does it cost? How long does it take?\nSeller: We can fit you in for a tune-up this week. A full tune-up is $60. The tune-up takes about 2 hours. You can book online through our website.", "fields": [{"name": "price", "value": 60, "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "A full tune-up is $60.", "ev_start": 137, "ev_end": 159}, {"name": "currency", "value": "USD", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "A full tune-up is $60.", "ev_start": 137, "ev_end": 159}, {"name": "availability", "value": "available", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "We can fit you in for a tune-up this week.", "ev_start": 94, "ev_end": 136}, {"name": "quantity_or_stock", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "delivery_or_pickup", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "timing", "value": "2 hours", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "The tune-up takes about 2 hours.", "ev_start": 160, "ev_end": 192}, {"name": "contact_next_step", "value": "book online", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "You can book online through our website.", "ev_start": 193, "ev_end": 233}]}, {"id": "bookstore_boxset_ambiguous", "split": "heldout", "business": "Chapter One Books", "product": "Harry Potter box set", "question": "Do you have the Harry Potter box set, and how much is it?", "taxonomy": "ambiguous_quantity", "transcript": "Agent: Do you have the Harry Potter box set? How much is it?\nSeller: We have the box set in stock. It is $12 a book, and there are seven books in the set. We can deliver it to you tomorrow.", "fields": [{"name": "price", "value": 12, "ai_status_engine": "confirmed", "ai_status": "supported", "condition": "per book", "evidence": "It is $12 a book, and there are seven books in the set.", "ev_start": 99, "ev_end": 154}, {"name": "currency", "value": "USD", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "It is $12 a book, and there are seven books in the set.", "ev_start": 99, "ev_end": 154}, {"name": "availability", "value": "in_stock", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "We have the box set in stock.", "ev_start": 69, "ev_end": 98}, {"name": "quantity_or_stock", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "delivery_or_pickup", "value": "delivery", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "We can deliver it to you tomorrow.", "ev_start": 155, "ev_end": 189}, {"name": "timing", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "contact_next_step", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}]}, {"id": "cafe_cake_conditional", "split": "dev", "business": "The Daily Grind", "product": "chocolate cake", "question": "How much is a large chocolate cake, and can you have it ready by Friday?", "taxonomy": "conditional_pricing", "transcript": "Agent: How much is a large chocolate cake? Can you have it ready by Friday?\nSeller: We have openings for Friday cake orders. A small chocolate cake is $25. The large chocolate cake is $40. We can deliver it locally. It would be ready on Friday. Call us back to confirm the order.", "fields": [{"name": "price", "value": 40, "ai_status_engine": "confirmed", "ai_status": "supported", "condition": "large", "evidence": "The large chocolate cake is $40.", "ev_start": 156, "ev_end": 188}, {"name": "currency", "value": "USD", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "A small chocolate cake is $25.", "ev_start": 125, "ev_end": 155}, {"name": "availability", "value": "available", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "We have openings for Friday cake orders.", "ev_start": 84, "ev_end": 124}, {"name": "quantity_or_stock", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "delivery_or_pickup", "value": "delivery", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "We can deliver it locally.", "ev_start": 189, "ev_end": 215}, {"name": "timing", "value": "on friday", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "It would be ready on Friday.", "ev_start": 216, "ev_end": 244}, {"name": "contact_next_step", "value": "call back", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Call us back to confirm the order.", "ev_start": 245, "ev_end": 279}]}, {"id": "cafe_soup_temporal", "split": "dev", "business": "The Daily Grind", "product": "tomato soup", "question": "Is the tomato soup on today, and how much is a bowl?", "taxonomy": "temporal_mismatch", "transcript": "Agent: Is the tomato soup on today? How much is a bowl?\nSeller: The soup was $7 yesterday. Today the tomato soup is $8. Yes, we have the tomato soup today.", "fields": [{"name": "price", "value": 8, "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Today the tomato soup is $8.", "ev_start": 91, "ev_end": 119}, {"name": "currency", "value": "USD", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "The soup was $7 yesterday.", "ev_start": 64, "ev_end": 90}, {"name": "availability", "value": "in_stock", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Yes, we have the tomato soup today.", "ev_start": 120, "ev_end": 155}, {"name": "quantity_or_stock", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "delivery_or_pickup", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "timing", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "contact_next_step", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}]}, {"id": "cake_wedding_starting_price", "split": "dev", "business": "Sugar Tier Cakes", "product": "wedding cake", "question": "How much is a wedding cake for 100 guests?", "taxonomy": "unsupported_inference", "transcript": "Agent: How much is a wedding cake for 100 guests?\nSeller: Wedding cakes start at $300. We can deliver it for the day. Delivery and setup is $50 for weddings. Book a tasting through our website to get started.", "fields": [{"name": "price", "value": 300, "ai_status_engine": "uncertain", "ai_status": "uncertain", "condition": "starting price", "evidence": "Wedding cakes start at $300.", "ev_start": 58, "ev_end": 86}, {"name": "currency", "value": "USD", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Wedding cakes start at $300.", "ev_start": 58, "ev_end": 86}, {"name": "availability", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "quantity_or_stock", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "delivery_or_pickup", "value": "delivery", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "We can deliver it for the day.", "ev_start": 87, "ev_end": 117}, {"name": "timing", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "contact_next_step", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}]}, {"id": "dry_cleaner_suit_missing", "split": "dev", "business": "PressPerfect Cleaners", "product": "suit dry cleaning", "question": "How much is suit dry cleaning, and when would it be ready?", "taxonomy": "missing_information", "transcript": "Agent: How much is suit dry cleaning? When would it be ready?\nSeller: We do clean suits here. A suit takes two days with us. You can drop it off any morning.", "fields": [{"name": "price", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "currency", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "availability", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "quantity_or_stock", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "delivery_or_pickup", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "timing", "value": "two days", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "A suit takes two days with us.", "ev_start": 94, "ev_end": 124}, {"name": "contact_next_step", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}]}, {"id": "electronics_battery_uncertain", "split": "dev", "business": "Circuit World", "product": "laptop battery for Dell XPS 13", "question": "Do you have a replacement battery for a Dell XPS 13, and what would it cost?", "taxonomy": "uncertain_inventory", "transcript": "Agent: Do you have a replacement battery for a Dell XPS 13? What would it cost?\nSeller: We usually stock batteries for the XPS 13. A replacement battery runs about $85. Best to call back tomorrow and I can check the shelf.", "fields": [{"name": "price", "value": 85, "ai_status_engine": "uncertain", "ai_status": "uncertain", "condition": null, "evidence": "A replacement battery runs about $85.", "ev_start": 131, "ev_end": 168}, {"name": "currency", "value": "USD", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "A replacement battery runs about $85.", "ev_start": 131, "ev_end": 168}, {"name": "availability", "value": null, "ai_status_engine": "uncertain", "ai_status": "uncertain", "condition": null, "evidence": "We usually stock batteries for the XPS 13.", "ev_start": 88, "ev_end": 130}, {"name": "quantity_or_stock", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "delivery_or_pickup", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "timing", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "contact_next_step", "value": "call back", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Best to call back tomorrow and I can check the shelf.", "ev_start": 169, "ev_end": 222}]}, {"id": "florist_delivery_fee_inference", "split": "heldout", "business": "Petal & Stem", "product": "red roses", "question": "Do you have red roses today, and can you deliver them?", "taxonomy": "unsupported_inference", "transcript": "Agent: Do you have red roses today? Can you deliver them?\nSeller: Yes, we have red roses in stock. Delivery is $10 within the city. We can deliver them this afternoon.", "fields": [{"name": "price", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "currency", "value": "USD", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Delivery is $10 within the city.", "ev_start": 99, "ev_end": 131}, {"name": "availability", "value": "in_stock", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Yes, we have red roses in stock.", "ev_start": 66, "ev_end": 98}, {"name": "quantity_or_stock", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "delivery_or_pickup", "value": "delivery", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "We can deliver them this afternoon.", "ev_start": 132, "ev_end": 167}, {"name": "timing", "value": "this afternoon", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "We can deliver them this afternoon.", "ev_start": 132, "ev_end": 167}, {"name": "contact_next_step", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}]}, {"id": "florist_roses_clean", "split": "heldout", "business": "Petal & Stem", "product": "red roses", "question": "How much is a dozen red roses, are they available today, and can they be delivered?", "taxonomy": "clean", "transcript": "Agent: Do you have red roses available today? How much is a dozen red roses? Can you deliver today?\nSeller: Yes, we have red roses in stock. A dozen red roses is $45. We have 20 bunches made up this morning. Yes, we deliver. We can have it delivered by 5 pm if you order soon. Just give us a call back to place the order.", "fields": [{"name": "price", "value": 45, "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "A dozen red roses is $45.", "ev_start": 141, "ev_end": 166}, {"name": "currency", "value": "USD", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "A dozen red roses is $45.", "ev_start": 141, "ev_end": 166}, {"name": "availability", "value": "in_stock", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Yes, we have red roses in stock.", "ev_start": 108, "ev_end": 140}, {"name": "quantity_or_stock", "value": "20 bunches", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "We have 20 bunches made up this morning.", "ev_start": 167, "ev_end": 207}, {"name": "delivery_or_pickup", "value": "delivery", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Yes, we deliver.", "ev_start": 208, "ev_end": 224}, {"name": "timing", "value": "by 5 pm", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "We can have it delivered by 5 pm if you order soon.", "ev_start": 225, "ev_end": 276}, {"name": "contact_next_step", "value": "call back", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Just give us a call back to place the order.", "ev_start": 277, "ev_end": 321}]}, {"id": "florist_roses_conditional", "split": "heldout", "business": "Petal & Stem", "product": "red roses", "question": "How much is a standard dozen of red roses, are they available today, and can they be delivered?", "taxonomy": "conditional_pricing", "transcript": "Agent: How much is a standard dozen of red roses? Are they available today? Can they be delivered? Will you have more tomorrow?\nSeller: Yes, we have red roses today. A standard dozen is $35. The imported roses are $50 a dozen. I need to check with the manager about delivery. We should have stock tomorrow, probably.", "fields": [{"name": "price", "value": 35, "ai_status_engine": "confirmed", "ai_status": "supported", "condition": "standard dozen", "evidence": "A standard dozen is $35.", "ev_start": 166, "ev_end": 190}, {"name": "currency", "value": "USD", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "A standard dozen is $35.", "ev_start": 166, "ev_end": 190}, {"name": "availability", "value": "in_stock", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Yes, we have red roses today.", "ev_start": 136, "ev_end": 165}, {"name": "quantity_or_stock", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "delivery_or_pickup", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "timing", "value": null, "ai_status_engine": "uncertain", "ai_status": "uncertain", "condition": null, "evidence": "We should have stock tomorrow, probably.", "ev_start": 276, "ev_end": 316}, {"name": "contact_next_step", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}]}, {"id": "furniture_chair_contradiction", "split": "heldout", "business": "Oak & Ore Furniture", "product": "oak dining chair", "question": "Do you have oak dining chairs in stock, and how much are they?", "taxonomy": "contradiction", "transcript": "Agent: Do you have oak dining chairs in stock? How much are they?\nSeller: Yes, we have oak dining chairs in stock. An oak dining chair is $150. Hold on, the system says those chairs sold out this morning. Delivery is available for furniture. I can hold one from the next batch for you.", "fields": [{"name": "price", "value": 150, "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "An oak dining chair is $150.", "ev_start": 115, "ev_end": 143}, {"name": "currency", "value": "USD", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "An oak dining chair is $150.", "ev_start": 115, "ev_end": 143}, {"name": "availability", "value": null, "ai_status_engine": "conflicting", "ai_status": "contradictory", "condition": null, "evidence": "Hold on, the system says those chairs sold out this morning.", "ev_start": 144, "ev_end": 204}, {"name": "quantity_or_stock", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "delivery_or_pickup", "value": "delivery", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Delivery is available for furniture.", "ev_start": 205, "ev_end": 241}, {"name": "timing", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "contact_next_step", "value": "hold", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "I can hold one from the next batch for you.", "ev_start": 242, "ev_end": 285}]}, {"id": "garden_centre_seedlings_uncertain", "split": "dev", "business": "Greenacre Garden Centre", "product": "tomato seedlings", "question": "Do you have tomato seedlings, how much are they, and how many trays do you have?", "taxonomy": "uncertain_inventory", "transcript": "Agent: Do you have tomato seedlings? How much are they? How many trays do you have?\nSeller: We had tomato seedlings this morning. I think there are some left, but I am not sure. A tray is $7. There should be a few trays left.", "fields": [{"name": "price", "value": 7, "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "A tray is $7.", "ev_start": 178, "ev_end": 191}, {"name": "currency", "value": "USD", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "A tray is $7.", "ev_start": 178, "ev_end": 191}, {"name": "availability", "value": null, "ai_status_engine": "uncertain", "ai_status": "uncertain", "condition": null, "evidence": "I think there are some left, but I am not sure.", "ev_start": 130, "ev_end": 177}, {"name": "quantity_or_stock", "value": null, "ai_status_engine": "uncertain", "ai_status": "uncertain", "condition": null, "evidence": "There should be a few trays left.", "ev_start": 192, "ev_end": 225}, {"name": "delivery_or_pickup", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "timing", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "contact_next_step", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}]}, {"id": "grocery_eggs_ambiguous", "split": "dev", "business": "Corner Grocer", "product": "free-range eggs", "question": "Do you have free-range eggs, how much is a dozen, and how many do you have left?", "taxonomy": "ambiguous_quantity", "transcript": "Agent: Do you have free-range eggs? How much is a dozen? How many do you have left?\nSeller: Yes, we have free-range eggs in stock. A dozen is $6. There are a few crates left out back. We can deliver grocery orders over $30.", "fields": [{"name": "price", "value": 6, "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "A dozen is $6.", "ev_start": 131, "ev_end": 145}, {"name": "currency", "value": "USD", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "A dozen is $6.", "ev_start": 131, "ev_end": 145}, {"name": "availability", "value": "in_stock", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Yes, we have free-range eggs in stock.", "ev_start": 92, "ev_end": 130}, {"name": "quantity_or_stock", "value": null, "ai_status_engine": "uncertain", "ai_status": "uncertain", "condition": null, "evidence": "There are a few crates left out back.", "ev_start": 146, "ev_end": 183}, {"name": "delivery_or_pickup", "value": "delivery", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "We can deliver grocery orders over $30.", "ev_start": 184, "ev_end": 223}, {"name": "timing", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "contact_next_step", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}]}, {"id": "grocery_milk_confusion", "split": "dev", "business": "Corner Grocer", "product": "almond milk", "question": "How much is the almond milk, and is it in stock?", "taxonomy": "entity_confusion", "transcript": "Agent: How much is the almond milk? Is it in stock?\nSeller: The oat milk is $4. The oat milk is sold out at the moment. The almond milk is $5. The almond milk is in stock.", "fields": [{"name": "price", "value": 5, "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "The almond milk is $5.", "ev_start": 120, "ev_end": 142}, {"name": "currency", "value": "USD", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "The oat milk is $4.", "ev_start": 60, "ev_end": 79}, {"name": "availability", "value": "in_stock", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "The almond milk is in stock.", "ev_start": 143, "ev_end": 171}, {"name": "quantity_or_stock", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "delivery_or_pickup", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "timing", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "contact_next_step", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}]}, {"id": "grocery_oatmilk_correction", "split": "heldout", "business": "Corner Grocer", "product": "oat milk", "question": "How much is the oat milk, and is it in stock?", "taxonomy": "contradiction", "transcript": "Agent: How much is the oat milk? Is it in stock?\nSeller: The oat milk is $4. Yes, it is in stock. Actually the oat milk went up, it is $5 now. There are 9 cartons on the shelf.", "fields": [{"name": "price", "value": 5, "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Actually the oat milk went up, it is $5 now.", "ev_start": 98, "ev_end": 142}, {"name": "currency", "value": "USD", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "The oat milk is $4.", "ev_start": 57, "ev_end": 76}, {"name": "availability", "value": "in_stock", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Yes, it is in stock.", "ev_start": 77, "ev_end": 97}, {"name": "quantity_or_stock", "value": "9 cartons", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "There are 9 cartons on the shelf.", "ev_start": 143, "ev_end": 176}, {"name": "delivery_or_pickup", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "timing", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "contact_next_step", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}]}, {"id": "hardware_paint_temporal", "split": "heldout", "business": "FixIt Hardware", "product": "exterior paint 5 litre", "question": "How much is a 5 litre tin of exterior paint, and do you have it?", "taxonomy": "temporal_mismatch", "transcript": "Agent: How much is a 5 litre tin of exterior paint? Do you have it?\nSeller: Last week that paint was $42. Today it is $48. We have 5 tins in stock.", "fields": [{"name": "price", "value": 48, "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Today it is $48.", "ev_start": 106, "ev_end": 122}, {"name": "currency", "value": "USD", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Last week that paint was $42.", "ev_start": 76, "ev_end": 105}, {"name": "availability", "value": "in_stock", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "We have 5 tins in stock.", "ev_start": 123, "ev_end": 147}, {"name": "quantity_or_stock", "value": "5 tins", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "We have 5 tins in stock.", "ev_start": 123, "ev_end": 147}, {"name": "delivery_or_pickup", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "timing", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "contact_next_step", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}]}, {"id": "hardware_screws_ambiguous", "split": "dev", "business": "FixIt Hardware", "product": "wood screws", "question": "Do you sell wood screws, how much are they, and are they sold by weight or by the box?", "taxonomy": "ambiguous_quantity", "transcript": "Agent: Do you sell wood screws? How much are they? Are they sold by weight or by the box?\nSeller: Yes, we carry wood screws. A box of wood screws is $9. I am not sure if that is priced by the box or by weight, the label is worn.", "fields": [{"name": "price", "value": 9, "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "A box of wood screws is $9.", "ev_start": 125, "ev_end": 152}, {"name": "currency", "value": "USD", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "A box of wood screws is $9.", "ev_start": 125, "ev_end": 152}, {"name": "availability", "value": "in_stock", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Yes, we carry wood screws.", "ev_start": 98, "ev_end": 124}, {"name": "quantity_or_stock", "value": null, "ai_status_engine": "uncertain", "ai_status": "uncertain", "condition": null, "evidence": "I am not sure if that is priced by the box or by weight, the label is worn.", "ev_start": 153, "ev_end": 228}, {"name": "delivery_or_pickup", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "timing", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "contact_next_step", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}]}, {"id": "music_store_strings_missing", "split": "heldout", "business": "Fermata Music", "product": "violin strings", "question": "Do you have violin strings, and do you offer same-day restringing?", "taxonomy": "missing_information", "transcript": "Agent: Do you have violin strings? Do you offer same-day restringing?\nSeller: We have violin strings in stock. There are 3 sets left. Restringing is done in 1 hour if you drop it off.", "fields": [{"name": "price", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "currency", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "availability", "value": "in_stock", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "We have violin strings in stock.", "ev_start": 78, "ev_end": 110}, {"name": "quantity_or_stock", "value": "3 sets", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "There are 3 sets left.", "ev_start": 111, "ev_end": 133}, {"name": "delivery_or_pickup", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "timing", "value": "in 1 hour", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Restringing is done in 1 hour if you drop it off.", "ev_start": 134, "ev_end": 183}, {"name": "contact_next_step", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}]}, {"id": "optician_frames_missing", "split": "dev", "business": "ClearView Opticians", "product": "titanium frames", "question": "Do you sell titanium frames, how much do they start at, and can I get an eye test the same day?", "taxonomy": "missing_information", "transcript": "Agent: Do you sell titanium frames? How much do they start at? Can I get an eye test the same day?\nSeller: Yes, we carry titanium frames. Prices vary a lot by brand. Eye tests are available on Saturdays. You can book online for the eye test.", "fields": [{"name": "price", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "currency", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "availability", "value": "in_stock", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Yes, we carry titanium frames.", "ev_start": 107, "ev_end": 137}, {"name": "quantity_or_stock", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "delivery_or_pickup", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "timing", "value": "on saturdays", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Eye tests are available on Saturdays.", "ev_start": 166, "ev_end": 203}, {"name": "contact_next_step", "value": "book online", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "You can book online for the eye test.", "ev_start": 204, "ev_end": 241}]}, {"id": "pet_store_dogfood_clean", "split": "dev", "business": "Happy Paws", "product": "5kg salmon dog food", "question": "Do you stock the 5kg salmon dog food, how much is it, and how many bags do you have?", "taxonomy": "clean", "transcript": "Agent: Do you stock the 5kg salmon dog food? How much is it? How many bags do you have?\nSeller: Yes, we have the salmon dog food in stock. The 5kg bag is $38. There are 6 bags on the shelf. We do not deliver, it is pickup only. Just come by the store to grab one.", "fields": [{"name": "price", "value": 38, "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "The 5kg bag is $38.", "ev_start": 139, "ev_end": 158}, {"name": "currency", "value": "USD", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "The 5kg bag is $38.", "ev_start": 139, "ev_end": 158}, {"name": "availability", "value": "in_stock", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Yes, we have the salmon dog food in stock.", "ev_start": 96, "ev_end": 138}, {"name": "quantity_or_stock", "value": "6 bags", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "There are 6 bags on the shelf.", "ev_start": 159, "ev_end": 189}, {"name": "delivery_or_pickup", "value": "pickup", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "We do not deliver, it is pickup only.", "ev_start": 190, "ev_end": 227}, {"name": "timing", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "contact_next_step", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}]}, {"id": "pharmacy_antihistamine_missing", "split": "dev", "business": "CarePlus Pharmacy", "product": "antihistamine tablets", "question": "How much are your antihistamine tablets, do you have them, and do you deliver?", "taxonomy": "missing_information", "transcript": "Agent: How much are your antihistamine tablets? Do you have them? Do you deliver?\nSeller: Yes, we have antihistamine tablets in stock. They are the 24 pack, non drowsy. Just ask at the counter when you come in.", "fields": [{"name": "price", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "currency", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "availability", "value": "in_stock", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Yes, we have antihistamine tablets in stock.", "ev_start": 90, "ev_end": 134}, {"name": "quantity_or_stock", "value": "24 pack", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "They are the 24 pack, non drowsy.", "ev_start": 135, "ev_end": 168}, {"name": "delivery_or_pickup", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "timing", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "contact_next_step", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}]}, {"id": "pharmacy_d2d3_confusion", "split": "heldout", "business": "CarePlus Pharmacy", "product": "vitamin D3", "question": "How much is vitamin D3, and do you have it in stock?", "taxonomy": "entity_confusion", "transcript": "Agent: How much is vitamin D3? Do you have it in stock?\nSeller: The vitamin D2 is $11. The vitamin D3 is $14. Both are in stock.", "fields": [{"name": "price", "value": 14, "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "The vitamin D3 is $14.", "ev_start": 87, "ev_end": 109}, {"name": "currency", "value": "USD", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "The vitamin D2 is $11.", "ev_start": 64, "ev_end": 86}, {"name": "availability", "value": "in_stock", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Both are in stock.", "ev_start": 110, "ev_end": 128}, {"name": "quantity_or_stock", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "delivery_or_pickup", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "timing", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "contact_next_step", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}]}, {"id": "pharmacy_vitamind_uncertain", "split": "heldout", "business": "CarePlus Pharmacy", "product": "vitamin D3", "question": "Do you have vitamin D3 in stock, and how much is it?", "taxonomy": "uncertain_inventory", "transcript": "Agent: Do you have vitamin D3 in stock? How much is it?\nSeller: We carry vitamin D3, though I am not sure any bottles are on the shelf right now. There might be a couple of bottles in the back. You could call back in the morning to check.", "fields": [{"name": "price", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "currency", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "availability", "value": null, "ai_status_engine": "uncertain", "ai_status": "uncertain", "condition": null, "evidence": "We carry vitamin D3, though I am not sure any bottles are on the shelf right now.", "ev_start": 64, "ev_end": 145}, {"name": "quantity_or_stock", "value": null, "ai_status_engine": "uncertain", "ai_status": "uncertain", "condition": null, "evidence": "There might be a couple of bottles in the back.", "ev_start": 146, "ev_end": 193}, {"name": "delivery_or_pickup", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "timing", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "contact_next_step", "value": "call back", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "You could call back in the morning to check.", "ev_start": 194, "ev_end": 238}]}, {"id": "plumber_callout_contradiction", "split": "dev", "business": "RapidFlow Plumbing", "product": "emergency call-out", "question": "What is your emergency call-out fee, and can someone come today?", "taxonomy": "contradiction", "transcript": "Agent: What is your emergency call-out fee? Can someone come today?\nSeller: The call-out fee is $60. We can fit you in today. For emergencies the call-out is $80. Someone can be there in 2 hours. Just text the address to us.", "fields": [{"name": "price", "value": null, "ai_status_engine": "conflicting", "ai_status": "contradictory", "condition": null, "evidence": "For emergencies the call-out is $80.", "ev_start": 126, "ev_end": 162}, {"name": "currency", "value": "USD", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "The call-out fee is $60.", "ev_start": 76, "ev_end": 100}, {"name": "availability", "value": "available", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "We can fit you in today.", "ev_start": 101, "ev_end": 125}, {"name": "quantity_or_stock", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "delivery_or_pickup", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "timing", "value": "in 2 hours", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Someone can be there in 2 hours.", "ev_start": 163, "ev_end": 195}, {"name": "contact_next_step", "value": "text", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Just text the address to us.", "ev_start": 196, "ev_end": 224}]}, {"id": "salon_balayage_conditional", "split": "heldout", "business": "Velvet Scissors", "product": "balayage", "question": "How much is a balayage, and do you have any appointments this week?", "taxonomy": "conditional_pricing", "transcript": "Agent: How much is a balayage? Do you have any appointments this week?\nSeller: A standard colour is $70. Balayage would be more, I am not sure of the exact price for that. We have an opening on Thursday. You can book online anytime.", "fields": [{"name": "price", "value": null, "ai_status_engine": "uncertain", "ai_status": "uncertain", "condition": null, "evidence": "Balayage would be more, I am not sure of the exact price for that.", "ev_start": 105, "ev_end": 171}, {"name": "currency", "value": "USD", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "A standard colour is $70.", "ev_start": 79, "ev_end": 104}, {"name": "availability", "value": "available", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "We have an opening on Thursday.", "ev_start": 172, "ev_end": 203}, {"name": "quantity_or_stock", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "delivery_or_pickup", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "timing", "value": "on thursday", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "We have an opening on Thursday.", "ev_start": 172, "ev_end": 203}, {"name": "contact_next_step", "value": "book online", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "You can book online anytime.", "ev_start": 204, "ev_end": 232}]}, {"id": "salon_timing_contradiction", "split": "dev", "business": "Velvet Scissors", "product": "haircut", "question": "Can I get a haircut today, and how much is it?", "taxonomy": "contradiction", "transcript": "Agent: Can I get a haircut today? How much is it?\nSeller: We have an opening at 3 pm today. A haircut is $30. Sorry, that opening is at 4 pm, not 3 pm. You can book online to grab it.", "fields": [{"name": "price", "value": 30, "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "A haircut is $30.", "ev_start": 92, "ev_end": 109}, {"name": "currency", "value": "USD", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "A haircut is $30.", "ev_start": 92, "ev_end": 109}, {"name": "availability", "value": "available", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "We have an opening at 3 pm today.", "ev_start": 58, "ev_end": 91}, {"name": "quantity_or_stock", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "delivery_or_pickup", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "timing", "value": null, "ai_status_engine": "conflicting", "ai_status": "contradictory", "condition": null, "evidence": "Sorry, that opening is at 4 pm, not 3 pm.", "ev_start": 110, "ev_end": 151}, {"name": "contact_next_step", "value": "book online", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "You can book online to grab it.", "ev_start": 152, "ev_end": 183}]}, {"id": "salon_toner_confusion", "split": "dev", "business": "Velvet Scissors", "product": "purple toner", "question": "Do you sell purple toner, and how much is it?", "taxonomy": "entity_confusion", "transcript": "Agent: Do you sell purple toner? How much is it?\nSeller: The purple shampoo is $16. The purple toner is $19. We have both on the shelf.", "fields": [{"name": "price", "value": 19, "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "The purple toner is $19.", "ev_start": 84, "ev_end": 108}, {"name": "currency", "value": "USD", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "The purple shampoo is $16.", "ev_start": 57, "ev_end": 83}, {"name": "availability", "value": "in_stock", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "We have both on the shelf.", "ev_start": 109, "ev_end": 135}, {"name": "quantity_or_stock", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "delivery_or_pickup", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "timing", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "contact_next_step", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}]}, {"id": "shoe_store_temporal", "split": "dev", "business": "StrideRight Shoes", "product": "trail running shoes", "question": "How much are the trail running shoes in a size 10?", "taxonomy": "temporal_mismatch", "transcript": "Agent: How much are the trail running shoes in a size 10?\nSeller: You might have seen them at $90 previously. They are $110 now. We have size 10 in stock. Only 2 pairs left in that size.", "fields": [{"name": "price", "value": 110, "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "They are $110 now.", "ev_start": 110, "ev_end": 128}, {"name": "currency", "value": "USD", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "You might have seen them at $90 previously.", "ev_start": 66, "ev_end": 109}, {"name": "availability", "value": "in_stock", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "We have size 10 in stock.", "ev_start": 129, "ev_end": 154}, {"name": "quantity_or_stock", "value": "2 pairs", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Only 2 pairs left in that size.", "ev_start": 155, "ev_end": 186}, {"name": "delivery_or_pickup", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "timing", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "contact_next_step", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}]}, {"id": "toy_store_kite_uncertain", "split": "dev", "business": "Wonder Toys", "product": "rainbow kite", "question": "Do you have rainbow kites, how much are they, and can I get one today?", "taxonomy": "uncertain_inventory", "transcript": "Agent: Do you have rainbow kites? How much are they? Can I get one today?\nSeller: We did have rainbow kites last week. I believe there is one left in the window. They were $15 last season.", "fields": [{"name": "price", "value": null, "ai_status_engine": "uncertain", "ai_status": "uncertain", "condition": null, "evidence": "They were $15 last season.", "ev_start": 162, "ev_end": 188}, {"name": "currency", "value": "USD", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "They were $15 last season.", "ev_start": 162, "ev_end": 188}, {"name": "availability", "value": null, "ai_status_engine": "uncertain", "ai_status": "uncertain", "condition": null, "evidence": "I believe there is one left in the window.", "ev_start": 119, "ev_end": 161}, {"name": "quantity_or_stock", "value": null, "ai_status_engine": "uncertain", "ai_status": "uncertain", "condition": null, "evidence": "I believe there is one left in the window.", "ev_start": 119, "ev_end": 161}, {"name": "delivery_or_pickup", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "timing", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "contact_next_step", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}]}, {"id": "tyre_shop_conditional", "split": "dev", "business": "Grip & Go Tyres", "product": "all-season tyres", "question": "How much is an all-season tyre fitted, and do you have them in stock?", "taxonomy": "conditional_pricing", "transcript": "Agent: How much is an all-season tyre fitted? Do you have them in stock?\nSeller: Yes, we have all-season tyres in stock. The tyre alone is $120. Fitted, the same tyre is $145. We have 8 tyres in the fitting bay. We can get it fitted in 45 minutes. Just book in when you are ready.", "fields": [{"name": "price", "value": 145, "ai_status_engine": "confirmed", "ai_status": "supported", "condition": "fitted", "evidence": "Fitted, the same tyre is $145.", "ev_start": 145, "ev_end": 175}, {"name": "currency", "value": "USD", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "The tyre alone is $120.", "ev_start": 121, "ev_end": 144}, {"name": "availability", "value": "in_stock", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Yes, we have all-season tyres in stock.", "ev_start": 81, "ev_end": 120}, {"name": "quantity_or_stock", "value": "8 tyres", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "We have 8 tyres in the fitting bay.", "ev_start": 176, "ev_end": 211}, {"name": "delivery_or_pickup", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "timing", "value": "in 45 minutes", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "We can get it fitted in 45 minutes.", "ev_start": 212, "ev_end": 247}, {"name": "contact_next_step", "value": "book in", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Just book in when you are ready.", "ev_start": 248, "ev_end": 280}]}, {"id": "tyre_shop_contradiction", "split": "heldout", "business": "Grip & Go Tyres", "product": "all-season tyres", "question": "How much is an all-season tyre, and do you have them in stock?", "taxonomy": "contradiction", "transcript": "Agent: How much is an all-season tyre? Do you have them in stock?\nSeller: Yes, we have that size in stock. That size runs $120 a tyre. The all-season ones are $135. There are 4 tyres left in that size. We can fit them in 30 minutes.", "fields": [{"name": "price", "value": null, "ai_status_engine": "conflicting", "ai_status": "contradictory", "condition": null, "evidence": "The all-season ones are $135.", "ev_start": 135, "ev_end": 164}, {"name": "currency", "value": "USD", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "That size runs $120 a tyre.", "ev_start": 107, "ev_end": 134}, {"name": "availability", "value": "in_stock", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "Yes, we have that size in stock.", "ev_start": 74, "ev_end": 106}, {"name": "quantity_or_stock", "value": "4 tyres", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "There are 4 tyres left in that size.", "ev_start": 165, "ev_end": 201}, {"name": "delivery_or_pickup", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}, {"name": "timing", "value": "in 30 minutes", "ai_status_engine": "confirmed", "ai_status": "supported", "condition": null, "evidence": "We can fit them in 30 minutes.", "ev_start": 202, "ev_end": 232}, {"name": "contact_next_step", "value": null, "ai_status_engine": "unconfirmed", "ai_status": "unsupported", "condition": null, "evidence": null, "ev_start": null, "ev_end": null}]}], "fields_total": 224};
+const LS_KEY = "trutrace.gold_review.v1";
+const TOTAL = DATA.fields_total;
+
+let state = loadState();
+let queue = [];
+let pos = 0;
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(raw){ const s = JSON.parse(raw); if(s && s.reviews) return s; }
+  }catch(e){}
+  return {reviewer:"", reviews:{}};
+}
+function save(){
+  state.reviewer = document.getElementById("reviewer").value;
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(e){}
+}
+function entry(caseId, fieldName){
+  const byCase = state.reviews[caseId] || (state.reviews[caseId] = {});
+  return byCase[fieldName] || (byCase[fieldName] = {status:null, note:"", spanState:"ai", span:null});
+}
+function current(){
+  const item = queue[pos];
+  if(!item) return null;
+  const c = DATA.cases[item.ci];
+  return {case:c, field:c.fields[item.fi]};
+}
+function effectiveSpan(cur, ent){
+  if(ent.spanState === "custom") return ent.span;
+  if(ent.spanState === "cleared") return null;
+  if(cur.field.evidence) return {text:cur.field.evidence, start:cur.field.ev_start, end:cur.field.ev_end};
+  return null;
+}
+function buildQueue(){
+  const f = document.getElementById("filter").value;
+  queue = [];
+  DATA.cases.forEach((c, ci) => {
+    c.fields.forEach((fld, fi) => {
+      const ent = (state.reviews[c.id] || {})[fld.name] || {};
+      if(f === "unreviewed" && ent.status) return;
+      if(f === "dev" && c.split !== "dev") return;
+      if(f === "heldout" && c.split !== "heldout") return;
+      queue.push({ci, fi});
+    });
+  });
+  if(pos >= queue.length) pos = Math.max(0, queue.length - 1);
+}
+function esc(s){
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+function render(){
+  buildQueue();
+  const cur = current();
+  const done = countReviewed();
+  document.getElementById("pfill").style.width = (100 * done / TOTAL) + "%";
+  const bySplit = {dev:[0,0], heldout:[0,0]};
+  DATA.cases.forEach(c => c.fields.forEach(fld => {
+    bySplit[c.split][1]++;
+    const ent = (state.reviews[c.id] || {})[fld.name] || {};
+    if(ent.status) bySplit[c.split][0]++;
+  }));
+  document.getElementById("pnums").textContent =
+    done + " of " + TOTAL + " fields reviewed · dev " + bySplit.dev[0] + "/" + bySplit.dev[1] +
+    " · held out " + bySplit.heldout[0] + "/" + bySplit.heldout[1] +
+    (queue.length ? " · field " + (pos + 1) + " of " + queue.length + " in view" : "");
+  if(!cur){
+    document.getElementById("caseTitle").textContent = "Nothing in this view";
+    document.getElementById("transcript").textContent = "";
+    return;
+  }
+  const ent = entry(cur.case.id, cur.field.name);
+  document.getElementById("caseTitle").textContent =
+    cur.case.business + " — " + cur.case.id;
+  document.getElementById("caseSub").textContent =
+    (cur.case.split === "heldout" ? "Held out split" : "Dev split") + " · " + cur.case.taxonomy +
+    " · asked: “" + cur.case.question + "”";
+  const span = effectiveSpan(cur, ent);
+  const t = cur.case.transcript;
+  const el = document.getElementById("transcript");
+  if(span && span.start != null && t.substr(span.start, span.end - span.start) === span.text){
+    el.innerHTML = esc(t.slice(0, span.start)) + "<mark>" + esc(span.text) + "</mark>" + esc(t.slice(span.end));
+  } else if(span && span.text && t.indexOf(span.text) >= 0){
+    const i = t.indexOf(span.text);
+    el.innerHTML = esc(t.slice(0, i)) + "<mark>" + esc(span.text) + "</mark>" + esc(t.slice(i + span.text.length));
+  } else {
+    el.textContent = t;
+  }
+  document.getElementById("fName").textContent = cur.field.name;
+  document.getElementById("fValue").textContent =
+    cur.field.value === null ? "(not established)" : JSON.stringify(cur.field.value);
+  document.getElementById("fAi").textContent = cur.field.ai_status + " (" + cur.field.ai_status_engine + ")";
+  document.getElementById("fCondWrap").style.display = cur.field.condition ? "" : "none";
+  document.getElementById("fCond").textContent = cur.field.condition || "";
+  const eb = document.getElementById("evidenceBox");
+  const em = document.getElementById("evMeta");
+  if(span){
+    eb.textContent = span.text;
+    em.textContent = (ent.spanState === "custom" ? "Your selected span" :
+      ent.spanState === "ai" ? "AI drafted span (accepted unless you change or clear it)" : "") +
+      (span.start != null ? " · characters " + span.start + "–" + span.end : "");
+  } else {
+    eb.textContent = "No evidence span attached to this field.";
+    em.textContent = ent.spanState === "cleared" ? "You cleared the AI drafted span." :
+      "The AI drafted labels record no evidence for this field.";
+  }
+  document.querySelectorAll("#statusBtns button").forEach(b => {
+    b.classList.toggle("active", ent.status === b.dataset.status);
+  });
+  const note = document.getElementById("note");
+  if(note.value !== (ent.note || "")) note.value = ent.note || "";
+  const fl = document.getElementById("fieldList");
+  fl.innerHTML = "";
+  cur.case.fields.forEach((fld, fi) => {
+    const e2 = (state.reviews[cur.case.id] || {})[fld.name] || {};
+    const b = document.createElement("button");
+    b.textContent = fld.name + (e2.status ? " ✓" : "");
+    if(e2.status) b.classList.add("done");
+    if(fld.name === cur.field.name) b.classList.add("current");
+    b.addEventListener("click", () => {
+      const idx = queue.findIndex(q => DATA.cases[q.ci].id === cur.case.id && q.fi === fi);
+      if(idx >= 0){ pos = idx; render(); }
+    });
+    fl.appendChild(b);
+  });
+  document.getElementById("prevBtn").disabled = pos <= 0;
+  document.getElementById("nextBtn").disabled = pos >= queue.length - 1;
+}
+function countReviewed(){
+  let n = 0;
+  DATA.cases.forEach(c => c.fields.forEach(fld => {
+    const ent = (state.reviews[c.id] || {})[fld.name] || {};
+    if(ent.status) n++;
+  }));
+  return n;
+}
+document.getElementById("statusBtns").addEventListener("click", e => {
+  const b = e.target.closest("button[data-status]");
+  if(!b) return;
+  const cur = current(); if(!cur) return;
+  entry(cur.case.id, cur.field.name).status = b.dataset.status;
+  save(); render();
+});
+document.getElementById("note").addEventListener("input", e => {
+  const cur = current(); if(!cur) return;
+  entry(cur.case.id, cur.field.name).note = e.target.value;
+  save();
+  document.getElementById("pnums").textContent = document.getElementById("pnums").textContent;
+});
+document.getElementById("reviewer").addEventListener("input", save);
+document.getElementById("filter").addEventListener("change", () => { pos = 0; render(); });
+document.getElementById("prevBtn").addEventListener("click", () => { if(pos > 0){ pos--; render(); } });
+document.getElementById("nextBtn").addEventListener("click", () => { if(pos < queue.length - 1){ pos++; render(); } });
+document.getElementById("useSel").addEventListener("click", () => {
+  const cur = current(); if(!cur) return;
+  const container = document.getElementById("transcript");
+  const sel = window.getSelection();
+  if(!sel.rangeCount) return;
+  const range = sel.getRangeAt(0);
+  if(!container.contains(range.startContainer) || !container.contains(range.endContainer)) return;
+  const pre = range.cloneRange();
+  pre.selectNodeContents(container);
+  pre.setEnd(range.startContainer, range.startOffset);
+  const start = pre.toString().length;
+  const text = range.toString();
+  if(!text) return;
+  const ent = entry(cur.case.id, cur.field.name);
+  ent.span = {text:text, start:start, end:start + text.length};
+  ent.spanState = "custom";
+  save(); render();
+});
+document.getElementById("clearEv").addEventListener("click", () => {
+  const cur = current(); if(!cur) return;
+  const ent = entry(cur.case.id, cur.field.name);
+  ent.span = null; ent.spanState = "cleared";
+  save(); render();
+});
+document.getElementById("resetBtn").addEventListener("click", () => {
+  if(!confirm("Discard all review decisions stored in this browser? The exported file, if you saved one, is unaffected.")) return;
+  localStorage.removeItem(LS_KEY);
+  state = {reviewer:"", reviews:{}};
+  document.getElementById("reviewer").value = "";
+  pos = 0; render();
+});
+function exportData(){
+  const cases = {};
+  let reviewed = 0;
+  DATA.cases.forEach(c => {
+    const fields = {};
+    c.fields.forEach(fld => {
+      const ent = (state.reviews[c.id] || {})[fld.name] || {status:null, note:"", spanState:"ai", span:null};
+      const isRev = !!ent.status;
+      if(isRev) reviewed++;
+      let evidence = null, source = "none";
+      if(isRev){
+        if(ent.spanState === "custom" && ent.span){ evidence = ent.span; source = "reviewer"; }
+        else if(ent.spanState === "ai" && fld.evidence){
+          evidence = {text:fld.evidence, start:fld.ev_start, end:fld.ev_end}; source = "ai_draft";
+        }
+      }
+      fields[fld.name] = {
+        value: fld.value,
+        ai_status: fld.ai_status,
+        human_status: isRev ? ent.status : null,
+        reviewed: isRev,
+        evidence: evidence,
+        evidence_source: source,
+        evidence_adjusted: ent.spanState === "custom",
+        evidence_cleared: ent.spanState === "cleared",
+        note: ent.note || ""
+      };
+    });
+    cases[c.id] = {split: c.split, fields: fields};
+  });
+  return {
+    dataset_version: "gold-v2-human-reviewed",
+    source_version: "gold-v1-ai-drafted",
+    reviewer: document.getElementById("reviewer").value || null,
+    exported_at: new Date().toISOString(),
+    fields_total: TOTAL,
+    fields_reviewed: reviewed,
+    cases: cases
+  };
+}
+document.getElementById("exportBtn").addEventListener("click", () => {
+  save();
+  const blob = new Blob([JSON.stringify(exportData(), null, 2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "gold_labels_v2.json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+document.getElementById("importBtn").addEventListener("click", () =>
+  document.getElementById("importFile").click());
+document.getElementById("importFile").addEventListener("change", e => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const data = JSON.parse(reader.result);
+      const reviews = {};
+      Object.entries(data.cases || {}).forEach(([caseId, c]) => {
+        reviews[caseId] = {};
+        Object.entries(c.fields || {}).forEach(([name, f]) => {
+          reviews[caseId][name] = {
+            status: f.reviewed ? f.human_status : null,
+            note: f.note || "",
+            spanState: f.evidence_source === "reviewer" ? "custom" :
+                       f.evidence_cleared ? "cleared" : "ai",
+            span: f.evidence_source === "reviewer" ? f.evidence : null
+          };
+        });
+      });
+      state = {reviewer: data.reviewer || "", reviews: reviews};
+      document.getElementById("reviewer").value = state.reviewer;
+      save(); pos = 0; render();
+    }catch(err){ alert("Could not read that export: " + err.message); }
+  };
+  reader.readAsText(file);
+});
+document.addEventListener("keydown", e => {
+  const tag = (e.target.tagName || "").toLowerCase();
+  if(tag === "textarea" || tag === "input" || tag === "select") return;
+  if(e.key === "ArrowRight") document.getElementById("nextBtn").click();
+  if(e.key === "ArrowLeft") document.getElementById("prevBtn").click();
+});
+document.getElementById("reviewer").value = state.reviewer || "";
+render();
+</script>
+</body>
+</html>

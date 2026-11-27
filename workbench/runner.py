@@ -53,7 +53,7 @@ from evals.metrics import field_correct, is_unsupported_claim
 from evals.run_evals import PRICES
 
 from . import pg_store, prompt_store, store
-from .datasets import LABELS_STATUS, load_split
+from .datasets import GOLD_LABELS_VERSION, LABELS_STATUS, load_split
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RUNS_DIR = os.path.join(ROOT, "runs")
@@ -277,6 +277,7 @@ def run_experiment(
             "case_ids": [c.id for c in cases],
         },
         "labels_status": LABELS_STATUS,
+        "gold_labels_version": GOLD_LABELS_VERSION,
         "cases_run": len([t for t in traces if t["status"] == "ok"]),
         "error": error,
         "metrics": {
@@ -344,7 +345,12 @@ def list_runs() -> list:
         path = os.path.join(RUNS_DIR, name, "run.json")
         if os.path.exists(path):
             with open(path, encoding="utf-8") as fh:
-                runs.append(json.load(fh))
+                record = json.load(fh)
+            # Verify runs (the interactive product's) are not
+            # benchmark runs: _run_summary reads benchmark metrics
+            # off them, and the workbench list is a benchmark list.
+            if record.get("kind") != "verify":
+                runs.append(record)
     return runs
 
 

@@ -21,6 +21,15 @@ LABELS_STATUS = (
     "unreviewed labels, not validated ground truth"
 )
 
+# The gold-label version every run is scored against. The frozen
+# labels in datasets/ (golden_dataset.jsonl + campaign/) are version
+# gold-v1-ai-drafted: drafted by an AI coding agent, pending Diwakar
+# Bhagat's human review. A completed human review lands as a NEW
+# version (gold-v2-human-reviewed, exported by tools/gold_review.html)
+# and never overwrites v1; when that happens this constant is bumped
+# and new runs name the new version. See GOLD_REVIEW.md.
+GOLD_LABELS_VERSION = "gold-v1-ai-drafted"
+
 SPLIT_NAMES = ("dev", "heldout", "campaign", "all")
 
 
