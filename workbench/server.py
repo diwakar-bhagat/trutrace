@@ -32,20 +32,62 @@ Provider status is explicit, by design: gpt-4o-mini is verified
 (OpenRouter returned HTTP 404 for google/gemini-2.0-flash-001; it has
 never run successfully), and Langfuse is not connected, so traces are
 the local Langfuse-shaped records in each run's cases.jsonl.
+
+The same app also serves the interactive product's API:
+
+  POST /api/verify               verify a submitted extraction
+                                 against its transcript (201); see
+                                 workbench/verify.py
+  POST /api/runs/{id}/review     record a human decision on one
+                                 field of a run (201); GET
+                                 /api/runs/{id} returns the recorded
+                                 reviews alongside the results
+
+Response contract (documented in STACK.md): POST /api/verify
+returns the verify run record itself (run_id, kind, per-field
+verdicts under "fields", a status-count "summary", the full stored
+input); POST /api/runs/{id}/review returns the stored review object.
+Errors are {"detail": "..."} with a plain-language message and a
+meaningful status code (400 client error, 404 unknown run, 413
+transcript too large, 429 rate limited, 502 provider failure).
+
+/api/verify is public and the OpenRouter path spends real money, so
+it is guarded: a transcript size cap, the model restricted to
+openai/gpt-4o-mini or the offline provider, and a per-client rate
+limit held in memory (10 runs per hour per client; it resets when
+the service redeploys, stated plainly wherever it is described).
+CORS allows exactly one origin, https://trutrace.pages.dev, the
+Pages site the interactive page is served from.
 """
 
 import os
+import threading
+import time
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
-from . import prompt_store, runner, store
+from app.providers.base import ProviderError
+from app.schemas import FIELDS
+
+from . import prompt_store, reviews, runner, store
+from . import verify as verify_mod
 from .datasets import LABELS_STATUS, split_info
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 app = FastAPI(title="TruTrace Workbench", docs_url=None, redoc_url=None)
+
+# The interactive page lives on Cloudflare Pages; the API stays on
+# Railway. Exactly one origin may call it from a browser.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://trutrace.pages.dev"],
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type"],
+)
 
 
 @app.on_event("startup")
@@ -69,6 +111,70 @@ class RunIn(BaseModel):
     provider: str = "offline"
     model: str | None = None
     split: str = "campaign"
+
+
+class VerifyIn(BaseModel):
+    transcript: str
+    candidate: dict
+    profile: str | list[str] | None = None
+    provider: str = "openrouter"
+    model: str | None = None
+    product: str = ""
+    question: str = ""
+
+
+class ReviewIn(BaseModel):
+    field: str
+    decision: str
+    note: str | None = None
+    case_id: str | None = None
+
+
+# ------------------------------------------------------- verify rate limit --
+# POST /api/verify is public and spends OpenRouter credit, so one
+# client may start a limited number of runs per hour. The window is
+# held in memory only: it resets when the service redeploys, which
+# is stated wherever the limit is described (STACK.md, DEPLOY.md).
+
+class _RateLimiter:
+    """A small sliding-window limiter, one bucket per client key."""
+
+    def __init__(self, limit: int, window_seconds: float):
+        self.limit = limit
+        self.window = window_seconds
+        self._hits: dict[str, list[float]] = {}
+        self._lock = threading.Lock()
+
+    def allow(self, key: str, now: float = None) -> bool:
+        now = time.monotonic() if now is None else now
+        with self._lock:
+            hits = [
+                t for t in self._hits.get(key, [])
+                if now - t < self.window
+            ]
+            if len(hits) >= self.limit:
+                self._hits[key] = hits
+                return False
+            hits.append(now)
+            self._hits[key] = hits
+            return True
+
+
+VERIFY_RATE_LIMIT = 10
+VERIFY_RATE_WINDOW_SECONDS = 3600.0
+_verify_limiter = _RateLimiter(
+    VERIFY_RATE_LIMIT, VERIFY_RATE_WINDOW_SECONDS
+)
+
+
+def _client_key(request: Request) -> str:
+    """The rate-limit bucket for a request: the first address of
+    X-Forwarded-For when a proxy set it (Railway does), else the
+    direct peer."""
+    forwarded = request.headers.get("x-forwarded-for")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    return request.client.host if request.client else "unknown"
 
 
 PROVIDER_STATUS = [
@@ -128,6 +234,15 @@ def status():
             "direction": "Arize Phoenix, self-hosted, selected as the "
                          "tracing layer (see STACK.md). Not wired in "
                          "this slice.",
+        },
+        "verify": {
+            "endpoint": "POST /api/verify",
+            "transcript_max_chars": verify_mod.MAX_TRANSCRIPT_CHARS,
+            "models": ["openai/gpt-4o-mini via openrouter", "offline"],
+            "rate_limit": (
+                f"{VERIFY_RATE_LIMIT} runs per hour per client, held "
+                "in memory; it resets when the service redeploys"
+            ),
         },
     }
 
@@ -212,7 +327,94 @@ def run_detail(run_id: str):
         run = runner.get_run(run_id)
     except FileNotFoundError:
         raise HTTPException(404, f"no run {run_id!r}")
-    return {"run": run, "cases": runner.list_case_summaries(run_id)}
+    return {
+        "run": run,
+        "cases": runner.list_case_summaries(run_id),
+        "reviews": reviews.list_reviews(run_id),
+    }
+
+
+# ------------------------------------------- interactive product (verify) --
+
+@app.post("/api/verify", status_code=201)
+def verify_create(body: VerifyIn, request: Request):
+    """Verify one submitted extraction against its transcript. The
+    full contract is in STACK.md; the guards are the size cap, the
+    per-client rate limit and the model restriction."""
+    if len(body.transcript) > verify_mod.MAX_TRANSCRIPT_CHARS:
+        raise HTTPException(
+            413,
+            f"the transcript is {len(body.transcript)} characters; "
+            f"the limit is {verify_mod.MAX_TRANSCRIPT_CHARS}",
+        )
+    if not _verify_limiter.allow(_client_key(request)):
+        raise HTTPException(
+            429,
+            f"rate limit: {VERIFY_RATE_LIMIT} verification runs per "
+            "hour per client. The limit is held in memory and resets "
+            "when the service redeploys.",
+        )
+    try:
+        return verify_mod.run_verify(
+            body.transcript,
+            body.candidate,
+            profile=body.profile,
+            provider_name=body.provider,
+            model=body.model,
+            product=body.product,
+            question=body.question,
+        )
+    except ProviderError as exc:
+        raise HTTPException(502, f"the provider failed: {exc}")
+    except ValueError as exc:
+        raise HTTPException(400, str(exc))
+
+
+@app.post("/api/runs/{run_id}/review", status_code=201)
+def review_create(run_id: str, body: ReviewIn):
+    """Record a human decision on one field of a run. Verify runs
+    have a single case ("submission"), so case_id defaults to it;
+    benchmark runs name the case explicitly."""
+    if body.decision not in reviews.DECISIONS:
+        raise HTTPException(
+            400,
+            f"decision must be one of {list(reviews.DECISIONS)}, "
+            f"got {body.decision!r}",
+        )
+    if body.field not in FIELDS:
+        raise HTTPException(
+            400,
+            f"unknown field {body.field!r}; choose from {FIELDS}",
+        )
+    try:
+        run = runner.get_run(run_id)
+    except FileNotFoundError:
+        raise HTTPException(404, f"no run {run_id!r}")
+    case_id = body.case_id
+    if run.get("kind") == "verify":
+        if case_id is not None and case_id != verify_mod.CASE_ID:
+            raise HTTPException(
+                404, f"no case {case_id!r} in run {run_id!r}"
+            )
+        case_id = verify_mod.CASE_ID
+    else:
+        if case_id is None:
+            raise HTTPException(
+                400, "case_id is required for benchmark runs"
+            )
+        known = (run.get("dataset") or {}).get("case_ids") or []
+        if case_id not in known:
+            raise HTTPException(
+                404, f"no case {case_id!r} in run {run_id!r}"
+            )
+    try:
+        return reviews.record_review(
+            run_id, case_id, body.field, body.decision, body.note
+        )
+    except FileNotFoundError:
+        raise HTTPException(404, f"no run {run_id!r}")
+    except ValueError as exc:
+        raise HTTPException(400, str(exc))
 
 
 @app.get("/api/runs/{run_id}/cases/{case_id}")

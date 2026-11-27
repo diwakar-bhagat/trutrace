@@ -74,6 +74,12 @@ main { max-width:1180px; margin:0 auto; padding:24px 24px 8px; }
 .big .of { color:var(--label-3); }
 .tile--dark .big .of { color:var(--d-label-3); }
 .fine { font-size:12px; line-height:1.45; color:var(--label-2); margin-top:16px; }
+
+/* try trutrace entry point */
+.trycta { display:inline-block; background:var(--blue); color:#fff;
+  font-weight:600; font-size:17px; padding:11px 28px; border-radius:9999px;
+  text-decoration:none; margin-top:2px; }
+.trycta:active { opacity:0.85; }
 .tile--dark .fine, .tile--dark3 .fine { color:var(--d-label-2); }
 .legend { display:flex; gap:20px; font-size:14px; color:var(--label-2); margin-top:10px; }
 .tile--dark .legend { color:var(--d-label-2); }
@@ -242,6 +248,19 @@ footer { padding:40px 24px 56px; }
         this model id; 0 of 32
         cases ran. The runs were stopped rather than re-pointed.</p></div>
         <span class="pstatus down">Did not run</span></div>
+    </section>
+
+    <section class="tile s12">
+      <div class="tile-head"><svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.3"/><path d="m8.6 12.3 2.4 2.4 4.4-5"/></svg><p class="kicker">Try it · the interactive workbench</p></div>
+      <h2>Run verification on your own call.</h2>
+      <p class="tile-copy" style="margin-top:10px">Paste a transcript and
+      the JSON an AI extracted from it. TruTrace checks every field
+      against the call and shows the evidence, or says plainly that
+      there is none. <span class="cont">Then the call is yours to make:
+      approve the verdict, reject it, or send it back for review.</span></p>
+      <a class="trycta" href="try.html">Try TruTrace</a>
+      <p class="fine">The workbench runs live against the backend; the
+      benchmark story on this page stays frozen and reproducible.</p>
     </section>
 
     <section class="tile tile--glass s7 case">

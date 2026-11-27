@@ -1,4 +1,11 @@
-"""Build demo/index.html from TruTrace's real outputs.
+"""Build demo/index.html (and demo/try.html) from TruTrace's real outputs.
+
+index.html is the benchmark story; try.html is the interactive
+workbench page (transcript + a submitted extraction in, per-field
+verdicts with evidence out, human review decisions recorded through
+the API). try.html's preloaded sample is campaign_01 with the
+baseline style candidate, derived below from the same offline
+baseline run the demo page shows.
 
 Nothing on the page is hand-typed data: the showcase answers come from
 running the pipeline on campaign_01 and campaign_02 in both
@@ -418,6 +425,12 @@ main { max-width:1180px; margin:0 auto; padding:24px 24px 8px; }
 .big .of { color:var(--label-3); }
 .tile--dark .big .of { color:var(--d-label-3); }
 .fine { font-size:12px; line-height:1.45; color:var(--label-2); margin-top:16px; }
+
+/* try trutrace entry point */
+.trycta { display:inline-block; background:var(--blue); color:#fff;
+  font-weight:600; font-size:17px; padding:11px 28px; border-radius:9999px;
+  text-decoration:none; margin-top:2px; }
+.trycta:active { opacity:0.85; }
 .tile--dark .fine, .tile--dark3 .fine { color:var(--d-label-2); }
 .legend { display:flex; gap:20px; font-size:14px; color:var(--label-2); margin-top:10px; }
 .tile--dark .legend { color:var(--d-label-2); }
@@ -609,6 +622,578 @@ JS = """
 
 # ---------------------------------------------------------------- page
 
+TRY_OUT = os.path.join(os.path.dirname(__file__), "try.html")
+
+TRY_CSS = """
+/* try.html workspace: three panels, same tokens as the demo page */
+.ws { display:grid; grid-template-columns:1.08fr 1fr 1fr; gap:20px;
+  align-items:start; }
+.panel-card { border-radius:var(--r-window); padding:24px;
+  background:var(--canvas); border:1px solid var(--border); min-width:0; }
+.lab { display:block; font-size:13px; font-weight:600; color:var(--label-2);
+  margin:16px 0 6px; }
+.lab:first-of-type { margin-top:0; }
+textarea, input[type="text"], select { width:100%; font:inherit; font-size:15px;
+  color:var(--label); background:var(--canvas);
+  border:1px solid var(--border); border-radius:var(--r-item);
+  padding:9px 12px; }
+textarea { font-family:var(--mono); font-size:13px; line-height:1.6; resize:vertical; }
+textarea:focus, input[type="text"]:focus, select:focus {
+  outline:2px solid var(--focus); outline-offset:1px; border-color:transparent; }
+.ctx-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.filebtn { display:inline-block; font-size:14px; font-weight:600;
+  color:var(--blue); cursor:pointer; margin-top:10px; }
+.runbtn { display:block; width:100%; margin-top:20px; background:var(--blue);
+  color:#fff; font-weight:600; font-size:17px; padding:11px 22px;
+  border-radius:9999px; }
+.runbtn:disabled { opacity:0.55; cursor:default; }
+.runbtn:active:not(:disabled) { opacity:0.85; }
+.errbox { border:1px solid rgba(211,0,5,0.4); border-left:4px solid var(--conflicting);
+  background:rgba(211,0,5,0.05); border-radius:var(--r-item);
+  padding:12px 14px; font-size:15px; line-height:1.45; margin-bottom:20px; }
+.errbox b { font-weight:600; }
+.empty { font-size:15px; color:var(--label-2); line-height:1.5;
+  border:1px dashed var(--border); border-radius:var(--r-group);
+  padding:18px 16px; }
+.spin { display:inline-block; width:14px; height:14px; border-radius:50%;
+  border:2px solid var(--fill); border-top-color:var(--blue);
+  animation:tt-spin 0.8s linear infinite; vertical-align:-2px; margin-right:8px; }
+@keyframes tt-spin { to { transform:rotate(360deg); } }
+.dclaim { font-size:15px; margin-top:2px; }
+.dclaim b { font-weight:600; }
+.dproof { font-size:13px; color:var(--label-2); margin-top:8px; }
+.noev { font-family:var(--mono); font-size:13px; color:var(--label-2);
+  margin-top:8px; }
+.review-block { margin-top:20px; border-top:1px solid var(--separator);
+  padding-top:16px; }
+.review-btns { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+.review-btns button { font-size:14px; font-weight:600; padding:7px 16px;
+  border-radius:9999px; border:1px solid var(--border); background:var(--canvas); }
+.review-btns button[aria-pressed="true"] { background:var(--blue);
+  border-color:var(--blue); color:#fff; }
+.review-btns button:disabled { opacity:0.55; cursor:default; }
+#review-note { margin-top:12px; }
+.backlink { display:inline-block; margin-top:22px; color:var(--blue-dark);
+  font-size:15px; text-decoration:none; }
+@media (max-width:1023px) { .ws { grid-template-columns:1fr; } }
+"""
+
+# The workspace script, in three named modules inlined as separate
+# script blocks: TruTrace.api (talking to the backend, nothing else),
+# TruTrace.store (the workspace state, nothing else), and the view
+# module (rendering and event wiring, the only one that touches the
+# DOM). The page is self-contained; the modules are sections, not
+# files, because the Pages dist is static files only.
+
+TRY_JS_API = """
+<script>
+/* Module: TruTrace.api — the API client. Owns the backend base URL
+   and every request the page makes; translates HTTP failures into
+   plain-language errors. Knows nothing about the DOM or state. */
+window.TruTrace = window.TruTrace || {};
+TruTrace.api = (function () {
+  var params = new URLSearchParams(window.location.search);
+  var BASE = params.get("api") || "https://trutrace-production.up.railway.app";
+
+  function ApiError(message, status) {
+    this.message = message;
+    this.status = status;
+  }
+
+  function friendly(status, detail) {
+    if (status === 429) {
+      return "Rate limited. " + detail + " Nothing was recorded; wait a while and try again.";
+    }
+    if (status === 413) {
+      return "Transcript too long. " + detail + " Shorten the transcript and run again.";
+    }
+    if (status === 502) {
+      return "The model provider failed. " + detail + " Nothing was recorded. Try again, or switch the model to Offline rules.";
+    }
+    if (status === 404) { return "Not found. " + detail; }
+    if (status === 400) { return "The backend rejected that input. " + detail; }
+    return detail || ("The request failed with status " + status + ".");
+  }
+
+  async function request(path, options) {
+    var res;
+    try {
+      res = await fetch(BASE + path, options);
+    } catch (e) {
+      throw new ApiError(
+        "The verification backend could not be reached. Check your connection and try again; if it keeps failing, the service may be redeploying, so give it a minute.",
+        0
+      );
+    }
+    var data = null;
+    try { data = await res.json(); } catch (e) { /* handled below */ }
+    if (!res.ok) {
+      throw new ApiError(friendly(res.status, data && data.detail), res.status);
+    }
+    return data;
+  }
+
+  function post(path, body) {
+    return request(path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+  }
+
+  return {
+    base: BASE,
+    verify: function (payload) { return post("/api/verify", payload); },
+    review: function (runId, body) {
+      return post("/api/runs/" + encodeURIComponent(runId) + "/review", body);
+    },
+    getRun: function (runId) {
+      return request("/api/runs/" + encodeURIComponent(runId), {});
+    },
+  };
+})();
+</script>
+"""
+
+TRY_JS_STORE = """
+<script>
+/* Module: TruTrace.store — the workspace state. One object, changed
+   only through set(), with subscribers re-rendering on every change.
+   Knows nothing about the DOM or the network. */
+TruTrace.store = (function () {
+  var state = {
+    phase: "empty",        /* empty | running | done | error */
+    run: null,             /* the verify run record, once done */
+    selected: null,        /* the field shown in the evidence panel */
+    reviews: {},           /* field -> review object recorded */
+    reviewing: null,       /* field whose review is being saved */
+    error: null,           /* plain-language message, once error */
+  };
+  var listeners = [];
+  return {
+    get: function () { return state; },
+    set: function (patch) {
+      state = Object.assign({}, state, patch);
+      listeners.forEach(function (fn) { fn(state); });
+    },
+    subscribe: function (fn) { listeners.push(fn); },
+  };
+})();
+</script>
+"""
+
+TRY_JS_VIEW = """
+<script>
+/* Module: the view — rendering and event wiring. Renders purely
+   from TruTrace.store state; calls the backend only through
+   TruTrace.api. This is the only module that touches the DOM. */
+(function () {
+  var api = TruTrace.api;
+  var store = TruTrace.store;
+  var SAMPLE = /*__SAMPLE__*/null;
+  var MAX_TRANSCRIPT = 12000;
+  var FIELD_LABEL = {
+    price: "Price", currency: "Currency", availability: "Availability",
+    quantity_or_stock: "Quantity", delivery_or_pickup: "Delivery",
+    timing: "Timing", contact_next_step: "Next step",
+  };
+  var STATUS = {
+    supported: ["Supported", "var(--verified)"],
+    uncertain: ["Uncertain", "var(--label-2)"],
+    unsupported: ["Unsupported", "var(--label-2)"],
+    contradictory: ["Contradictory", "var(--conflicting)"],
+  };
+  var DECISION_LABEL = {
+    approve: "Approved", reject: "Rejected", needs_review: "Needs review",
+  };
+
+  function el(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function fmt(v) {
+    if (v === null || v === undefined) { return "—"; }
+    return String(v);
+  }
+
+  /* ---------------------------------------------------------- render */
+
+  function renderBanner(state) {
+    var box = el("banner");
+    if (state.phase === "error" && state.error) {
+      box.hidden = false;
+      box.innerHTML = "<b>Something went wrong.</b> " + esc(state.error);
+    } else {
+      box.hidden = true;
+      box.innerHTML = "";
+    }
+  }
+
+  function renderFields(state) {
+    el("fields-empty").hidden = state.phase !== "empty";
+    el("fields-running").hidden = state.phase !== "running";
+    var list = el("fields-list");
+    var meta = el("run-meta");
+    if (state.phase !== "done" || !state.run) {
+      list.innerHTML = "";
+      meta.hidden = true;
+      return;
+    }
+    var run = state.run;
+    list.innerHTML = Object.keys(run.fields).map(function (name) {
+      var f = run.fields[name];
+      var st = STATUS[f.status];
+      var pressed = state.selected === name ? "true" : "false";
+      return '<button type="button" class="frow" data-field="' + esc(name) +
+        '" aria-pressed="' + pressed + '">' +
+        '<span class="fname">' + esc(FIELD_LABEL[name] || name) + "</span>" +
+        '<span class="fvalue">' + esc(fmt(f.claimed_value)) + "</span>" +
+        '<span class="chip" style="color:' + st[1] + '">' + st[0] + "</span>" +
+        "</button>";
+    }).join("");
+    list.querySelectorAll(".frow").forEach(function (row) {
+      row.addEventListener("click", function () {
+        store.set({ selected: row.getAttribute("data-field") });
+      });
+    });
+    var s = run.summary;
+    meta.hidden = false;
+    meta.textContent = "Run " + run.run_id + " · " + s.supported +
+      " supported, " + s.uncertain + " uncertain, " + s.unsupported +
+      " unsupported, " + s.contradictory + " contradictory · " +
+      (run.model ? run.model : "offline rules") + ". " +
+      "Stored with the run; it survives backend redeploys.";
+  }
+
+  function renderDetail(state) {
+    var empty = el("detail-empty");
+    var body = el("detail-body");
+    if (state.phase !== "done" || !state.run || !state.selected) {
+      empty.hidden = false;
+      body.hidden = true;
+      return;
+    }
+    var name = state.selected;
+    var f = state.run.fields[name];
+    var st = STATUS[f.status];
+    empty.hidden = true;
+    body.hidden = false;
+    el("d-field").textContent = FIELD_LABEL[name] || name;
+    var ds = el("d-status");
+    ds.textContent = st[0];
+    ds.style.color = st[1];
+    el("d-claim").innerHTML = "The extraction claims <b>" +
+      esc(fmt(f.claimed_value)) + "</b>. The call establishes <b>" +
+      esc(fmt(f.verified_value)) + "</b>.";
+    if (f.evidence) {
+      el("d-evidence").hidden = false;
+      el("d-evidence").textContent = f.evidence;
+      el("d-noev").hidden = true;
+    } else {
+      el("d-evidence").hidden = true;
+      el("d-noev").hidden = false;
+      el("d-noev").textContent =
+        "No evidence: nothing in the call supports this field. The absence is the finding.";
+    }
+    el("d-reason").textContent = f.reason || "";
+    el("d-proof").textContent = (f.speaker || f.timestamp)
+      ? "Said by " + [f.speaker, f.timestamp].filter(Boolean).join(" · ") + "."
+      : "";
+    var review = state.reviews[name];
+    el("review-state").textContent = review
+      ? "Your decision: " + DECISION_LABEL[review.decision] +
+        ", recorded with the run."
+      : "No decision recorded for this field yet.";
+    document.querySelectorAll(".review-btns button").forEach(function (b) {
+      var d = b.getAttribute("data-decision");
+      b.setAttribute("aria-pressed",
+        review && review.decision === d ? "true" : "false");
+      b.disabled = state.reviewing === name;
+    });
+  }
+
+  function render(state) {
+    renderBanner(state);
+    renderFields(state);
+    renderDetail(state);
+    el("run").disabled = state.phase === "running";
+    el("run").textContent = state.phase === "running"
+      ? "Verifying…" : "Run verification";
+  }
+
+  /* ---------------------------------------------------------- actions */
+
+  function fail(message) {
+    store.set({ phase: "error", error: message });
+  }
+
+  function runVerification() {
+    var transcript = el("transcript").value;
+    var candidateText = el("candidate").value;
+    if (!transcript.trim()) {
+      fail("The transcript box is empty. Paste a call transcript, load a text file, or use the preloaded sample.");
+      return;
+    }
+    if (transcript.length > MAX_TRANSCRIPT) {
+      fail("The transcript is " + transcript.length + " characters; the limit is " +
+        MAX_TRANSCRIPT + ". Shorten it and run again.");
+      return;
+    }
+    var candidate;
+    try {
+      candidate = JSON.parse(candidateText);
+    } catch (e) {
+      fail("The candidate box is not valid JSON (" + e.message + "). Fix the JSON and run again; nothing was sent.");
+      return;
+    }
+    if (!candidate || typeof candidate !== "object" || Array.isArray(candidate)) {
+      fail('The candidate must be a flat JSON object, like {"price": 35, "currency": "USD"}.');
+      return;
+    }
+    var provider = el("provider").value;
+    store.set({ phase: "running", error: null, run: null, selected: null, reviews: {} });
+    api.verify({
+      transcript: transcript,
+      candidate: candidate,
+      provider: provider,
+      model: provider === "openrouter" ? "openai/gpt-4o-mini" : null,
+      product: el("product").value,
+      question: el("question").value,
+    }).then(function (run) {
+      var first = Object.keys(run.fields)[0];
+      store.set({ phase: "done", run: run, selected: first });
+    }).catch(function (err) {
+      fail(err.message || "The verification failed.");
+    });
+  }
+
+  function recordReview(decision) {
+    var state = store.get();
+    if (!state.run || !state.selected) { return; }
+    var field = state.selected;
+    store.set({ reviewing: field });
+    api.review(state.run.run_id, {
+      field: field,
+      decision: decision,
+      note: el("review-note").value || null,
+    }).then(function (review) {
+      var reviews = Object.assign({}, store.get().reviews);
+      reviews[field] = review;
+      store.set({ reviews: reviews, reviewing: null });
+      el("review-note").value = "";
+    }).catch(function (err) {
+      store.set({ reviewing: null });
+      fail(err.message || "The review could not be recorded.");
+    });
+  }
+
+  /* ---------------------------------------------------------- wiring */
+
+  function preload() {
+    el("transcript").value = SAMPLE.transcript;
+    el("candidate").value = JSON.stringify(SAMPLE.candidate, null, 2);
+    el("product").value = SAMPLE.product || "";
+    el("question").value = SAMPLE.question || "";
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    preload();
+    store.subscribe(render);
+    render(store.get());
+    el("run").addEventListener("click", runVerification);
+    document.querySelectorAll(".review-btns button").forEach(function (b) {
+      b.addEventListener("click", function () {
+        recordReview(b.getAttribute("data-decision"));
+      });
+    });
+    el("file").addEventListener("change", function () {
+      var file = el("file").files[0];
+      if (!file) { return; }
+      var reader = new FileReader();
+      reader.onload = function () {
+        el("transcript").value = String(reader.result || "");
+        el("file-name").textContent = "Loaded " + file.name + ".";
+      };
+      reader.onerror = function () {
+        fail("That file could not be read. Paste the transcript text instead.");
+      };
+      reader.readAsText(file);
+    });
+  });
+})();
+</script>
+"""
+
+
+def build_try_html(showcase, base_answer) -> str:
+    """The interactive page. The preloaded sample is campaign_01: its
+    real transcript, its product and question, and a candidate JSON
+    taken from the recorded baseline style extraction (the offline
+    baseline answer computed in main), which asserts the hedges.
+    The page labels it as a sample extraction being checked, never
+    as ground truth."""
+    candidate = {
+        name: field.value
+        for name, field in base_answer.fields.items()
+        if field.value is not None
+    }
+    if isinstance(candidate.get("price"), float) and candidate["price"].is_integer():
+        candidate["price"] = int(candidate["price"])
+    sample = {
+        "transcript": showcase.transcript,
+        "candidate": candidate,
+        "product": showcase.product,
+        "question": showcase.question,
+    }
+    sample_json = json.dumps(sample, ensure_ascii=False).replace("</", "<\\/")
+    page = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Try TruTrace — verify an extraction against its call</title>
+<style>%%CSS%%%%TRY_CSS%%</style>
+</head>
+<body>
+<!-- The interactive workbench. Design tokens and surface values as
+     the demo page (DESIGN.apple.md; CupertinoUI measured values,
+     credited in demo/build_demo.py); Action Blue is the only
+     interactive colour. The script is three named modules inlined
+     as separate blocks: TruTrace.api, TruTrace.store, and the view. -->
+<header class="site">
+  <div class="site-inner">
+    <p class="wordmark">TruTrace <span>· verified answers from seller calls</span></p>
+    <h1>Check an extraction against its call.</h1>
+    <p class="sub">Bring a transcript and the JSON an AI produced from
+    it. <b>TruTrace verifies every field against what was actually
+    said, and shows the line it rests on, or says there is none.</b></p>
+    <a class="backlink" href="index.html">The benchmark story</a>
+  </div>
+</header>
+<main>
+  <div id="banner" class="errbox" hidden></div>
+  <div class="ws">
+
+    <section class="panel-card">
+      <div class="tile-head">%%ICON_WAVE%%<p class="kicker">1 · The call and the extraction</p></div>
+      <label class="lab" for="transcript">Transcript</label>
+      <textarea id="transcript" rows="13" spellcheck="false"></textarea>
+      <label class="filebtn">Load a transcript file (.txt)
+        <input type="file" id="file" accept=".txt,text/plain" hidden>
+      </label>
+      <span class="fine" id="file-name" style="margin-left:8px"></span>
+      <label class="lab" for="candidate">The extraction to check (JSON)</label>
+      <textarea id="candidate" rows="8" spellcheck="false"></textarea>
+      <div class="ctx-grid">
+        <div>
+          <label class="lab" for="product">Product (optional)</label>
+          <input type="text" id="product">
+        </div>
+        <div>
+          <label class="lab" for="question">Buyer's question (optional)</label>
+          <input type="text" id="question">
+        </div>
+      </div>
+      <div class="ctx-grid">
+        <div>
+          <label class="lab" for="profile">Fields</label>
+          <select id="profile">
+            <option value="campaign">Campaign fields (all seven)</option>
+          </select>
+        </div>
+        <div>
+          <label class="lab" for="provider">Model</label>
+          <select id="provider">
+            <option value="openrouter">gpt-4o-mini · OpenRouter</option>
+            <option value="offline">Offline rules (no model call)</option>
+          </select>
+        </div>
+      </div>
+      <button type="button" class="runbtn" id="run">Run verification</button>
+      <p class="fine">Preloaded sample: the campaign_01 florist call from
+      the benchmark page. The candidate JSON is an example extraction of
+      that call in the baseline style, which asserts the seller's hedges
+      as facts. It is the thing being checked here, not ground truth.
+      Product and question sharpen the price checks: verification is
+      relative to what was asked for. Limits: transcripts up to 12,000
+      characters, 10 runs per hour per visitor.</p>
+    </section>
+
+    <section class="panel-card">
+      <div class="tile-head">%%ICON_TABLE%%<p class="kicker">2 · Field verdicts</p></div>
+      <div id="fields-empty" class="empty">No run yet. Verdicts appear
+      here after a run, one row per field, each with its status:
+      supported, uncertain, unsupported or contradictory. Nothing is
+      precomputed; every run is executed live by the backend.</div>
+      <div id="fields-running" class="empty" hidden><span class="spin"></span>Verifying each field against the transcript. This takes a few seconds with the model, less with offline rules.</div>
+      <div id="fields-list"></div>
+      <p class="fine" id="run-meta" hidden></p>
+    </section>
+
+    <section class="panel-card">
+      <div class="tile-head">%%ICON_SEAL%%<p class="kicker">3 · Evidence and review</p></div>
+      <div id="detail-empty" class="empty">Select a field after a run to
+      see the exact line its verdict rests on, and to record your
+      decision on it.</div>
+      <div id="detail-body" hidden>
+        <div class="detail-head">
+          <span class="dlabel" id="d-field"></span>
+          <span class="dstatus" id="d-status"></span>
+        </div>
+        <p class="dclaim" id="d-claim"></p>
+        <p class="dlabel" style="margin-top:14px">Evidence</p>
+        <p class="devidence" id="d-evidence"></p>
+        <p class="noev" id="d-noev" hidden></p>
+        <p class="dreason" id="d-reason"></p>
+        <p class="dproof" id="d-proof"></p>
+        <div class="review-block">
+          <p class="dlabel">Your decision</p>
+          <div class="review-btns">
+            <button type="button" data-decision="approve" aria-pressed="false">Approve</button>
+            <button type="button" data-decision="reject" aria-pressed="false">Reject</button>
+            <button type="button" data-decision="needs_review" aria-pressed="false">Needs review</button>
+          </div>
+          <input type="text" id="review-note" placeholder="Note (optional)">
+          <p class="fine" id="review-state"></p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+<footer>
+  <div class="footer-inner">
+    <p>TruTrace, by Diwakar Bhagat. The workbench verifies a submitted
+    extraction against its transcript; it does not extract in this
+    path, and a verdict is only ever about the transcript provided.</p>
+    <p class="fine">Runs and review decisions are stored on the backend
+    and survive redeploys. The verify endpoint is public and guarded:
+    a 12,000 character transcript cap, the model restricted to
+    gpt-4o-mini or the offline rules, and 10 runs per hour per visitor
+    (held in memory; the counter resets when the service redeploys).
+    Design tokens from this project's DESIGN.apple.md; surface values
+    are measured macOS values adapted from the CupertinoUI theme CSS.
+    Icons are original inline SVG drawings in the SF Symbols style.</p>
+  </div>
+</footer>
+%%JS_API%%%%JS_STORE%%%%JS_VIEW%%
+</body>
+</html>
+"""
+    page = page.replace("%%CSS%%", CSS)
+    page = page.replace("%%TRY_CSS%%", TRY_CSS)
+    page = page.replace("%%ICON_WAVE%%", icon("waveform"))
+    page = page.replace("%%ICON_TABLE%%", icon("table"))
+    page = page.replace("%%ICON_SEAL%%", icon("seal"))
+    page = page.replace("%%JS_API%%", TRY_JS_API)
+    page = page.replace("%%JS_STORE%%", TRY_JS_STORE)
+    page = page.replace("%%JS_VIEW%%", TRY_JS_VIEW)
+    page = page.replace("/*__SAMPLE__*/null", sample_json)
+    return page
+
+
 def stat_pair(label_base, big_base, note_base, label_cur, big_cur, note_cur):
     return (
         f'<p class="kicker">{label_base}</p>'
@@ -747,6 +1332,19 @@ def main() -> int:
         this model id; {gemini["cases_run"]} of {gemini["cases_total"]}
         cases ran. The runs were stopped rather than re-pointed.</p></div>
         <span class="pstatus down">Did not run</span></div>
+    </section>
+
+    <section class="tile s12">
+      <div class="tile-head">{icon("seal")}<p class="kicker">Try it · the interactive workbench</p></div>
+      <h2>Run verification on your own call.</h2>
+      <p class="tile-copy" style="margin-top:10px">Paste a transcript and
+      the JSON an AI extracted from it. TruTrace checks every field
+      against the call and shows the evidence, or says plainly that
+      there is none. <span class="cont">Then the call is yours to make:
+      approve the verdict, reject it, or send it back for review.</span></p>
+      <a class="trycta" href="try.html">Try TruTrace</a>
+      <p class="fine">The workbench runs live against the backend; the
+      benchmark story on this page stays frozen and reproducible.</p>
     </section>
 
     <section class="tile tile--glass s7 case">
@@ -906,6 +1504,11 @@ def main() -> int:
     with open(OUT, "w", encoding="utf-8") as fh:
         fh.write(html)
     print(f"wrote {OUT} ({len(html)} bytes)")
+
+    try_html = build_try_html(showcase, base)
+    with open(TRY_OUT, "w", encoding="utf-8") as fh:
+        fh.write(try_html)
+    print(f"wrote {TRY_OUT} ({len(try_html)} bytes)")
     return 0
 
 

@@ -1,4 +1,4 @@
--- TruTrace workbench — PostgreSQL schema (five tables).
+-- TruTrace workbench — PostgreSQL schema (six tables).
 --
 -- This replaces the earlier three-table scaffold (prompt_versions,
 -- runs, case_traces), which was never executed anywhere: no
@@ -55,6 +55,7 @@ CREATE TABLE IF NOT EXISTS eval_datasets (
 
 CREATE TABLE IF NOT EXISTS eval_runs (
     run_id         TEXT PRIMARY KEY,
+    kind           TEXT NOT NULL DEFAULT 'benchmark',  -- 'benchmark' | 'verify' (interactive product runs)
     created_at     TIMESTAMPTZ NOT NULL,
     prompt_key     TEXT NOT NULL REFERENCES eval_prompts(key),
     prompt_name    TEXT NOT NULL,
@@ -109,7 +110,27 @@ CREATE TABLE IF NOT EXISTS eval_results (
     FOREIGN KEY (run_id, case_id) REFERENCES eval_cases(run_id, case_id)
 );
 
+-- Existing databases predate the kind marker: add it if missing.
+-- (Fresh databases get it from the CREATE TABLE above; ADD COLUMN
+-- IF NOT EXISTS is a no-op there.)
+ALTER TABLE eval_runs ADD COLUMN IF NOT EXISTS kind TEXT NOT NULL DEFAULT 'benchmark';
+
+-- Human review decisions on run fields (the interactive product's
+-- review loop, also available on benchmark runs). One row per
+-- (run, case, field): a later decision replaces the earlier one, so
+-- the table always holds the current decision, with its timestamp.
+CREATE TABLE IF NOT EXISTS eval_reviews (
+    run_id     TEXT NOT NULL REFERENCES eval_runs(run_id),
+    case_id    TEXT NOT NULL,
+    field      TEXT NOT NULL,
+    decision   TEXT NOT NULL CHECK (decision IN ('approve', 'reject', 'needs_review')),
+    note       TEXT,
+    created_at TIMESTAMPTZ NOT NULL,
+    PRIMARY KEY (run_id, case_id, field)
+);
+
 CREATE INDEX IF NOT EXISTS idx_eval_results_run ON eval_results(run_id);
 CREATE INDEX IF NOT EXISTS idx_eval_cases_run ON eval_cases(run_id);
 CREATE INDEX IF NOT EXISTS idx_eval_runs_prompt ON eval_runs(prompt_key);
 CREATE INDEX IF NOT EXISTS idx_eval_runs_created ON eval_runs(created_at);
+CREATE INDEX IF NOT EXISTS idx_eval_reviews_run ON eval_reviews(run_id);

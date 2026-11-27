@@ -52,12 +52,27 @@ class TestSchema(unittest.TestCase):
         with open(pg_store.SCHEMA_PATH, encoding="utf-8") as fh:
             cls.sql = fh.read()
 
-    def test_five_tables_all_idempotent(self):
+    def test_six_tables_all_idempotent(self):
         for table in (
             "eval_prompts", "eval_datasets", "eval_runs",
-            "eval_cases", "eval_results",
+            "eval_cases", "eval_results", "eval_reviews",
         ):
             self.assertIn(f"CREATE TABLE IF NOT EXISTS {table}", self.sql)
+
+    def test_verify_kind_marker_and_reviews_shape(self):
+        # Verify runs are distinguished from benchmark runs by the
+        # kind marker, added idempotently for existing databases.
+        self.assertIn(
+            "ALTER TABLE eval_runs ADD COLUMN IF NOT EXISTS kind",
+            self.sql,
+        )
+        # Reviews hold one current decision per (run, case, field),
+        # restricted to the three decisions the product offers.
+        self.assertIn("PRIMARY KEY (run_id, case_id, field)", self.sql)
+        self.assertIn(
+            "CHECK (decision IN ('approve', 'reject', 'needs_review'))",
+            self.sql,
+        )
 
     def test_prompt_versions_unique_and_immutable_shape(self):
         self.assertIn("UNIQUE (name, version)", self.sql)
@@ -73,7 +88,7 @@ class TestSchema(unittest.TestCase):
     def test_statements_split_cleanly(self):
         statements = pg_store._statements(self.sql)
         creates = [s for s in statements if s.startswith("CREATE TABLE")]
-        self.assertEqual(len(creates), 5)
+        self.assertEqual(len(creates), 6)
         for statement in statements:
             self.assertNotIn("--", statement)
 

@@ -355,6 +355,7 @@ def ensure_ready(prompt_records: list = None) -> None:
             if not _ready:
                 _apply_schema(cur)
                 _register_datasets(cur)
+                _register_verify_dataset(cur)
             if prompt_records:
                 _register_prompts(cur, prompt_records)
     _ready = True
@@ -478,13 +479,19 @@ def save_run(run: dict, traces: list, docs_by_id: dict) -> None:
 
 
 def list_runs() -> list:
+    """Benchmark runs only. Verify runs live in the same table,
+    marked kind='verify' in their record, and the benchmark list (and
+    the workbench UI built on it) never sees them."""
     _ensure_schema()
     with _connect() as conn:
         with conn.cursor() as cur:
             cur.execute(
                 "SELECT record FROM eval_runs ORDER BY run_id DESC"
             )
-            return [row["record"] for row in cur.fetchall()]
+            return [
+                row["record"] for row in cur.fetchall()
+                if row["record"].get("kind") != "verify"
+            ]
 
 
 def get_run(run_id: str) -> dict:
@@ -529,3 +536,237 @@ def get_case_trace(run_id: str, case_id: str) -> dict:
     if row is None:
         raise KeyError(f"no case {case_id!r} in run {run_id!r}")
     return row["trace"]
+
+
+# ------------------------------------------------------------- verify runs --
+# The interactive product's runs (workbench/verify.py) persist in the
+# same tables as benchmark runs, distinguished by the kind marker:
+# eval_runs.kind = 'verify' and kind='verify' inside the record. The
+# dataset reference points at a registered 'verify' dataset whose
+# cases list is empty by design: a verify run's input is one
+# caller-supplied transcript, stored on its own eval_cases row, and
+# it carries no gold labels (its labels_status says so).
+
+VERIFY_DATASET_NAME = "verify"
+VERIFY_DATASET_VERSION = "1.0.0"
+
+
+def verify_dataset_payload() -> dict:
+    """The registered dataset row verify runs reference. Empty cases
+    on purpose: the input lives on the run's eval_cases row."""
+    from .verify import LABELS_STATUS as VERIFY_LABELS_STATUS
+
+    return {
+        "name": VERIFY_DATASET_NAME,
+        "version": VERIFY_DATASET_VERSION,
+        "content_hash": hashlib.sha256(
+            _canonical([]).encode("utf-8")
+        ).hexdigest(),
+        "cases": [],
+        "labels_status": VERIFY_LABELS_STATUS,
+    }
+
+
+def _register_verify_dataset(cur) -> None:
+    payload = verify_dataset_payload()
+    cur.execute(
+        """
+        INSERT INTO eval_datasets (name, version, content_hash,
+            cases, labels_status, created_at)
+        VALUES (%(name)s, %(version)s, %(content_hash)s,
+            %(cases)s, %(labels_status)s, now())
+        ON CONFLICT (name, version) DO NOTHING
+        """,
+        _wrap(payload, "cases"),
+    )
+
+
+def verify_run_rows(record: dict, trace: dict) -> tuple:
+    """Decompose a verify run record + its single trace into
+    (run_row, case_row, result_row). Pure, like run_rows: the same
+    decomposition the live insert uses."""
+    dataset = verify_dataset_payload()
+    run_row = {
+        "run_id": record["run_id"],
+        "kind": "verify",
+        "created_at": record["created_at"],
+        "prompt_key": "trutrace@1.0.0",
+        "prompt_name": "trutrace",
+        "prompt_version": "1.0.0",
+        "dataset_name": dataset["name"],
+        "dataset_version": dataset["version"],
+        "dataset_hash": dataset["content_hash"],
+        "provider": record["provider"],
+        "model": record["model"],
+        "status": "error" if record.get("error") else "completed",
+        "cases_run": 1,
+        "cases_total": 1,
+        "labels_status": record["labels_status"],
+        "configuration": {
+            "kind": "verify",
+            "prompt_version": record["prompt_version"],
+            "profile": record["profile"],
+            "provider": record["provider"],
+            "model": record["model"],
+            "langfuse": record["langfuse"],
+        },
+        "metrics": record["summary"],
+        "error_log": record.get("error"),
+        "record": record,
+    }
+    case_row = {
+        "run_id": record["run_id"],
+        "case_id": trace["case_id"],
+        "case_index": 0,
+        "taxonomy": "user_submitted",
+        "input": {
+            "question": record["input"].get("question", ""),
+            "product": record["input"].get("product", ""),
+            "transcript": record["input"]["transcript"],
+            "candidate": record["input"]["candidate"],
+            "profile": record["profile"],
+        },
+        "gold": {},
+    }
+    result_row = {
+        "run_id": record["run_id"],
+        "case_id": trace["case_id"],
+        "case_index": 0,
+        "trace_id": trace["trace_id"],
+        "status": trace["status"],
+        "raw_response": trace.get("raw_response"),
+        "raw_extraction": trace.get("raw_extraction"),
+        "parsed_output": trace.get("output"),
+        "field_scores": record["fields"],
+        "unsupported_claims": [
+            name for name, entry in record["fields"].items()
+            if entry["status"] == "unsupported"
+        ],
+        "evaluations": None,
+        "usage": trace.get("usage") or {},
+        "latency_ms": trace.get("latency_ms"),
+        "wall_latency_ms": trace.get("wall_latency_ms"),
+        "provider_used": trace.get("provider_used"),
+        "fallback_used": bool(trace.get("fallback_used")),
+        "error": trace.get("error"),
+        "trace": trace,
+    }
+    return run_row, case_row, result_row
+
+
+def save_verify_run(record: dict, trace: dict) -> None:
+    """Persist one verify run in a single transaction: the run row
+    (kind='verify'), its single case row (the submitted input, no
+    gold), and its result row (the per-field verdicts)."""
+    _ensure_schema()
+    run_row, case_row, result_row = verify_run_rows(record, trace)
+    with _connect() as conn:
+        with conn.cursor() as cur:
+            _register_verify_dataset(cur)
+            cur.execute(
+                """
+                INSERT INTO eval_runs (run_id, kind, created_at,
+                    prompt_key, prompt_name, prompt_version,
+                    dataset_name, dataset_version, dataset_hash,
+                    provider, model, status, cases_run, cases_total,
+                    labels_status, configuration, metrics, error_log,
+                    record)
+                VALUES (%(run_id)s, %(kind)s, %(created_at)s,
+                    %(prompt_key)s, %(prompt_name)s,
+                    %(prompt_version)s, %(dataset_name)s,
+                    %(dataset_version)s, %(dataset_hash)s,
+                    %(provider)s, %(model)s, %(status)s,
+                    %(cases_run)s, %(cases_total)s,
+                    %(labels_status)s, %(configuration)s, %(metrics)s,
+                    %(error_log)s, %(record)s)
+                """,
+                _wrap(run_row, "configuration", "metrics",
+                      "error_log", "record"),
+            )
+            cur.execute(
+                """
+                INSERT INTO eval_cases (run_id, case_id,
+                    case_index, taxonomy, input, gold)
+                VALUES (%(run_id)s, %(case_id)s, %(case_index)s,
+                    %(taxonomy)s, %(input)s, %(gold)s)
+                """,
+                _wrap(case_row, "input", "gold"),
+            )
+            cur.execute(
+                """
+                INSERT INTO eval_results (run_id, case_id,
+                    case_index, trace_id, status, raw_response,
+                    raw_extraction, parsed_output, field_scores,
+                    unsupported_claims, evaluations, usage,
+                    latency_ms, wall_latency_ms, provider_used,
+                    fallback_used, error, trace)
+                VALUES (%(run_id)s, %(case_id)s, %(case_index)s,
+                    %(trace_id)s, %(status)s, %(raw_response)s,
+                    %(raw_extraction)s, %(parsed_output)s,
+                    %(field_scores)s, %(unsupported_claims)s,
+                    %(evaluations)s, %(usage)s, %(latency_ms)s,
+                    %(wall_latency_ms)s, %(provider_used)s,
+                    %(fallback_used)s, %(error)s, %(trace)s)
+                """,
+                _wrap(result_row, "raw_extraction", "parsed_output",
+                      "field_scores", "unsupported_claims",
+                      "evaluations", "usage", "trace"),
+            )
+
+
+# ------------------------------------------------------------------ reviews --
+
+def _review_record(row: dict) -> dict:
+    created = row["created_at"]
+    if not isinstance(created, str):
+        created = created.isoformat(timespec="seconds")
+    return {
+        "run_id": row["run_id"],
+        "case_id": row["case_id"],
+        "field": row["field"],
+        "decision": row["decision"],
+        "note": row["note"],
+        "created_at": created,
+    }
+
+
+def save_review(run_id: str, case_id: str, field: str,
+                decision: str, note: str = None) -> dict:
+    """Insert or replace one field decision. The primary key is
+    (run, case, field), so a later decision replaces the earlier
+    one and the table always holds the current decision."""
+    _ensure_schema()
+    with _connect() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT 1 FROM eval_runs WHERE run_id = %s", (run_id,)
+            )
+            if cur.fetchone() is None:
+                raise FileNotFoundError(f"no run {run_id!r}")
+            cur.execute(
+                """
+                INSERT INTO eval_reviews (run_id, case_id, field,
+                    decision, note, created_at)
+                VALUES (%s, %s, %s, %s, %s, now())
+                ON CONFLICT (run_id, case_id, field) DO UPDATE SET
+                    decision = EXCLUDED.decision,
+                    note = EXCLUDED.note,
+                    created_at = EXCLUDED.created_at
+                RETURNING *
+                """,
+                (run_id, case_id, field, decision, note),
+            )
+            row = cur.fetchone()
+    return _review_record(row)
+
+
+def list_reviews(run_id: str) -> list:
+    _ensure_schema()
+    with _connect() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT * FROM eval_reviews WHERE run_id = %s "
+                "ORDER BY case_id, field",
+                (run_id,),
+            )
+            return [_review_record(row) for row in cur.fetchall()]
