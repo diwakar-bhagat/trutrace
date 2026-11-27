@@ -1,0 +1,62 @@
+{
+  "id": "tyre_shop_contradiction",
+  "business_name": "Grip & Go Tyres",
+  "business_type": "Tyre shop",
+  "product": "all-season tyres",
+  "question": "How much is an all-season tyre, and do you have them in stock?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "contradiction",
+  "transcript": "Agent: How much is an all-season tyre? Do you have them in stock?\nSeller: Yes, we have that size in stock. That size runs $120 a tyre. The all-season ones are $135. There are 4 tyres left in that size. We can fit them in 30 minutes.",
+  "gold": {
+    "price": {
+      "value": null,
+      "status": "conflicting",
+      "evidence": "The all-season ones are $135.",
+      "condition": null
+    },
+    "currency": {
+      "value": "USD",
+      "status": "confirmed",
+      "evidence": "That size runs $120 a tyre.",
+      "condition": null
+    },
+    "availability": {
+      "value": "in_stock",
+      "status": "confirmed",
+      "evidence": "Yes, we have that size in stock.",
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": "4 tyres",
+      "status": "confirmed",
+      "evidence": "There are 4 tyres left in that size.",
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "timing": {
+      "value": "in 30 minutes",
+      "status": "confirmed",
+      "evidence": "We can fit them in 30 minutes.",
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    }
+  }
+}

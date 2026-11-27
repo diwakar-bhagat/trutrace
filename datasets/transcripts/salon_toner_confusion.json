@@ -1,0 +1,62 @@
+{
+  "id": "salon_toner_confusion",
+  "business_name": "Velvet Scissors",
+  "business_type": "Salon",
+  "product": "purple toner",
+  "question": "Do you sell purple toner, and how much is it?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "entity_confusion",
+  "transcript": "Agent: Do you sell purple toner? How much is it?\nSeller: The purple shampoo is $16. The purple toner is $19. We have both on the shelf.",
+  "gold": {
+    "price": {
+      "value": 19,
+      "status": "confirmed",
+      "evidence": "The purple toner is $19.",
+      "condition": null
+    },
+    "currency": {
+      "value": "USD",
+      "status": "confirmed",
+      "evidence": "The purple shampoo is $16.",
+      "condition": null
+    },
+    "availability": {
+      "value": "in_stock",
+      "status": "confirmed",
+      "evidence": "We have both on the shelf.",
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "timing": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    }
+  }
+}

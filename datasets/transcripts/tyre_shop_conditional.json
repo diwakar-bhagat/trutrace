@@ -1,0 +1,62 @@
+{
+  "id": "tyre_shop_conditional",
+  "business_name": "Grip & Go Tyres",
+  "business_type": "Tyre shop",
+  "product": "all-season tyres",
+  "question": "How much is an all-season tyre fitted, and do you have them in stock?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "conditional_pricing",
+  "transcript": "Agent: How much is an all-season tyre fitted? Do you have them in stock?\nSeller: Yes, we have all-season tyres in stock. The tyre alone is $120. Fitted, the same tyre is $145. We have 8 tyres in the fitting bay. We can get it fitted in 45 minutes. Just book in when you are ready.",
+  "gold": {
+    "price": {
+      "value": 145,
+      "status": "confirmed",
+      "evidence": "Fitted, the same tyre is $145.",
+      "condition": "fitted"
+    },
+    "currency": {
+      "value": "USD",
+      "status": "confirmed",
+      "evidence": "The tyre alone is $120.",
+      "condition": null
+    },
+    "availability": {
+      "value": "in_stock",
+      "status": "confirmed",
+      "evidence": "Yes, we have all-season tyres in stock.",
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": "8 tyres",
+      "status": "confirmed",
+      "evidence": "We have 8 tyres in the fitting bay.",
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "timing": {
+      "value": "in 45 minutes",
+      "status": "confirmed",
+      "evidence": "We can get it fitted in 45 minutes.",
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": "book in",
+      "status": "confirmed",
+      "evidence": "Just book in when you are ready.",
+      "condition": null
+    }
+  }
+}

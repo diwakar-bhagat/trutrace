@@ -1,0 +1,97 @@
+{
+ "note": "Provider deaths are simulated by the killswitch wrappers; the fallback and unconfirmed behaviour is the pipeline's own code path (app/pipeline.py run_batch). The same scenarios are covered by automated tests in tests/test_degradation.py.",
+ "scenario_a_killed_mid_run": {
+  "summary": {
+   "total": 6,
+   "served_by_primary": 3,
+   "served_by_fallback": 3,
+   "unavailable": 0
+  },
+  "per_transcript": [
+   {
+    "provider_used": "primary",
+    "fallback_used": false,
+    "confirmed_fields": 2,
+    "error": null
+   },
+   {
+    "provider_used": "primary",
+    "fallback_used": false,
+    "confirmed_fields": 6,
+    "error": null
+   },
+   {
+    "provider_used": "primary",
+    "fallback_used": false,
+    "confirmed_fields": 4,
+    "error": null
+   },
+   {
+    "provider_used": "offline-fallback",
+    "fallback_used": true,
+    "confirmed_fields": 3,
+    "error": "primary failed: provider killed after 3 successful calls (simulated)"
+   },
+   {
+    "provider_used": "offline-fallback",
+    "fallback_used": true,
+    "confirmed_fields": 3,
+    "error": "primary failed: provider killed after 3 successful calls (simulated)"
+   },
+   {
+    "provider_used": "offline-fallback",
+    "fallback_used": true,
+    "confirmed_fields": 1,
+    "error": "primary failed: provider killed after 3 successful calls (simulated)"
+   }
+  ],
+  "setup": "primary: gpt-4o-mini via OpenRouter, wrapped in KillAfterProvider(3); fallback: offline provider; 6 campaign transcripts, current configuration"
+ },
+ "scenario_b_all_providers_down": {
+  "summary": {
+   "total": 6,
+   "served_by_primary": 0,
+   "served_by_fallback": 0,
+   "unavailable": 6
+  },
+  "per_transcript": [
+   {
+    "provider_used": null,
+    "fallback_used": false,
+    "confirmed_fields": 0,
+    "error": "primary down (simulated); fallback failed: fallback down (simulated)"
+   },
+   {
+    "provider_used": null,
+    "fallback_used": false,
+    "confirmed_fields": 0,
+    "error": "primary down (simulated); fallback failed: fallback down (simulated)"
+   },
+   {
+    "provider_used": null,
+    "fallback_used": false,
+    "confirmed_fields": 0,
+    "error": "primary down (simulated); fallback failed: fallback down (simulated)"
+   },
+   {
+    "provider_used": null,
+    "fallback_used": false,
+    "confirmed_fields": 0,
+    "error": "primary down (simulated); fallback failed: fallback down (simulated)"
+   },
+   {
+    "provider_used": null,
+    "fallback_used": false,
+    "confirmed_fields": 0,
+    "error": "primary down (simulated); fallback failed: fallback down (simulated)"
+   },
+   {
+    "provider_used": null,
+    "fallback_used": false,
+    "confirmed_fields": 0,
+    "error": "primary down (simulated); fallback failed: fallback down (simulated)"
+   }
+  ],
+  "setup": "primary: DeadProvider; fallback: DeadProvider; 6 campaign transcripts, current configuration"
+ }
+}

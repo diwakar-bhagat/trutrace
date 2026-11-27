@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TruTrace Workbench — Prompt Lab · Experiment Runner</title>
+<style>
+  /* Design system: DESIGN.apple.md (Apple design analysis).
+     Action Blue #0066cc is the single interactive colour.
+     SF Pro ladder 300 / 400 / 600 / 700 — weight 500 is absent.
+     Body copy 17px / 400 / 1.47. Inter is the off-Apple substitute.
+     No decorative gradients. The system's one drop shadow is
+     reserved for product imagery; this UI has none, so no shadows. */
+  :root{
+    --primary:#0066cc; --primary-focus:#0071e3; --primary-on-dark:#2997ff;
+    --ink:#1d1d1f; --on-primary:#ffffff; --on-dark:#ffffff;
+    --body-muted-dark:#cccccc; --ink-muted-80:#333333; --ink-muted-48:#7a7a7a;
+    --divider-soft:#f0f0f0; --hairline:#e0e0e0;
+    --canvas:#ffffff; --parchment:#f5f5f7; --pearl:#fafafc;
+    --tile-1:#272729; --tile-2:#2a2a2c; --tile-3:#252527; --black:#000000;
+    --chip:rgba(210,210,215,.64);
+    /* Field states are content, not chrome: colour appears only on
+       state labels, never on an interactive element. */
+    --verified:#007d48; --conflicting:#d30005; --unconfirmed:#7a7a7a;
+    --font-text:"SF Pro Text", Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-display:"SF Pro Display", Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:var(--font-text); color:var(--ink); background:var(--canvas);
+    font-size:17px; font-weight:400; line-height:1.47; letter-spacing:-0.374px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .num{font-variant-numeric:tabular-nums}
+  .mono{font-family:ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size:14px; letter-spacing:0}
+
+  /* global-nav: true black, 44px, nav-link 12px */
+  header.gnav{
+    background:var(--black); color:var(--on-dark); height:44px;
+    display:flex; align-items:center; gap:28px; padding:0 24px;
+    font-size:12px; letter-spacing:-0.12px; position:sticky; top:0; z-index:10;
+  }
+  header.gnav .brand{font-weight:600; font-size:14px; letter-spacing:-0.224px}
+  header.gnav nav{margin-left:auto; display:flex; gap:24px}
+  header.gnav nav button{
+    appearance:none; background:none; border:none; padding:4px 0;
+    font:inherit; color:var(--body-muted-dark); cursor:pointer;
+  }
+  header.gnav nav button.active{color:var(--on-dark)}
+  header.gnav nav button:active{transform:scale(.95)}
+
+  /* sub-nav-frosted: parchment, 52px, tagline name */
+  .subnav{
+    background:rgba(245,245,247,.8); backdrop-filter:saturate(180%) blur(20px);
+    border-bottom:1px solid var(--hairline);
+    height:52px; display:flex; align-items:center; gap:16px; padding:0 24px;
+    position:sticky; top:44px; z-index:9;
+  }
+  .subnav .name{font-family:var(--font-display); font-size:21px; font-weight:600; letter-spacing:.231px}
+  .subnav .note{margin-left:auto; color:var(--ink-muted-48); font-size:14px; letter-spacing:-0.224px}
+
+  /* labels notice: persistent wherever scores appear */
+  .notice{
+    padding:12px 24px; border-bottom:1px solid var(--hairline);
+    color:var(--ink-muted-80); font-size:14px; line-height:1.43; letter-spacing:-0.224px;
+  }
+  .notice b{font-weight:600; color:var(--ink)}
+  .chips{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px}
+  .chip{
+    background:var(--pearl); border:3px solid var(--divider-soft);
+    border-radius:11px; padding:5px 12px; font-size:14px; color:var(--ink-muted-80);
+  }
+  .chip b{font-weight:600; color:var(--ink)}
+  .chip .bad{color:var(--conflicting); font-weight:600}
+
+  main{padding:0}
+  .wrap{max-width:1240px; margin:0 auto; padding:32px 24px 64px}
+  .band{padding:40px 0}
+  .band .wrap{padding-top:0; padding-bottom:0}
+  .band.parchment{background:var(--parchment)}
+  .band.dark{background:var(--tile-1); color:var(--on-dark)}
+  .band.dark .sub, .band.dark .reason{color:var(--body-muted-dark)}
+  .band.dark .lab{color:var(--body-muted-dark)}
+  section.view{display:none}
+  section.view.active{display:block}
+
+  h2{font-family:var(--font-display); font-size:34px; font-weight:600; line-height:1.1; margin:0 0 8px}
+  h3{font-family:var(--font-display); font-size:21px; font-weight:600; letter-spacing:.231px; margin:28px 0 10px}
+  .sub{color:var(--ink-muted-48); font-size:14px; line-height:1.43; letter-spacing:-0.224px; margin:0 0 16px; max-width:980px}
+  .lab{color:var(--ink-muted-48); font-size:14px; letter-spacing:-0.224px; margin-bottom:5px}
+
+  .cols{display:grid; grid-template-columns:320px 1fr; gap:24px; align-items:start}
+  @media (max-width:834px){ .cols{grid-template-columns:1fr} }
+
+  /* store-utility-card grammar: white, hairline, 18px radius, 24px pad */
+  .card{
+    background:var(--canvas); border:1px solid var(--hairline);
+    border-radius:18px; padding:24px;
+  }
+  .card + .card{margin-top:24px}
+  .card.flush{padding:0; overflow:hidden}
+  .list{padding:8px}
+  .list button{
+    display:block; width:100%; text-align:left; appearance:none;
+    background:var(--canvas); border:none; border-radius:11px;
+    padding:12px 14px; font:inherit; cursor:pointer;
+  }
+  .list button.active{background:var(--parchment)}
+  .list button:active{transform:scale(.98)}
+  .list .k{font-weight:600}
+  .list .m{color:var(--ink-muted-48); font-size:14px; letter-spacing:-0.224px}
+
+  .meta{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px 24px; margin-bottom:16px}
+  .meta .val{font-size:17px}
+  pre.text{
+    background:var(--parchment); border:1px solid var(--divider-soft);
+    border-radius:8px; padding:14px 16px; white-space:pre-wrap;
+    word-break:break-word; margin:0 0 16px; line-height:1.55;
+  }
+  pre.diff .add{color:var(--verified)}
+  pre.diff .del{color:var(--conflicting)}
+  .transcript{
+    background:var(--parchment); border:1px solid var(--divider-soft);
+    border-radius:8px; padding:16px 18px; white-space:pre-wrap; margin:0;
+  }
+  .band.dark .transcript{background:var(--tile-2); border-color:var(--tile-3); color:var(--on-dark)}
+
+  textarea, input[type=text], input[type=number], select{
+    width:100%; font:inherit; color:var(--ink); background:var(--canvas);
+    border:1px solid rgba(0,0,0,.08); border-radius:8px; padding:9px 14px;
+  }
+  textarea{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-size:14px; line-height:1.55; letter-spacing:0}
+  select:focus, input:focus, textarea:focus{outline:2px solid var(--primary-focus); outline-offset:1px}
+  label.fl{display:block; margin:0 0 14px}
+  label.fl .lab{display:block; margin-bottom:6px}
+  .row{display:flex; gap:16px; flex-wrap:wrap; align-items:end}
+  .row > *{flex:1 1 170px}
+  .row > .narrow{flex:0 1 170px}
+
+  /* button-primary: Action Blue pill. button-secondary: ghost pill. */
+  .btn{
+    appearance:none; border-radius:9999px; padding:11px 22px; font:inherit;
+    cursor:pointer; border:1px solid var(--primary);
+    background:var(--primary); color:var(--on-primary); white-space:nowrap;
+  }
+  .btn:active{transform:scale(.95)}
+  .btn:focus-visible{outline:2px solid var(--primary-focus); outline-offset:2px}
+  .btn.secondary{background:transparent; color:var(--primary)}
+  .btn:disabled{opacity:.45; cursor:default}
+  .btnrow{display:flex; gap:12px; flex-wrap:wrap; margin-top:8px; align-items:center}
+
+  table{border-collapse:collapse; width:100%; font-size:14px; letter-spacing:-0.224px}
+  th, td{padding:10px 14px; text-align:left; border-bottom:1px solid var(--divider-soft); vertical-align:top}
+  th{font-weight:600; background:var(--pearl); color:var(--ink)}
+  .band.dark th{background:var(--tile-2); color:var(--on-dark); border-color:var(--tile-3)}
+  .band.dark td{border-color:var(--tile-3)}
+  tr.clickable{cursor:pointer}
+  tr.clickable:hover td{background:var(--parchment)}
+  .state{font-weight:600}
+  .state.confirmed{color:var(--verified)}
+  .state.conflicting{color:var(--conflicting)}
+  .state.uncertain, .state.unconfirmed{color:var(--unconfirmed)}
+  .band.dark .state.uncertain, .band.dark .state.unconfirmed{color:var(--body-muted-dark)}
+  .pill{
+    display:inline-block; border:1px solid var(--hairline); border-radius:9999px;
+    padding:2px 12px; font-size:14px; color:var(--ink-muted-80); background:var(--canvas);
+  }
+  .pill.fail{color:var(--conflicting)}
+  .pill.pass{color:var(--verified)}
+  .err{color:var(--conflicting); font-weight:600}
+  .statusline{min-height:25px; color:var(--ink-muted-80); margin-top:12px; font-size:14px; letter-spacing:-0.224px}
+  .evidence{color:var(--ink-muted-80); font-style:italic}
+  .reason{color:var(--ink-muted-48); font-size:14px; letter-spacing:-0.224px}
+  .kv{display:grid; grid-template-columns:190px 1fr; gap:6px 18px; margin-bottom:8px}
+  .kv .k{color:var(--ink-muted-48); font-size:14px; letter-spacing:-0.224px}
+  .band.dark .kv .k{color:var(--body-muted-dark)}
+  .band.dark a{color:var(--primary-on-dark)}
+  footer{
+    background:var(--parchment); color:var(--ink-muted-80);
+    padding:32px 24px 48px; font-size:12px; letter-spacing:-0.12px; line-height:1.5;
+  }
+  footer .legal{color:var(--ink-muted-48); margin-top:10px}
+</style>
+</head>
+<body>
+
+<header class="gnav">
+  <span class="brand">TruTrace Workbench</span>
+  <nav>
+    <button data-view="prompts" class="active">Prompt Lab</button>
+    <button data-view="experiments">Experiments</button>
+    <button data-view="compare">Compare runs</button>
+  </nav>
+</header>
+
+<div class="subnav">
+  <span class="name" id="viewTitle">Prompt Lab</span>
+  <span class="note">Local workbench. Runs persist to <span class="mono">runs/</span> in the repo.</span>
+</div>
+
+<div class="notice" id="labelsNotice">Loading status…</div>
+
+<main>
+
+  <!-- ======================= PROMPT LAB ======================= -->
+  <section class="view active" id="view-prompts">
+    <div class="wrap">
+      <h2>Prompt Lab</h2>
+      <p class="sub">Prompts are immutable version files. Open one, clone it, edit the clone, save it as a new version. A version used by a completed run can never be overwritten.</p>
+      <div class="cols">
+        <div class="card list" id="promptList"></div>
+        <div>
+          <div class="card" id="promptDetail">
+            <p class="sub">Select a prompt version.</p>
+          </div>
+          <div class="card" id="promptEditor" style="display:none"></div>
+          <div class="card" id="promptDiff" style="display:none"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= EXPERIMENTS ======================= -->
+  <section class="view" id="view-experiments">
+    <div class="band parchment">
+      <div class="wrap">
+        <h2>Experiment Runner</h2>
+        <p class="sub">Run a prompt version against a dataset split through the existing verification engine. Every run persists its prompt snapshot, per-case outputs, evidence, traces, latency, tokens and cost.</p>
+        <div class="row">
+          <label class="fl"><span class="lab">Prompt version</span>
+            <select id="runPrompt"></select></label>
+          <label class="fl"><span class="lab">Provider</span>
+            <select id="runProvider">
+              <option value="offline">offline (deterministic)</option>
+              <option value="openrouter">openrouter</option>
+            </select></label>
+          <label class="fl"><span class="lab">Model</span>
+            <select id="runModel">
+              <option value="openai/gpt-4o-mini">openai/gpt-4o-mini (verified)</option>
+              <option value="google/gemini-2.0-flash-001">google/gemini-2.0-flash-001 (failed / not verified)</option>
+            </select></label>
+          <label class="fl"><span class="lab">Dataset split</span>
+            <select id="runSplit"></select></label>
+          <div class="narrow"><button class="btn" id="runBtn">Run experiment</button></div>
+        </div>
+        <div class="statusline" id="runStatus"></div>
+      </div>
+    </div>
+    <div class="wrap">
+      <h3 style="margin-top:0">Persisted runs</h3>
+      <div class="card flush">
+        <table>
+          <thead><tr>
+            <th>Run</th><th>Prompt</th><th>Provider · model</th><th>Split</th>
+            <th>Accuracy</th><th>Unsupported</th><th>p50 latency</th><th>Cost</th>
+          </tr></thead>
+          <tbody id="runTable"></tbody>
+        </table>
+      </div>
+      <div id="runDetail"></div>
+    </div>
+  </section>
+
+  <!-- ======================= COMPARE RUNS ======================= -->
+  <section class="view" id="view-compare">
+    <div class="wrap">
+      <h2>Compare runs</h2>
+      <p class="sub">Two runs side by side. The comparison is only meaningful on identical inputs, and the page says so when they are not.</p>
+      <div class="card">
+        <div class="row">
+          <label class="fl"><span class="lab">Run A</span><select id="cmpA"></select></label>
+          <label class="fl"><span class="lab">Run B</span><select id="cmpB"></select></label>
+          <div class="narrow"><button class="btn" id="cmpBtn">Compare</button></div>
+        </div>
+        <div class="statusline" id="cmpStatus"></div>
+        <div id="cmpResult"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= CASE INSPECTOR ======================= -->
+  <section class="view" id="view-case">
+    <div id="caseDetail"></div>
+  </section>
+
+</main>
+
+<footer>
+  <div style="max-width:1240px;margin:0 auto">
+    TruTrace workbench — local. All numbers on this page come from executed runs persisted in <span class="mono">runs/</span>. Traces are local records in each run's <span class="mono">cases.jsonl</span> (Langfuse-shaped); Langfuse is not connected.
+    <div class="legal">Design system: DESIGN.apple.md. Action Blue #0066cc is the only interactive colour; field-state colour appears on state labels only.</div>
+  </div>
+</footer>
+
+<script>
+const $ = (s, el=document) => el.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmtVal = v => v === null || v === undefined ? "—" : (typeof v === "object" ? JSON.stringify(v) : String(v));
+const pct = (num, den) => den ? (100*num/den).toFixed(1) + "%" : "—";
+
+let PROMPTS = [], RUNS = [], currentPrompt = null, lastRunId = null;
+
+async function api(path, opts){
+  const r = await fetch(path, opts);
+  const body = await r.json().catch(() => ({}));
+  if(!r.ok) throw new Error(body.detail || ("HTTP " + r.status));
+  return body;
+}
+
+/* ---------------- status ---------------- */
+async function loadStatus(){
+  const s = await api("/api/status");
+  $("#labelsNotice").innerHTML =
+    "<b>Gold labels:</b> " + esc(s.labels_status) +
+    " &nbsp;·&nbsp; <b>Tracing:</b> " + esc(s.tracing.implemented) +
+    `<div class="chips">` + s.providers.map(p =>
+      `<span class="chip">${esc(p.id)} — <b>${esc(p.status)}</b></span>`
+    ).join("") + `<span class="chip">Langfuse — <span class="bad">not connected</span></span></div>`;
+}
+
+/* ---------------- prompt lab ---------------- */
+async function loadPrompts(){
+  const data = await api("/api/prompts");
+  PROMPTS = data.prompts;
+  $("#promptList").innerHTML = PROMPTS.map(p =>
+    `<button data-key="${esc(p.key)}" class="${currentPrompt === p.key ? "active" : ""}">
+       <span class="k">${esc(p.key)}</span><br>
+       <span class="m">profile ${esc(p.verification)} · temp ${esc(p.params?.temperature)}${p.parent ? " · cloned from " + esc(p.parent) : ""}</span>
+     </button>`).join("");
+  document.querySelectorAll("#promptList button").forEach(b =>
+    b.addEventListener("click", () => openPrompt(b.dataset.key)));
+  $("#runPrompt").innerHTML = PROMPTS.map(p =>
+    `<option value="${esc(p.key)}">${esc(p.key)}</option>`).join("");
+}
+
+function openPrompt(key){
+  currentPrompt = key;
+  const p = PROMPTS.find(x => x.key === key);
+  document.querySelectorAll("#promptList button").forEach(b =>
+    b.classList.toggle("active", b.dataset.key === key));
+  $("#promptEditor").style.display = "none";
+  $("#promptDiff").style.display = "none";
+  const others = PROMPTS.filter(x => x.key !== key);
+  $("#promptDetail").innerHTML = `
+    <div class="meta">
+      <div><div class="lab">Version</div><div class="val"><b>${esc(p.key)}</b></div></div>
+      <div><div class="lab">Verification profile</div><div class="val">${esc(p.verification)}</div></div>
+      <div><div class="lab">Temperature</div><div class="val num">${esc(p.params?.temperature)}</div></div>
+      <div><div class="lab">Parent</div><div class="val">${esc(p.parent || "—")}</div></div>
+      <div><div class="lab">Created</div><div class="val">${esc(p.created_at)}</div></div>
+      <div><div class="lab">Legacy version</div><div class="val">${esc(p.legacy_version || "—")}</div></div>
+    </div>
+    ${p.notes ? `<p class="sub">${esc(p.notes)}</p>` : ""}
+    <div class="lab">System prompt</div>
+    <pre class="text mono">${esc(p.system)}</pre>
+    <div class="lab">User prompt</div>
+    <pre class="text mono">${esc(p.user)}</pre>
+    <div class="btnrow">
+      <button class="btn" id="cloneBtn">Clone and edit</button>
+      <label style="display:flex;gap:8px;align-items:center">
+        <span class="reason">Compare with</span>
+        <select id="diffWith" style="width:auto">${others.map(o => `<option value="${esc(o.key)}">${esc(o.key)}</option>`).join("")}</select>
+      </label>
+      <button class="btn secondary" id="diffBtn">Show diff</button>
+    </div>`;
+  $("#cloneBtn").addEventListener("click", () => openEditor(p));
+  $("#diffBtn").addEventListener("click", () => showDiff(p.key, $("#diffWith").value));
+}
+
+function bumpVersion(v){
+  const parts = String(v).split(".");
+  if(parts.length >= 2 && !isNaN(parts[1])) { parts[1] = String(Number(parts[1]) + 1); return parts.join("."); }
+  return v + ".1";
+}
+
+function openEditor(p){
+  const ed = $("#promptEditor");
+  ed.style.display = "block";
+  ed.innerHTML = `
+    <h3 style="margin-top:0">New version of ${esc(p.name)}</h3>
+    <p class="sub">Cloned from ${esc(p.key)}. Saving writes a new immutable version file; ${esc(p.key)} stays untouched.</p>
+    <div class="row">
+      <label class="fl"><span class="lab">Name</span>
+        <input type="text" id="edName" value="${esc(p.name)}"></label>
+      <label class="fl narrow"><span class="lab">New version</span>
+        <input type="text" id="edVersion" value="${esc(bumpVersion(p.version))}"></label>
+      <label class="fl narrow"><span class="lab">Temperature</span>
+        <input type="number" id="edTemp" step="0.1" min="0" max="2" value="${esc(p.params?.temperature ?? 0)}"></label>
+      <label class="fl"><span class="lab">Verification profile</span>
+        <select id="edProfile">
+          <option value="full" ${p.verification === "full" ? "selected" : ""}>full — every verification check on</option>
+          <option value="passthrough" ${p.verification === "passthrough" ? "selected" : ""}>passthrough — baseline stance, checks off</option>
+        </select></label>
+    </div>
+    <label class="fl"><span class="lab">System prompt</span>
+      <textarea id="edSystem" rows="12">${esc(p.system)}</textarea></label>
+    <label class="fl"><span class="lab">User prompt</span>
+      <textarea id="edUser" rows="7">${esc(p.user)}</textarea></label>
+    <label class="fl"><span class="lab">Notes</span>
+      <input type="text" id="edNotes" placeholder="What changed and why"></label>
+    <div class="btnrow">
+      <button class="btn" id="saveBtn">Save as new version</button>
+      <button class="btn secondary" id="cancelBtn">Cancel</button>
+    </div>
+    <div class="statusline" id="edStatus"></div>`;
+  ed.scrollIntoView({behavior:"smooth", block:"start"});
+  $("#cancelBtn").addEventListener("click", () => { ed.style.display = "none"; });
+  $("#saveBtn").addEventListener("click", async () => {
+    const st = $("#edStatus"); st.textContent = "Saving…"; st.className = "statusline";
+    try{
+      const rec = await api("/api/prompts", {
+        method: "POST", headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          name: $("#edName").value.trim(),
+          version: $("#edVersion").value.trim(),
+          system: $("#edSystem").value,
+          user: $("#edUser").value,
+          temperature: Number($("#edTemp").value),
+          verification: $("#edProfile").value,
+          notes: $("#edNotes").value,
+          parent: p.key
+        })
+      });
+      await loadPrompts();
+      openPrompt(rec.key);
+    }catch(e){ st.innerHTML = `<span class="err">${esc(e.message)}</span>`; }
+  });
+}
+
+async function showDiff(a, b){
+  const box = $("#promptDiff");
+  const d = await api(`/api/prompts/compare?a=${encodeURIComponent(a)}&b=${encodeURIComponent(b)}`);
+  const colorDiff = text => esc(text).split("\n").map(line =>
+    line.startsWith("+") && !line.startsWith("+++") ? `<span class="add">${line}</span>` :
+    line.startsWith("-") && !line.startsWith("---") ? `<span class="del">${line}</span>` : line
+  ).join("\n");
+  const params = Object.entries(d.param_changes || {}).map(([k, v]) =>
+    `<tr><td>${esc(k)}</td><td class="num">${esc(fmtVal(v[0]))}</td><td class="num">${esc(fmtVal(v[1]))}</td></tr>`).join("");
+  box.style.display = "block";
+  box.innerHTML = `
+    <h3 style="margin-top:0">Diff: ${esc(a)} → ${esc(b)}</h3>
+    <div class="kv">
+      <div class="k">Fingerprint A</div><div class="mono">${esc(d.fingerprint_a)}</div>
+      <div class="k">Fingerprint B</div><div class="mono">${esc(d.fingerprint_b)}</div>
+      <div class="k">Verification profile</div><div>${d.verification_change ? esc(d.verification_change.join(" → ")) : "unchanged"}</div>
+    </div>
+    ${params ? `<table><thead><tr><th>Parameter</th><th>${esc(a)}</th><th>${esc(b)}</th></tr></thead><tbody>${params}</tbody></table>` : `<p class="sub">No parameter changes.</p>`}
+    <h3>System prompt</h3>
+    <pre class="text mono diff">${d.system_diff ? colorDiff(d.system_diff) : "No changes."}</pre>
+    <h3>User prompt</h3>
+    <pre class="text mono diff">${d.user_diff ? colorDiff(d.user_diff) : "No changes."}</pre>`;
+  box.scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+/* ---------------- experiments ---------------- */
+async function loadDatasets(){
+  const d = await api("/api/datasets");
+  $("#runSplit").innerHTML = d.splits.map(s =>
+    `<option value="${esc(s.name)}">${esc(s.name)} (${s.cases} cases)</option>`).join("");
+}
+
+function metricCells(r){
+  const ea = r.extraction_accuracy, uc = r.unsupported_claim_rate, oe = r.operational_efficiency;
+  return {
+    acc: `${ea.correct}/${ea.total} (${pct(ea.correct, ea.total)})`,
+    uns: `${uc.unsupported}/${uc.confirmed_fields} (${pct(uc.unsupported, uc.confirmed_fields)})`,
+    p50: oe.p50_latency_ms != null ? Math.round(oe.p50_latency_ms) + " ms" : "—",
+    cost: oe.cost_usd_computed != null ? "$" + oe.cost_usd_computed.toFixed(6) : "—"
+  };
+}
+
+async function loadRuns(){
+  const data = await api("/api/runs");
+  RUNS = data.runs;
+  $("#runTable").innerHTML = RUNS.map(r => {
+    const m = metricCells(r);
+    return `<tr class="clickable" data-run="${esc(r.run_id)}">
+      <td class="mono">${esc(r.run_id)}</td>
+      <td>${esc(r.prompt_key)}</td>
+      <td>${esc(r.provider)}${r.model ? " · " + esc(r.model) : ""}</td>
+      <td>${esc(r.split)}</td>
+      <td class="num">${m.acc}</td>
+      <td class="num">${m.uns}</td>
+      <td class="num">${m.p50}</td>
+      <td class="num">${m.cost}</td>
+    </tr>`;
+  }).join("") || `<tr><td colspan="8" class="reason">No runs persisted yet.</td></tr>`;
+  document.querySelectorAll("#runTable tr.clickable").forEach(tr =>
+    tr.addEventListener("click", () => openRun(tr.dataset.run)));
+  const opts = RUNS.map(r => `<option value="${esc(r.run_id)}">${esc(r.run_id)}</option>`).join("");
+  $("#cmpA").innerHTML = opts; $("#cmpB").innerHTML = opts;
+  if(RUNS.length > 1) $("#cmpB").selectedIndex = 1;
+}
+
+async function openRun(runId){
+  lastRunId = runId;
+  const {run, cases} = await api(`/api/runs/${encodeURIComponent(runId)}`);
+  const m = run.metrics;
+  const metricRows = [
+    ["Extraction accuracy", `${m.extraction_accuracy.correct} of ${m.extraction_accuracy.total} fields`, pct(m.extraction_accuracy.correct, m.extraction_accuracy.total)],
+    ["Evidence coverage", `${m.evidence_coverage.covered} of ${m.evidence_coverage.confirmed_fields} confirmed fields`, pct(m.evidence_coverage.covered, m.evidence_coverage.confirmed_fields)],
+    ["Unsupported claims", `${m.unsupported_claim_rate.unsupported} of ${m.unsupported_claim_rate.confirmed_fields} confirmed fields`, pct(m.unsupported_claim_rate.unsupported, m.unsupported_claim_rate.confirmed_fields)],
+    ["Contradiction detection", `${m.contradiction_detection.detected} of ${m.contradiction_detection.gold_conflicting_fields} gold conflicting fields`, pct(m.contradiction_detection.detected, m.contradiction_detection.gold_conflicting_fields)],
+    ["Latency p50 / p95", `${fmtVal(m.operational_efficiency.p50_latency_ms)} ms / ${fmtVal(m.operational_efficiency.p95_latency_ms)} ms`, ""],
+    ["Tokens / cost", `${fmtVal(m.operational_efficiency.total_tokens)} tokens`, m.operational_efficiency.cost_usd_computed != null ? "$" + m.operational_efficiency.cost_usd_computed.toFixed(6) + " computed" : "—"]
+  ].map(([k, v, p]) => `<tr><td>${k}</td><td class="num">${v}</td><td class="num">${p}</td></tr>`).join("");
+  const caseRows = cases.map(c => `
+    <tr class="clickable" data-case="${esc(c.case_id)}">
+      <td class="mono">${esc(c.case_id)}</td>
+      <td>${esc(c.taxonomy)}</td>
+      <td>${c.status === "ok"
+        ? (c.failed_fields.length === 0
+            ? `<span class="pill pass">all ${c.total_fields} fields correct</span>`
+            : `<span class="pill fail">${c.correct_fields}/${c.total_fields} correct — failed: ${esc(c.failed_fields.join(", "))}</span>`)
+        : `<span class="pill fail">error</span>`}</td>
+      <td class="num">${c.latency_ms != null ? Math.round(c.latency_ms) + " ms" : "—"}</td>
+    </tr>`).join("");
+  $("#runDetail").innerHTML = `
+    <h3>Run ${esc(run.run_id)}</h3>
+    <p class="sub">${esc(run.prompt.key)} · ${esc(run.provider)}${run.model ? " · " + esc(run.model) : ""} · split ${esc(run.dataset.split)} · ${run.cases_run} of ${run.dataset.cases_total} cases · prompt fingerprint <span class="mono">${esc(run.prompt.fingerprint.slice(0, 16))}…</span><br>
+    <b>Labels:</b> ${esc(run.labels_status)}</p>
+    ${run.error ? `<p class="err">Run stopped: ${esc(run.error.message)}</p>` : ""}
+    <div class="card flush">
+      <table><thead><tr><th>Metric</th><th>Count</th><th>Rate</th></tr></thead><tbody>${metricRows}</tbody></table>
+    </div>
+    <h3>Cases — click a case to inspect its evidence and trace</h3>
+    <div class="card flush">
+      <table><thead><tr><th>Case</th><th>Taxonomy</th><th>Result</th><th>Latency</th></tr></thead>
+      <tbody>${caseRows}</tbody></table>
+    </div>`;
+  document.querySelectorAll("#runDetail tr.clickable").forEach(tr =>
+    tr.addEventListener("click", () => openCase(runId, tr.dataset.case)));
+  $("#runDetail").scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+async function openCase(runId, caseId){
+  const t = await api(`/api/runs/${encodeURIComponent(runId)}/cases/${encodeURIComponent(caseId)}`);
+  switchView("case");
+  if(t.status !== "ok"){
+    $("#caseDetail").innerHTML = `<div class="wrap">
+      <div class="btnrow" style="margin-bottom:16px"><button class="btn secondary" data-back>← Back to experiments</button></div>
+      <h2>${esc(caseId)}</h2><p class="err">Provider error: ${esc(t.error || "")}</p>
+      <h3>Transcript</h3><pre class="transcript">${esc(t.input.transcript)}</pre></div>`;
+    bindBack();
+    return;
+  }
+  const ev = t.evaluations;
+  const rows = Object.entries(ev.fields).map(([name, f]) => {
+    const g = f.gold, p = f.predicted;
+    return `<tr>
+      <td><b>${esc(name)}</b><br>${f.correct ? `<span class="pill pass">correct</span>` : `<span class="pill fail">failed</span>`}
+        ${f.unsupported_claim ? ` <span class="pill fail">unsupported claim</span>` : ""}
+        ${f.evidence_grounded === false ? ` <span class="pill fail">evidence not in transcript</span>` : ""}</td>
+      <td><span class="state ${esc(g.status)}">${esc(g.status)}</span> ${esc(fmtVal(g.value))}${g.condition ? `<br><span class="reason">condition: ${esc(g.condition)}</span>` : ""}</td>
+      <td><span class="state ${esc(p.status)}">${esc(p.status)}</span> ${esc(fmtVal(p.value))}${p.condition ? `<br><span class="reason">condition: ${esc(p.condition)}</span>` : ""}
+        ${p.evidence ? `<br><span class="evidence">“${esc(p.evidence)}”</span>` : ""}
+        ${p.reason ? `<br><span class="reason">${esc(p.reason)}</span>` : ""}</td>
+    </tr>`;
+  }).join("");
+  $("#caseDetail").innerHTML = `
+    <div class="wrap" style="padding-bottom:24px">
+      <div class="btnrow" style="margin-bottom:16px"><button class="btn secondary" data-back>← Back to experiments</button></div>
+      <h2>${esc(caseId)}</h2>
+      <p class="sub">${esc(t.taxonomy)} · ${ev.correct_fields} of ${ev.total_fields} fields correct · failed: ${esc(ev.failed_fields.join(", ") || "none")}</p>
+      <h3 style="margin-top:0">Question</h3>
+      <p style="margin:0">${esc(t.input.question)}</p>
+    </div>
+    <div class="band dark">
+      <div class="wrap">
+        <h3 style="margin-top:0">Trace record</h3>
+        <p class="sub">Local record from this run's <span class="mono">cases.jsonl</span>, in Langfuse shape. Langfuse is not connected.</p>
+        <div class="kv">
+          <div class="k">Trace ID</div><div class="mono">${esc(t.trace_id)}</div>
+          <div class="k">Run</div><div class="mono">${esc(t.run_id)}</div>
+          <div class="k">Prompt version</div><div>${esc(t.prompt_version)}</div>
+          <div class="k">Provider · model</div><div>${esc(t.provider)}${t.model ? " · " + esc(t.model) : ""}${t.fallback_used ? " (fallback used)" : ""}</div>
+          <div class="k">Latency</div><div class="num">${esc(fmtVal(t.latency_ms))} ms</div>
+          <div class="k">Tokens</div><div class="num">${esc(fmtVal(t.usage?.total_tokens))} (prompt ${esc(fmtVal(t.usage?.prompt_tokens))}, completion ${esc(fmtVal(t.usage?.completion_tokens))})</div>
+          <div class="k">Reported cost</div><div class="num">${t.usage?.reported_cost_usd != null ? "$" + t.usage.reported_cost_usd.toFixed(6) : "—"}</div>
+        </div>
+      </div>
+    </div>
+    <div class="wrap" style="padding-top:32px">
+      <h3 style="margin-top:0">Transcript</h3>
+      <pre class="transcript">${esc(t.input.transcript)}</pre>
+      <h3>Expected vs actual, field by field</h3>
+      <div class="card flush">
+        <table><thead><tr><th>Field</th><th>Expected (gold)</th><th>Actual (verified answer)</th></tr></thead>
+        <tbody>${rows}</tbody></table>
+      </div>
+      <p class="sub" style="margin-top:14px">Gold labels: AI drafted, pending human review. A "failed" field is a disagreement with unreviewed labels, judged by the deterministic checks in the verification engine and evals/metrics.py.</p>
+    </div>`;
+  bindBack();
+}
+
+function bindBack(){
+  document.querySelectorAll("[data-back]").forEach(b =>
+    b.addEventListener("click", () => switchView("experiments")));
+}
+
+$("#runBtn").addEventListener("click", async () => {
+  const st = $("#runStatus");
+  const provider = $("#runProvider").value;
+  const body = {
+    prompt_key: $("#runPrompt").value,
+    provider,
+    model: provider === "openrouter" ? $("#runModel").value : null,
+    split: $("#runSplit").value
+  };
+  st.textContent = "Running… (openrouter runs take roughly 3–5 seconds per case)";
+  $("#runBtn").disabled = true;
+  try{
+    const r = await api("/api/runs", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(body)
+    });
+    st.textContent = "Run persisted: " + r.run_id;
+    await loadRuns();
+    await openRun(r.run_id);
+  }catch(e){ st.innerHTML = `<span class="err">${esc(e.message)}</span>`; }
+  $("#runBtn").disabled = false;
+});
+
+/* ---------------- compare runs ---------------- */
+$("#cmpBtn").addEventListener("click", async () => {
+  const a = $("#cmpA").value, b = $("#cmpB").value;
+  const st = $("#cmpStatus");
+  if(!a || !b || a === b){ st.innerHTML = `<span class="err">Pick two different runs.</span>`; return; }
+  const c = await api(`/api/runs/compare?a=${encodeURIComponent(a)}&b=${encodeURIComponent(b)}`);
+  const row = (label, fa, fb) => `<tr><td>${label}</td><td class="num">${fa}</td><td class="num">${fb}</td></tr>`;
+  const A = c.a, B = c.b;
+  const table = [
+    row("Prompt", A.prompt_key, B.prompt_key),
+    row("Provider · model", A.provider + (A.model ? " · " + A.model : ""), B.provider + (B.model ? " · " + B.model : "")),
+    row("Split", A.split, B.split),
+    row("Extraction accuracy", `${A.extraction_accuracy.correct}/${A.extraction_accuracy.total} (${pct(A.extraction_accuracy.correct, A.extraction_accuracy.total)})`, `${B.extraction_accuracy.correct}/${B.extraction_accuracy.total} (${pct(B.extraction_accuracy.correct, B.extraction_accuracy.total)})`),
+    row("Evidence coverage", `${A.evidence_coverage.covered}/${A.evidence_coverage.confirmed_fields} (${pct(A.evidence_coverage.covered, A.evidence_coverage.confirmed_fields)})`, `${B.evidence_coverage.covered}/${B.evidence_coverage.confirmed_fields} (${pct(B.evidence_coverage.covered, B.evidence_coverage.confirmed_fields)})`),
+    row("Unsupported claims", `${A.unsupported_claim_rate.unsupported}/${A.unsupported_claim_rate.confirmed_fields} (${pct(A.unsupported_claim_rate.unsupported, A.unsupported_claim_rate.confirmed_fields)})`, `${B.unsupported_claim_rate.unsupported}/${B.unsupported_claim_rate.confirmed_fields} (${pct(B.unsupported_claim_rate.unsupported, B.unsupported_claim_rate.confirmed_fields)})`),
+    row("Contradiction recall", `${A.contradiction_detection.detected}/${A.contradiction_detection.gold_conflicting_fields}`, `${B.contradiction_detection.detected}/${B.contradiction_detection.gold_conflicting_fields}`),
+    row("Latency p50", fmtVal(A.operational_efficiency.p50_latency_ms) + " ms", fmtVal(B.operational_efficiency.p50_latency_ms) + " ms"),
+    row("Cost (computed)", A.operational_efficiency.cost_usd_computed != null ? "$" + A.operational_efficiency.cost_usd_computed.toFixed(6) : "—", B.operational_efficiency.cost_usd_computed != null ? "$" + B.operational_efficiency.cost_usd_computed.toFixed(6) : "—")
+  ].join("");
+  const caseRows = (c.per_case || []).map(pc => {
+    const changed = Object.entries(pc.changed_fields || {}).map(([f, v]) =>
+      `${esc(f)}: ${v.a_correct ? "correct in A" : "failed in A"} → ${v.b_correct ? "correct in B" : "failed in B"}`).join("<br>");
+    return `<tr><td class="mono">${esc(pc.case_id)}</td><td class="num">${pc.a_correct_fields}/7</td><td class="num">${pc.b_correct_fields}/7</td><td>${changed || '<span class="reason">no field changed correctness</span>'}</td></tr>`;
+  }).join("");
+  $("#cmpResult").innerHTML = `
+    <p class="sub" style="margin-top:16px">${c.identical_inputs
+      ? "Identical inputs: same split and same case set."
+      : '<span class="err">Different or incomplete inputs (split or case set differ, or a run stopped early) — the numbers below are not a like-for-like comparison.</span>'}
+      <br><b>Labels:</b> ${esc(c.labels_status)}</p>
+    <table><thead><tr><th>Metric</th><th>A — ${esc(A.run_id)}</th><th>B — ${esc(B.run_id)}</th></tr></thead>
+    <tbody>${table}</tbody></table>
+    ${c.identical_inputs ? `<h3>Per case</h3>
+    <table><thead><tr><th>Case</th><th>A correct</th><th>B correct</th><th>What changed</th></tr></thead>
+    <tbody>${caseRows}</tbody></table>` : ""}`;
+});
+
+/* ---------------- navigation ---------------- */
+const TITLES = {prompts: "Prompt Lab", experiments: "Experiments", compare: "Compare runs", case: "Case inspector"};
+function switchView(name){
+  document.querySelectorAll("section.view").forEach(s => s.classList.remove("active"));
+  $("#view-" + name).classList.add("active");
+  document.querySelectorAll("header.gnav nav button").forEach(b =>
+    b.classList.toggle("active", b.dataset.view === name));
+  $("#viewTitle").textContent = TITLES[name] || name;
+  window.scrollTo({top: 0});
+}
+document.querySelectorAll("header.gnav nav button").forEach(b =>
+  b.addEventListener("click", () => switchView(b.dataset.view)));
+
+/* ---------------- boot ---------------- */
+(async () => {
+  try{
+    await loadStatus();
+    await loadPrompts();
+    await loadDatasets();
+    await loadRuns();
+    if(PROMPTS.length) openPrompt(PROMPTS[PROMPTS.length - 1].key);
+  }catch(e){
+    $("#labelsNotice").innerHTML = `<span class="err">Failed to load: ${esc(e.message)}</span>`;
+  }
+})();
+</script>
+</body>
+</html>

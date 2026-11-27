@@ -1,0 +1,62 @@
+{
+  "id": "bakery_sourdough_clean",
+  "business_name": "Crumb & Craft",
+  "business_type": "Bakery",
+  "product": "sourdough loaf",
+  "question": "Do you have sourdough loaves today, how much are they, and can I reserve one?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "clean",
+  "transcript": "Agent: Do you have sourdough loaves today? How much are they? Can I reserve one?\nSeller: Yes, the sourdough loaves are in stock. A sourdough loaf is $8. We baked 12 loaves this morning. You can pick it up any time today. I can reserve one under your name.",
+  "gold": {
+    "price": {
+      "value": 8,
+      "status": "confirmed",
+      "evidence": "A sourdough loaf is $8.",
+      "condition": null
+    },
+    "currency": {
+      "value": "USD",
+      "status": "confirmed",
+      "evidence": "A sourdough loaf is $8.",
+      "condition": null
+    },
+    "availability": {
+      "value": "in_stock",
+      "status": "confirmed",
+      "evidence": "Yes, the sourdough loaves are in stock.",
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": "12 loaves",
+      "status": "confirmed",
+      "evidence": "We baked 12 loaves this morning.",
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": "pickup",
+      "status": "confirmed",
+      "evidence": "You can pick it up any time today.",
+      "condition": null
+    },
+    "timing": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": "reserve",
+      "status": "confirmed",
+      "evidence": "I can reserve one under your name.",
+      "condition": null
+    }
+  }
+}

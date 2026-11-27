@@ -1,0 +1,1287 @@
+{
+ "provider": "offline",
+ "model": null,
+ "prompt_version": "trutrace-1.0.0",
+ "config": "current",
+ "cases_run": 10,
+ "cases_total": 10,
+ "error": null,
+ "metrics": {
+  "extraction_accuracy": {
+   "overall": 0.8,
+   "correct": 56,
+   "total": 70,
+   "per_field": {
+    "price": 0.6,
+    "currency": 0.8,
+    "availability": 1.0,
+    "quantity_or_stock": 1.0,
+    "delivery_or_pickup": 0.6,
+    "timing": 0.8,
+    "contact_next_step": 0.8
+   }
+  },
+  "evidence_coverage": {
+   "rate": 1.0,
+   "covered": 34,
+   "confirmed_fields": 34
+  },
+  "unsupported_claim_rate": {
+   "rate": 0.1176,
+   "unsupported": 4,
+   "confirmed_fields": 34
+  },
+  "contradiction_detection": {
+   "recall": 1.0,
+   "detected": 1,
+   "gold_conflicting_fields": 1,
+   "details": [
+    {
+     "case": "campaign_03_contradiction",
+     "field": "price",
+     "detected": true
+    }
+   ]
+  },
+  "operational_efficiency": {
+   "mean_latency_ms": 0.58,
+   "p50_latency_ms": 0.54,
+   "p95_latency_ms": 1.28,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "total_tokens": null,
+   "cost_usd_computed": null,
+   "cost_usd_reported": null,
+   "prices_used_per_1m_tokens": null
+  }
+ },
+ "failures": [
+  {
+   "case": "campaign_01_showcase_hedged",
+   "taxonomy": "uncertain_inventory",
+   "field": "contact_next_step",
+   "gold": {
+    "value": "order online",
+    "status": "confirmed",
+    "evidence": "[00:26] Seller: You can order on our website.",
+    "condition": null,
+    "speaker": "Seller",
+    "timestamp": "00:26"
+   },
+   "predicted": {
+    "value": null,
+    "status": "unconfirmed",
+    "evidence": null,
+    "condition": null,
+    "reason": "contact_next_step was not established in the call",
+    "candidates": [],
+    "speaker": null,
+    "timestamp": null
+   }
+  },
+  {
+   "case": "campaign_04_conditional",
+   "taxonomy": "conditional_pricing",
+   "field": "price",
+   "gold": {
+    "value": 35,
+    "status": "confirmed",
+    "evidence": "[00:05] Seller: For a standard dozen red roses it is $35.",
+    "condition": "standard dozen only",
+    "speaker": "Seller",
+    "timestamp": "00:05"
+   },
+   "predicted": {
+    "value": null,
+    "status": "conflicting",
+    "evidence": "[00:12] Seller: The premium long-stem dozen is $50.",
+    "condition": null,
+    "reason": "call states two different prices for the same product: 35.0, 50.0",
+    "candidates": [
+     35.0,
+     50.0
+    ],
+    "speaker": "Seller",
+    "timestamp": "00:12"
+   }
+  },
+  {
+   "case": "campaign_04_conditional",
+   "taxonomy": "conditional_pricing",
+   "field": "delivery_or_pickup",
+   "gold": {
+    "value": "delivery",
+    "status": "confirmed",
+    "evidence": "[00:25] Seller: Delivery today is fine, it would get there by 4 pm.",
+    "condition": null,
+    "speaker": "Seller",
+    "timestamp": "00:25"
+   },
+   "predicted": {
+    "value": null,
+    "status": "unconfirmed",
+    "evidence": null,
+    "condition": null,
+    "reason": "delivery_or_pickup was not established in the call",
+    "candidates": [],
+    "speaker": null,
+    "timestamp": null
+   }
+  },
+  {
+   "case": "campaign_05_missing_price",
+   "taxonomy": "missing_information",
+   "field": "delivery_or_pickup",
+   "gold": {
+    "value": "delivery",
+    "status": "confirmed",
+    "evidence": "[00:21] Seller: Delivery today is fine, it would reach by 7 pm.",
+    "condition": null,
+    "speaker": "Seller",
+    "timestamp": "00:21"
+   },
+   "predicted": {
+    "value": null,
+    "status": "unconfirmed",
+    "evidence": null,
+    "condition": null,
+    "reason": "delivery_or_pickup was not established in the call",
+    "candidates": [],
+    "speaker": null,
+    "timestamp": null
+   }
+  },
+  {
+   "case": "campaign_06_asr_noise",
+   "taxonomy": "clean",
+   "field": "price",
+   "gold": {
+    "value": 38,
+    "status": "confirmed",
+    "evidence": "[00:05] Seller: Yeah, uh, read, red roses, a dozen, that is thirty-eight dollars.",
+    "condition": null,
+    "speaker": "Seller",
+    "timestamp": "00:05"
+   },
+   "predicted": {
+    "value": null,
+    "status": "unconfirmed",
+    "evidence": null,
+    "condition": null,
+    "reason": "no price was quoted in the call",
+    "candidates": [],
+    "speaker": null,
+    "timestamp": null
+   }
+  },
+  {
+   "case": "campaign_06_asr_noise",
+   "taxonomy": "clean",
+   "field": "currency",
+   "gold": {
+    "value": "USD",
+    "status": "confirmed",
+    "evidence": "[00:05] Seller: Yeah, uh, read, red roses, a dozen, that is thirty-eight dollars.",
+    "condition": null,
+    "speaker": "Seller",
+    "timestamp": "00:05"
+   },
+   "predicted": {
+    "value": null,
+    "status": "unconfirmed",
+    "evidence": null,
+    "condition": null,
+    "reason": "no currency was established in the call",
+    "candidates": [],
+    "speaker": null,
+    "timestamp": null
+   }
+  },
+  {
+   "case": "campaign_06_asr_noise",
+   "taxonomy": "clean",
+   "field": "delivery_or_pickup",
+   "gold": {
+    "value": "delivery",
+    "status": "confirmed",
+    "evidence": "[00:19] Seller: Delivery today, yeah, by, uh, five pm.",
+    "condition": null,
+    "speaker": "Seller",
+    "timestamp": "00:19"
+   },
+   "predicted": {
+    "value": null,
+    "status": "unconfirmed",
+    "evidence": null,
+    "condition": null,
+    "reason": "delivery_or_pickup was not established in the call",
+    "candidates": [],
+    "speaker": null,
+    "timestamp": null
+   }
+  },
+  {
+   "case": "campaign_06_asr_noise",
+   "taxonomy": "clean",
+   "field": "timing",
+   "gold": {
+    "value": "by 5 pm",
+    "status": "confirmed",
+    "evidence": "[00:19] Seller: Delivery today, yeah, by, uh, five pm.",
+    "condition": null,
+    "speaker": "Seller",
+    "timestamp": "00:19"
+   },
+   "predicted": {
+    "value": null,
+    "status": "unconfirmed",
+    "evidence": null,
+    "condition": null,
+    "reason": "no timing was established in the call",
+    "candidates": [],
+    "speaker": null,
+    "timestamp": null
+   }
+  },
+  {
+   "case": "campaign_06_asr_noise",
+   "taxonomy": "clean",
+   "field": "contact_next_step",
+   "gold": {
+    "value": "order in the app",
+    "status": "confirmed",
+    "evidence": "[00:26] Seller: Just, uh, order through the app.",
+    "condition": null,
+    "speaker": "Seller",
+    "timestamp": "00:26"
+   },
+   "predicted": {
+    "value": null,
+    "status": "unconfirmed",
+    "evidence": null,
+    "condition": null,
+    "reason": "contact_next_step was not established in the call",
+    "candidates": [],
+    "speaker": null,
+    "timestamp": null
+   }
+  },
+  {
+   "case": "campaign_08_hedged_stock",
+   "taxonomy": "uncertain_inventory",
+   "field": "timing",
+   "gold": {
+    "value": "by 3 pm",
+    "status": "uncertain",
+    "evidence": "[00:19] Seller: We can deliver today by 3 pm if they are there.",
+    "condition": null,
+    "speaker": "Seller",
+    "timestamp": "00:19"
+   },
+   "predicted": {
+    "value": "by 3 pm",
+    "status": "confirmed",
+    "evidence": "[00:19] Seller: We can deliver today by 3 pm if they are there.",
+    "condition": null,
+    "reason": null,
+    "candidates": [],
+    "speaker": "Seller",
+    "timestamp": "00:19"
+   }
+  },
+  {
+   "case": "campaign_09_temporal",
+   "taxonomy": "temporal_mismatch",
+   "field": "price",
+   "gold": {
+    "value": 36,
+    "status": "confirmed",
+    "evidence": "[00:12] Seller: This week it is $36 a dozen.",
+    "condition": null,
+    "speaker": "Seller",
+    "timestamp": "00:12"
+   },
+   "predicted": {
+    "value": 36.0,
+    "status": "confirmed",
+    "evidence": "[00:12] Seller: This week it is $36 a dozen.",
+    "condition": "per dozen",
+    "reason": null,
+    "candidates": [],
+    "speaker": "Seller",
+    "timestamp": "00:12"
+   }
+  },
+  {
+   "case": "campaign_10_wrong_product",
+   "taxonomy": "entity_confusion",
+   "field": "price",
+   "gold": {
+    "value": null,
+    "status": "unconfirmed",
+    "evidence": null,
+    "condition": null,
+    "speaker": null,
+    "timestamp": null
+   },
+   "predicted": {
+    "value": 28.0,
+    "status": "confirmed",
+    "evidence": "[00:05] Seller: White roses are $28 a dozen today.",
+    "condition": "per dozen",
+    "reason": null,
+    "candidates": [],
+    "speaker": "Seller",
+    "timestamp": "00:05"
+   }
+  },
+  {
+   "case": "campaign_10_wrong_product",
+   "taxonomy": "entity_confusion",
+   "field": "currency",
+   "gold": {
+    "value": null,
+    "status": "unconfirmed",
+    "evidence": null,
+    "condition": null,
+    "speaker": null,
+    "timestamp": null
+   },
+   "predicted": {
+    "value": "USD",
+    "status": "confirmed",
+    "evidence": "[00:05] Seller: White roses are $28 a dozen today.",
+    "condition": null,
+    "reason": null,
+    "candidates": [],
+    "speaker": "Seller",
+    "timestamp": "00:05"
+   }
+  },
+  {
+   "case": "campaign_10_wrong_product",
+   "taxonomy": "entity_confusion",
+   "field": "delivery_or_pickup",
+   "gold": {
+    "value": "delivery",
+    "status": "confirmed",
+    "evidence": "[00:19] Seller: We do deliver across the city, same day.",
+    "condition": null,
+    "speaker": "Seller",
+    "timestamp": "00:19"
+   },
+   "predicted": {
+    "value": null,
+    "status": "unconfirmed",
+    "evidence": null,
+    "condition": null,
+    "reason": "delivery_or_pickup was not established in the call",
+    "candidates": [],
+    "speaker": null,
+    "timestamp": null
+   }
+  }
+ ],
+ "cases": [
+  {
+   "id": "campaign_01_showcase_hedged",
+   "taxonomy": "uncertain_inventory",
+   "fields": {
+    "price": {
+     "gold_status": "uncertain",
+     "gold_value": 35,
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:07",
+     "pred_status": "uncertain",
+     "pred_value": 35.0,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:07"
+    },
+    "currency": {
+     "gold_status": "confirmed",
+     "gold_value": "USD",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:07",
+     "pred_status": "confirmed",
+     "pred_value": "USD",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:07"
+    },
+    "availability": {
+     "gold_status": "uncertain",
+     "gold_value": null,
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:13",
+     "pred_status": "uncertain",
+     "pred_value": "in_stock",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:13"
+    },
+    "quantity_or_stock": {
+     "gold_status": "unconfirmed",
+     "gold_value": null,
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "delivery_or_pickup": {
+     "gold_status": "uncertain",
+     "gold_value": "delivery",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:19",
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "timing": {
+     "gold_status": "uncertain",
+     "gold_value": "tomorrow morning",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:19",
+     "pred_status": "uncertain",
+     "pred_value": "tomorrow morning",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:19"
+    },
+    "contact_next_step": {
+     "gold_status": "confirmed",
+     "gold_value": "order online",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:26",
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": false,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    }
+   }
+  },
+  {
+   "id": "campaign_02_clean_confirm",
+   "taxonomy": "clean",
+   "fields": {
+    "price": {
+     "gold_status": "confirmed",
+     "gold_value": 38,
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:05",
+     "pred_status": "confirmed",
+     "pred_value": 38.0,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:05"
+    },
+    "currency": {
+     "gold_status": "confirmed",
+     "gold_value": "USD",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:05",
+     "pred_status": "confirmed",
+     "pred_value": "USD",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:05"
+    },
+    "availability": {
+     "gold_status": "confirmed",
+     "gold_value": "in_stock",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:11",
+     "pred_status": "confirmed",
+     "pred_value": "in_stock",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:11"
+    },
+    "quantity_or_stock": {
+     "gold_status": "unconfirmed",
+     "gold_value": null,
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "delivery_or_pickup": {
+     "gold_status": "confirmed",
+     "gold_value": "delivery",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:17",
+     "pred_status": "confirmed",
+     "pred_value": "delivery",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:17"
+    },
+    "timing": {
+     "gold_status": "confirmed",
+     "gold_value": "by 6 pm",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:17",
+     "pred_status": "confirmed",
+     "pred_value": "by 6 pm",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:17"
+    },
+    "contact_next_step": {
+     "gold_status": "confirmed",
+     "gold_value": "book in",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:24",
+     "pred_status": "confirmed",
+     "pred_value": "book in",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:24"
+    }
+   }
+  },
+  {
+   "id": "campaign_03_contradiction",
+   "taxonomy": "contradiction",
+   "fields": {
+    "price": {
+     "gold_status": "conflicting",
+     "gold_value": null,
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:20",
+     "pred_status": "conflicting",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:20"
+    },
+    "currency": {
+     "gold_status": "confirmed",
+     "gold_value": "USD",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:06",
+     "pred_status": "confirmed",
+     "pred_value": "USD",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:06"
+    },
+    "availability": {
+     "gold_status": "confirmed",
+     "gold_value": "in_stock",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:12",
+     "pred_status": "confirmed",
+     "pred_value": "in_stock",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:12"
+    },
+    "quantity_or_stock": {
+     "gold_status": "unconfirmed",
+     "gold_value": null,
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "delivery_or_pickup": {
+     "gold_status": "confirmed",
+     "gold_value": "delivery",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:27",
+     "pred_status": "confirmed",
+     "pred_value": "delivery",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:27"
+    },
+    "timing": {
+     "gold_status": "confirmed",
+     "gold_value": "by 5 pm",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:27",
+     "pred_status": "confirmed",
+     "pred_value": "by 5 pm",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:27"
+    },
+    "contact_next_step": {
+     "gold_status": "unconfirmed",
+     "gold_value": null,
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    }
+   }
+  },
+  {
+   "id": "campaign_04_conditional",
+   "taxonomy": "conditional_pricing",
+   "fields": {
+    "price": {
+     "gold_status": "confirmed",
+     "gold_value": 35,
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:05",
+     "pred_status": "conflicting",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": false,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:12"
+    },
+    "currency": {
+     "gold_status": "confirmed",
+     "gold_value": "USD",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:05",
+     "pred_status": "confirmed",
+     "pred_value": "USD",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:05"
+    },
+    "availability": {
+     "gold_status": "confirmed",
+     "gold_value": "in_stock",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:18",
+     "pred_status": "confirmed",
+     "pred_value": "in_stock",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:18"
+    },
+    "quantity_or_stock": {
+     "gold_status": "unconfirmed",
+     "gold_value": null,
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "delivery_or_pickup": {
+     "gold_status": "confirmed",
+     "gold_value": "delivery",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:25",
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": false,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "timing": {
+     "gold_status": "confirmed",
+     "gold_value": "by 4 pm",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:25",
+     "pred_status": "confirmed",
+     "pred_value": "by 4 pm",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:25"
+    },
+    "contact_next_step": {
+     "gold_status": "unconfirmed",
+     "gold_value": null,
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    }
+   }
+  },
+  {
+   "id": "campaign_05_missing_price",
+   "taxonomy": "missing_information",
+   "fields": {
+    "price": {
+     "gold_status": "unconfirmed",
+     "gold_value": null,
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "currency": {
+     "gold_status": "unconfirmed",
+     "gold_value": null,
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "availability": {
+     "gold_status": "confirmed",
+     "gold_value": "in_stock",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:06",
+     "pred_status": "confirmed",
+     "pred_value": "in_stock",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:06"
+    },
+    "quantity_or_stock": {
+     "gold_status": "unconfirmed",
+     "gold_value": null,
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "delivery_or_pickup": {
+     "gold_status": "confirmed",
+     "gold_value": "delivery",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:21",
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": false,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "timing": {
+     "gold_status": "confirmed",
+     "gold_value": "by 7 pm",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:21",
+     "pred_status": "confirmed",
+     "pred_value": "by 7 pm",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:21"
+    },
+    "contact_next_step": {
+     "gold_status": "confirmed",
+     "gold_value": "call back",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:28",
+     "pred_status": "confirmed",
+     "pred_value": "call back",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:28"
+    }
+   }
+  },
+  {
+   "id": "campaign_06_asr_noise",
+   "taxonomy": "clean",
+   "fields": {
+    "price": {
+     "gold_status": "confirmed",
+     "gold_value": 38,
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:05",
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": false,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "currency": {
+     "gold_status": "confirmed",
+     "gold_value": "USD",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:05",
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": false,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "availability": {
+     "gold_status": "confirmed",
+     "gold_value": "in_stock",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:12",
+     "pred_status": "confirmed",
+     "pred_value": "in_stock",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:12"
+    },
+    "quantity_or_stock": {
+     "gold_status": "unconfirmed",
+     "gold_value": null,
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "delivery_or_pickup": {
+     "gold_status": "confirmed",
+     "gold_value": "delivery",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:19",
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": false,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "timing": {
+     "gold_status": "confirmed",
+     "gold_value": "by 5 pm",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:19",
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": false,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "contact_next_step": {
+     "gold_status": "confirmed",
+     "gold_value": "order in the app",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:26",
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": false,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    }
+   }
+  },
+  {
+   "id": "campaign_07_out_of_stock",
+   "taxonomy": "clean",
+   "fields": {
+    "price": {
+     "gold_status": "confirmed",
+     "gold_value": 36,
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:06",
+     "pred_status": "confirmed",
+     "pred_value": 36.0,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:06"
+    },
+    "currency": {
+     "gold_status": "confirmed",
+     "gold_value": "USD",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:06",
+     "pred_status": "confirmed",
+     "pred_value": "USD",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:06"
+    },
+    "availability": {
+     "gold_status": "confirmed",
+     "gold_value": "out_of_stock",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:13",
+     "pred_status": "confirmed",
+     "pred_value": "out_of_stock",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:13"
+    },
+    "quantity_or_stock": {
+     "gold_status": "unconfirmed",
+     "gold_value": null,
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "delivery_or_pickup": {
+     "gold_status": "unconfirmed",
+     "gold_value": null,
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "timing": {
+     "gold_status": "unconfirmed",
+     "gold_value": null,
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "contact_next_step": {
+     "gold_status": "confirmed",
+     "gold_value": "reserve",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:21",
+     "pred_status": "confirmed",
+     "pred_value": "reserve",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:21"
+    }
+   }
+  },
+  {
+   "id": "campaign_08_hedged_stock",
+   "taxonomy": "uncertain_inventory",
+   "fields": {
+    "price": {
+     "gold_status": "confirmed",
+     "gold_value": 42,
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:05",
+     "pred_status": "confirmed",
+     "pred_value": 42.0,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:05"
+    },
+    "currency": {
+     "gold_status": "confirmed",
+     "gold_value": "USD",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:05",
+     "pred_status": "confirmed",
+     "pred_value": "USD",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:05"
+    },
+    "availability": {
+     "gold_status": "uncertain",
+     "gold_value": null,
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:12",
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "quantity_or_stock": {
+     "gold_status": "unconfirmed",
+     "gold_value": null,
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "delivery_or_pickup": {
+     "gold_status": "confirmed",
+     "gold_value": "delivery",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:19",
+     "pred_status": "confirmed",
+     "pred_value": "delivery",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:19"
+    },
+    "timing": {
+     "gold_status": "uncertain",
+     "gold_value": "by 3 pm",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:19",
+     "pred_status": "confirmed",
+     "pred_value": "by 3 pm",
+     "pred_condition": null,
+     "correct": false,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:19"
+    },
+    "contact_next_step": {
+     "gold_status": "confirmed",
+     "gold_value": "text",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:26",
+     "pred_status": "confirmed",
+     "pred_value": "text",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:26"
+    }
+   }
+  },
+  {
+   "id": "campaign_09_temporal",
+   "taxonomy": "temporal_mismatch",
+   "fields": {
+    "price": {
+     "gold_status": "confirmed",
+     "gold_value": 36,
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:12",
+     "pred_status": "confirmed",
+     "pred_value": 36.0,
+     "pred_condition": "per dozen",
+     "correct": false,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:12"
+    },
+    "currency": {
+     "gold_status": "confirmed",
+     "gold_value": "USD",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:12",
+     "pred_status": "confirmed",
+     "pred_value": "USD",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:05"
+    },
+    "availability": {
+     "gold_status": "confirmed",
+     "gold_value": "in_stock",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:19",
+     "pred_status": "confirmed",
+     "pred_value": "in_stock",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:19"
+    },
+    "quantity_or_stock": {
+     "gold_status": "unconfirmed",
+     "gold_value": null,
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "delivery_or_pickup": {
+     "gold_status": "confirmed",
+     "gold_value": "delivery",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:19",
+     "pred_status": "confirmed",
+     "pred_value": "delivery",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:19"
+    },
+    "timing": {
+     "gold_status": "confirmed",
+     "gold_value": "by 2 pm",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:19",
+     "pred_status": "confirmed",
+     "pred_value": "by 2 pm",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:19"
+    },
+    "contact_next_step": {
+     "gold_status": "unconfirmed",
+     "gold_value": null,
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    }
+   }
+  },
+  {
+   "id": "campaign_10_wrong_product",
+   "taxonomy": "entity_confusion",
+   "fields": {
+    "price": {
+     "gold_status": "unconfirmed",
+     "gold_value": null,
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "confirmed",
+     "pred_value": 28.0,
+     "pred_condition": "per dozen",
+     "correct": false,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:05"
+    },
+    "currency": {
+     "gold_status": "unconfirmed",
+     "gold_value": null,
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "confirmed",
+     "pred_value": "USD",
+     "pred_condition": null,
+     "correct": false,
+     "pred_speaker": "Seller",
+     "pred_timestamp": "00:05"
+    },
+    "availability": {
+     "gold_status": "unconfirmed",
+     "gold_value": null,
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "quantity_or_stock": {
+     "gold_status": "unconfirmed",
+     "gold_value": null,
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "delivery_or_pickup": {
+     "gold_status": "confirmed",
+     "gold_value": "delivery",
+     "gold_speaker": "Seller",
+     "gold_timestamp": "00:19",
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": false,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "timing": {
+     "gold_status": "unconfirmed",
+     "gold_value": null,
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "contact_next_step": {
+     "gold_status": "unconfirmed",
+     "gold_value": null,
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,38 @@
+{
+ "dev": [
+  "bakery_sourdough_clean",
+  "bike_shop_tuneup_clean",
+  "cafe_cake_conditional",
+  "cafe_soup_temporal",
+  "cake_wedding_starting_price",
+  "dry_cleaner_suit_missing",
+  "electronics_battery_uncertain",
+  "garden_centre_seedlings_uncertain",
+  "grocery_eggs_ambiguous",
+  "grocery_milk_confusion",
+  "hardware_screws_ambiguous",
+  "optician_frames_missing",
+  "pet_store_dogfood_clean",
+  "pharmacy_antihistamine_missing",
+  "plumber_callout_contradiction",
+  "salon_timing_contradiction",
+  "salon_toner_confusion",
+  "shoe_store_temporal",
+  "toy_store_kite_uncertain",
+  "tyre_shop_conditional"
+ ],
+ "heldout": [
+  "bookstore_boxset_ambiguous",
+  "florist_delivery_fee_inference",
+  "florist_roses_clean",
+  "florist_roses_conditional",
+  "furniture_chair_contradiction",
+  "grocery_oatmilk_correction",
+  "hardware_paint_temporal",
+  "music_store_strings_missing",
+  "pharmacy_d2d3_confusion",
+  "pharmacy_vitamind_uncertain",
+  "salon_balayage_conditional",
+  "tyre_shop_contradiction"
+ ]
+}

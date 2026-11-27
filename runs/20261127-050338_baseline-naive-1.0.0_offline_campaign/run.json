@@ -1,0 +1,177 @@
+{
+  "run_id": "20261127-050338_baseline-naive-1.0.0_offline_campaign",
+  "created_at": "2026-11-27T05:03:38+00:00",
+  "prompt": {
+    "key": "baseline-naive@1.0.0",
+    "name": "baseline-naive",
+    "version": "1.0.0",
+    "parent": null,
+    "verification": "passthrough",
+    "params": {
+      "temperature": 0
+    },
+    "system": "You extract a structured answer from a phone call between an agent\nand a local business. The business was asked: \"{question}\"\n\nExtract exactly this schema:\n{schema}",
+    "user": "Transcript:\n\"\"\"\n{transcript}\n\"\"\"\n\nRespond with a JSON object with the schema fields only.",
+    "fingerprint": "179e07270ec3a5f9c331fac504803c88fd30c1c26e45989a01ecd4cad2c875f7"
+  },
+  "provider": "offline",
+  "model": null,
+  "dataset": {
+    "split": "campaign",
+    "cases_total": 10,
+    "case_ids": [
+      "campaign_01_showcase_hedged",
+      "campaign_02_clean_confirm",
+      "campaign_03_contradiction",
+      "campaign_04_conditional",
+      "campaign_05_missing_price",
+      "campaign_06_asr_noise",
+      "campaign_07_out_of_stock",
+      "campaign_08_hedged_stock",
+      "campaign_09_temporal",
+      "campaign_10_wrong_product"
+    ]
+  },
+  "labels_status": "AI drafted, pending human review: scores are measured against unreviewed labels, not validated ground truth",
+  "cases_run": 10,
+  "error": null,
+  "metrics": {
+    "extraction_accuracy": {
+      "overall": 0.7429,
+      "correct": 52,
+      "total": 70,
+      "per_field": {
+        "price": 0.4,
+        "currency": 0.8,
+        "availability": 0.9,
+        "quantity_or_stock": 1.0,
+        "delivery_or_pickup": 0.6,
+        "timing": 0.7,
+        "contact_next_step": 0.8
+      }
+    },
+    "evidence_coverage": {
+      "rate": 1.0,
+      "covered": 39,
+      "confirmed_fields": 39
+    },
+    "unsupported_claim_rate": {
+      "rate": 0.2308,
+      "unsupported": 9,
+      "confirmed_fields": 39
+    },
+    "contradiction_detection": {
+      "recall": 0.0,
+      "detected": 0,
+      "gold_conflicting_fields": 1
+    },
+    "operational_efficiency": {
+      "mean_latency_ms": 0.57,
+      "p50_latency_ms": 0.3,
+      "p95_latency_ms": 3.06,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cost_usd_computed": null,
+      "cost_usd_reported": null,
+      "prices_used_per_1m_tokens": null
+    }
+  },
+  "failures": [
+    {
+      "case": "campaign_01_showcase_hedged",
+      "taxonomy": "uncertain_inventory",
+      "field": "price"
+    },
+    {
+      "case": "campaign_01_showcase_hedged",
+      "taxonomy": "uncertain_inventory",
+      "field": "availability"
+    },
+    {
+      "case": "campaign_01_showcase_hedged",
+      "taxonomy": "uncertain_inventory",
+      "field": "timing"
+    },
+    {
+      "case": "campaign_01_showcase_hedged",
+      "taxonomy": "uncertain_inventory",
+      "field": "contact_next_step"
+    },
+    {
+      "case": "campaign_03_contradiction",
+      "taxonomy": "contradiction",
+      "field": "price"
+    },
+    {
+      "case": "campaign_04_conditional",
+      "taxonomy": "conditional_pricing",
+      "field": "price"
+    },
+    {
+      "case": "campaign_04_conditional",
+      "taxonomy": "conditional_pricing",
+      "field": "delivery_or_pickup"
+    },
+    {
+      "case": "campaign_05_missing_price",
+      "taxonomy": "missing_information",
+      "field": "delivery_or_pickup"
+    },
+    {
+      "case": "campaign_06_asr_noise",
+      "taxonomy": "clean",
+      "field": "price"
+    },
+    {
+      "case": "campaign_06_asr_noise",
+      "taxonomy": "clean",
+      "field": "currency"
+    },
+    {
+      "case": "campaign_06_asr_noise",
+      "taxonomy": "clean",
+      "field": "delivery_or_pickup"
+    },
+    {
+      "case": "campaign_06_asr_noise",
+      "taxonomy": "clean",
+      "field": "timing"
+    },
+    {
+      "case": "campaign_06_asr_noise",
+      "taxonomy": "clean",
+      "field": "contact_next_step"
+    },
+    {
+      "case": "campaign_08_hedged_stock",
+      "taxonomy": "uncertain_inventory",
+      "field": "timing"
+    },
+    {
+      "case": "campaign_09_temporal",
+      "taxonomy": "temporal_mismatch",
+      "field": "price"
+    },
+    {
+      "case": "campaign_10_wrong_product",
+      "taxonomy": "entity_confusion",
+      "field": "price"
+    },
+    {
+      "case": "campaign_10_wrong_product",
+      "taxonomy": "entity_confusion",
+      "field": "currency"
+    },
+    {
+      "case": "campaign_10_wrong_product",
+      "taxonomy": "entity_confusion",
+      "field": "delivery_or_pickup"
+    }
+  ],
+  "langfuse": {
+    "connected": false,
+    "status": "not connected",
+    "note": "No Langfuse account or keys are configured. Traces are local records in cases.jsonl, modelled on Langfuse's trace shape (trace id, prompt version, model, input, output, latency, token usage, evaluation outcomes)."
+  }
+}

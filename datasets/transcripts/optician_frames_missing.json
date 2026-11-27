@@ -1,0 +1,62 @@
+{
+  "id": "optician_frames_missing",
+  "business_name": "ClearView Opticians",
+  "business_type": "Optician",
+  "product": "titanium frames",
+  "question": "Do you sell titanium frames, how much do they start at, and can I get an eye test the same day?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "missing_information",
+  "transcript": "Agent: Do you sell titanium frames? How much do they start at? Can I get an eye test the same day?\nSeller: Yes, we carry titanium frames. Prices vary a lot by brand. Eye tests are available on Saturdays. You can book online for the eye test.",
+  "gold": {
+    "price": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "currency": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "availability": {
+      "value": "in_stock",
+      "status": "confirmed",
+      "evidence": "Yes, we carry titanium frames.",
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "timing": {
+      "value": "on saturdays",
+      "status": "confirmed",
+      "evidence": "Eye tests are available on Saturdays.",
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": "book online",
+      "status": "confirmed",
+      "evidence": "You can book online for the eye test.",
+      "condition": null
+    }
+  }
+}

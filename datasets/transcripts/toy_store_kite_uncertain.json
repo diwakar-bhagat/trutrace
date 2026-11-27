@@ -1,0 +1,62 @@
+{
+  "id": "toy_store_kite_uncertain",
+  "business_name": "Wonder Toys",
+  "business_type": "Toy store",
+  "product": "rainbow kite",
+  "question": "Do you have rainbow kites, how much are they, and can I get one today?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "uncertain_inventory",
+  "transcript": "Agent: Do you have rainbow kites? How much are they? Can I get one today?\nSeller: We did have rainbow kites last week. I believe there is one left in the window. They were $15 last season.",
+  "gold": {
+    "price": {
+      "value": null,
+      "status": "uncertain",
+      "evidence": "They were $15 last season.",
+      "condition": null
+    },
+    "currency": {
+      "value": "USD",
+      "status": "confirmed",
+      "evidence": "They were $15 last season.",
+      "condition": null
+    },
+    "availability": {
+      "value": null,
+      "status": "uncertain",
+      "evidence": "I believe there is one left in the window.",
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": null,
+      "status": "uncertain",
+      "evidence": "I believe there is one left in the window.",
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "timing": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    }
+  }
+}

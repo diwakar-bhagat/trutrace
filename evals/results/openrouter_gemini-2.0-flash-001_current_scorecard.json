@@ -1,0 +1,52 @@
+{
+  "provider": "openrouter",
+  "model": "google/gemini-2.0-flash-001",
+  "prompt_version": "trutrace-1.0.0",
+  "config": "current",
+  "cases_run": 0,
+  "cases_total": 32,
+  "error": {
+    "case": "bakery_sourdough_clean",
+    "message": "or_call.py chat failed for model google/gemini-2.0-flash-001: urllib.error.HTTPError: HTTP Error 404: Not Found"
+  },
+  "metrics": {
+    "extraction_accuracy": {
+      "overall": null,
+      "correct": 0,
+      "total": 0,
+      "per_field": {}
+    },
+    "evidence_coverage": {
+      "rate": null,
+      "covered": 0,
+      "confirmed_fields": 0
+    },
+    "unsupported_claim_rate": {
+      "rate": null,
+      "unsupported": 0,
+      "confirmed_fields": 0
+    },
+    "contradiction_detection": {
+      "recall": null,
+      "detected": 0,
+      "gold_conflicting_fields": 0,
+      "details": []
+    },
+    "operational_efficiency": {
+      "mean_latency_ms": null,
+      "p50_latency_ms": null,
+      "p95_latency_ms": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null,
+      "cost_usd_computed": 0.0,
+      "cost_usd_reported": null,
+      "prices_used_per_1m_tokens": {
+        "input": 0.1,
+        "output": 0.4
+      }
+    }
+  },
+  "failures": [],
+  "cases": []
+}

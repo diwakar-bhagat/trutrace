@@ -1,0 +1,62 @@
+{
+  "id": "hardware_paint_temporal",
+  "business_name": "FixIt Hardware",
+  "business_type": "Hardware store",
+  "product": "exterior paint 5 litre",
+  "question": "How much is a 5 litre tin of exterior paint, and do you have it?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "temporal_mismatch",
+  "transcript": "Agent: How much is a 5 litre tin of exterior paint? Do you have it?\nSeller: Last week that paint was $42. Today it is $48. We have 5 tins in stock.",
+  "gold": {
+    "price": {
+      "value": 48,
+      "status": "confirmed",
+      "evidence": "Today it is $48.",
+      "condition": null
+    },
+    "currency": {
+      "value": "USD",
+      "status": "confirmed",
+      "evidence": "Last week that paint was $42.",
+      "condition": null
+    },
+    "availability": {
+      "value": "in_stock",
+      "status": "confirmed",
+      "evidence": "We have 5 tins in stock.",
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": "5 tins",
+      "status": "confirmed",
+      "evidence": "We have 5 tins in stock.",
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "timing": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    }
+  }
+}

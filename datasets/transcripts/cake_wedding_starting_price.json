@@ -1,0 +1,62 @@
+{
+  "id": "cake_wedding_starting_price",
+  "business_name": "Sugar Tier Cakes",
+  "business_type": "Bakery",
+  "product": "wedding cake",
+  "question": "How much is a wedding cake for 100 guests?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "unsupported_inference",
+  "transcript": "Agent: How much is a wedding cake for 100 guests?\nSeller: Wedding cakes start at $300. We can deliver it for the day. Delivery and setup is $50 for weddings. Book a tasting through our website to get started.",
+  "gold": {
+    "price": {
+      "value": 300,
+      "status": "uncertain",
+      "evidence": "Wedding cakes start at $300.",
+      "condition": "starting price"
+    },
+    "currency": {
+      "value": "USD",
+      "status": "confirmed",
+      "evidence": "Wedding cakes start at $300.",
+      "condition": null
+    },
+    "availability": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": "delivery",
+      "status": "confirmed",
+      "evidence": "We can deliver it for the day.",
+      "condition": null
+    },
+    "timing": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    }
+  }
+}

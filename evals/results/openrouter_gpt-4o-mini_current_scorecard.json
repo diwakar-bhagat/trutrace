@@ -1,0 +1,2903 @@
+{
+  "provider": "openrouter",
+  "model": "openai/gpt-4o-mini",
+  "prompt_version": "trutrace-1.0.0",
+  "config": "current",
+  "cases_run": 32,
+  "cases_total": 32,
+  "error": null,
+  "metrics": {
+    "extraction_accuracy": {
+      "overall": 0.8036,
+      "correct": 180,
+      "total": 224,
+      "per_field": {
+        "price": 0.9375,
+        "currency": 0.8438,
+        "availability": 0.9062,
+        "quantity_or_stock": 0.8438,
+        "delivery_or_pickup": 1.0,
+        "timing": 0.5,
+        "contact_next_step": 0.5938
+      }
+    },
+    "evidence_coverage": {
+      "rate": 1.0,
+      "covered": 116,
+      "confirmed_fields": 116
+    },
+    "unsupported_claim_rate": {
+      "rate": 0.2931,
+      "unsupported": 34,
+      "confirmed_fields": 116
+    },
+    "contradiction_detection": {
+      "recall": 0.5,
+      "detected": 2,
+      "gold_conflicting_fields": 4,
+      "details": [
+        {
+          "case": "furniture_chair_contradiction",
+          "field": "availability",
+          "detected": false
+        },
+        {
+          "case": "plumber_callout_contradiction",
+          "field": "price",
+          "detected": true
+        },
+        {
+          "case": "salon_timing_contradiction",
+          "field": "timing",
+          "detected": false
+        },
+        {
+          "case": "tyre_shop_contradiction",
+          "field": "price",
+          "detected": true
+        }
+      ]
+    },
+    "operational_efficiency": {
+      "mean_latency_ms": 3381.44,
+      "p50_latency_ms": 3458.53,
+      "p95_latency_ms": 4396.52,
+      "prompt_tokens": 13906,
+      "completion_tokens": 5239,
+      "total_tokens": 19145,
+      "cost_usd_computed": 0.005229,
+      "cost_usd_reported": 0.005229,
+      "prices_used_per_1m_tokens": {
+        "input": 0.15,
+        "output": 0.6
+      }
+    }
+  },
+  "failures": [
+    {
+      "case": "bakery_sourdough_clean",
+      "taxonomy": "clean",
+      "field": "timing",
+      "gold": {
+        "value": null,
+        "status": "unconfirmed",
+        "evidence": null,
+        "condition": null
+      },
+      "predicted": {
+        "value": "any time today",
+        "status": "confirmed",
+        "evidence": "You can pick it up any time today.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "bakery_sourdough_clean",
+      "taxonomy": "clean",
+      "field": "contact_next_step",
+      "gold": {
+        "value": "reserve",
+        "status": "confirmed",
+        "evidence": "I can reserve one under your name.",
+        "condition": null
+      },
+      "predicted": {
+        "value": "I can reserve one under your name.",
+        "status": "confirmed",
+        "evidence": "I can reserve one under your name.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "bike_shop_tuneup_clean",
+      "taxonomy": "clean",
+      "field": "timing",
+      "gold": {
+        "value": "2 hours",
+        "status": "confirmed",
+        "evidence": "The tune-up takes about 2 hours.",
+        "condition": null
+      },
+      "predicted": {
+        "value": "about 2 hours",
+        "status": "confirmed",
+        "evidence": "The tune-up takes about 2 hours.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "bike_shop_tuneup_clean",
+      "taxonomy": "clean",
+      "field": "contact_next_step",
+      "gold": {
+        "value": "book online",
+        "status": "confirmed",
+        "evidence": "You can book online through our website.",
+        "condition": null
+      },
+      "predicted": {
+        "value": "You can book online through our website.",
+        "status": "confirmed",
+        "evidence": "You can book online through our website.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "bookstore_boxset_ambiguous",
+      "taxonomy": "ambiguous_quantity",
+      "field": "timing",
+      "gold": {
+        "value": null,
+        "status": "unconfirmed",
+        "evidence": null,
+        "condition": null
+      },
+      "predicted": {
+        "value": "tomorrow",
+        "status": "confirmed",
+        "evidence": "We can deliver it to you tomorrow",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "cafe_cake_conditional",
+      "taxonomy": "conditional_pricing",
+      "field": "price",
+      "gold": {
+        "value": 40,
+        "status": "confirmed",
+        "evidence": "The large chocolate cake is $40.",
+        "condition": "large"
+      },
+      "predicted": {
+        "value": 40.0,
+        "status": "confirmed",
+        "evidence": "The large chocolate cake is $40.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "cafe_cake_conditional",
+      "taxonomy": "conditional_pricing",
+      "field": "timing",
+      "gold": {
+        "value": "on friday",
+        "status": "confirmed",
+        "evidence": "It would be ready on Friday.",
+        "condition": null
+      },
+      "predicted": {
+        "value": "friday",
+        "status": "confirmed",
+        "evidence": "It would be ready on Friday.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "cafe_cake_conditional",
+      "taxonomy": "conditional_pricing",
+      "field": "contact_next_step",
+      "gold": {
+        "value": "call back",
+        "status": "confirmed",
+        "evidence": "Call us back to confirm the order.",
+        "condition": null
+      },
+      "predicted": {
+        "value": "Call us back to confirm the order.",
+        "status": "confirmed",
+        "evidence": "Call us back to confirm the order.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "cafe_soup_temporal",
+      "taxonomy": "temporal_mismatch",
+      "field": "currency",
+      "gold": {
+        "value": "USD",
+        "status": "confirmed",
+        "evidence": "The soup was $7 yesterday.",
+        "condition": null
+      },
+      "predicted": {
+        "value": null,
+        "status": "unconfirmed",
+        "evidence": "USD",
+        "condition": null,
+        "reason": "no supporting span in the transcript",
+        "candidates": []
+      }
+    },
+    {
+      "case": "cafe_soup_temporal",
+      "taxonomy": "temporal_mismatch",
+      "field": "timing",
+      "gold": {
+        "value": null,
+        "status": "unconfirmed",
+        "evidence": null,
+        "condition": null
+      },
+      "predicted": {
+        "value": null,
+        "status": "conflicting",
+        "evidence": "Yes, we have the tomato soup today.",
+        "condition": null,
+        "reason": "call states two different times: yesterday, today",
+        "candidates": [
+          "yesterday",
+          "today"
+        ]
+      }
+    },
+    {
+      "case": "cake_wedding_starting_price",
+      "taxonomy": "unsupported_inference",
+      "field": "currency",
+      "gold": {
+        "value": "USD",
+        "status": "confirmed",
+        "evidence": "Wedding cakes start at $300.",
+        "condition": null
+      },
+      "predicted": {
+        "value": null,
+        "status": "unconfirmed",
+        "evidence": "USD",
+        "condition": null,
+        "reason": "no supporting span in the transcript",
+        "candidates": []
+      }
+    },
+    {
+      "case": "cake_wedding_starting_price",
+      "taxonomy": "unsupported_inference",
+      "field": "timing",
+      "gold": {
+        "value": null,
+        "status": "unconfirmed",
+        "evidence": null,
+        "condition": null
+      },
+      "predicted": {
+        "value": "the day",
+        "status": "confirmed",
+        "evidence": "We can deliver it for the day.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "cake_wedding_starting_price",
+      "taxonomy": "unsupported_inference",
+      "field": "contact_next_step",
+      "gold": {
+        "value": null,
+        "status": "unconfirmed",
+        "evidence": null,
+        "condition": null
+      },
+      "predicted": {
+        "value": "Book a tasting through our website to get started.",
+        "status": "confirmed",
+        "evidence": "Book a tasting through our website to get started.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "electronics_battery_uncertain",
+      "taxonomy": "uncertain_inventory",
+      "field": "timing",
+      "gold": {
+        "value": null,
+        "status": "unconfirmed",
+        "evidence": null,
+        "condition": null
+      },
+      "predicted": {
+        "value": "tomorrow",
+        "status": "confirmed",
+        "evidence": "Best to call back tomorrow and I can check the shelf.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "electronics_battery_uncertain",
+      "taxonomy": "uncertain_inventory",
+      "field": "contact_next_step",
+      "gold": {
+        "value": "call back",
+        "status": "confirmed",
+        "evidence": "Best to call back tomorrow and I can check the shelf.",
+        "condition": null
+      },
+      "predicted": {
+        "value": "Best to call back tomorrow and I can check the shelf.",
+        "status": "confirmed",
+        "evidence": "Best to call back tomorrow and I can check the shelf.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "florist_roses_clean",
+      "taxonomy": "clean",
+      "field": "contact_next_step",
+      "gold": {
+        "value": "call back",
+        "status": "confirmed",
+        "evidence": "Just give us a call back to place the order.",
+        "condition": null
+      },
+      "predicted": {
+        "value": "Just give us a call back to place the order.",
+        "status": "confirmed",
+        "evidence": "Just give us a call back to place the order.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "furniture_chair_contradiction",
+      "taxonomy": "contradiction",
+      "field": "price",
+      "gold": {
+        "value": 150,
+        "status": "confirmed",
+        "evidence": "An oak dining chair is $150.",
+        "condition": null
+      },
+      "predicted": {
+        "value": null,
+        "status": "unconfirmed",
+        "evidence": null,
+        "condition": null,
+        "reason": "no price was quoted in the call",
+        "candidates": []
+      }
+    },
+    {
+      "case": "furniture_chair_contradiction",
+      "taxonomy": "contradiction",
+      "field": "currency",
+      "gold": {
+        "value": "USD",
+        "status": "confirmed",
+        "evidence": "An oak dining chair is $150.",
+        "condition": null
+      },
+      "predicted": {
+        "value": null,
+        "status": "unconfirmed",
+        "evidence": null,
+        "condition": null,
+        "reason": "no supporting span in the transcript",
+        "candidates": []
+      }
+    },
+    {
+      "case": "furniture_chair_contradiction",
+      "taxonomy": "contradiction",
+      "field": "availability",
+      "gold": {
+        "value": null,
+        "status": "conflicting",
+        "evidence": "Hold on, the system says those chairs sold out this morning.",
+        "condition": null
+      },
+      "predicted": {
+        "value": "out_of_stock",
+        "status": "confirmed",
+        "evidence": "Yes, we have oak dining chairs in stock. An oak dining chair is $150. Hold on, the system says those chairs sold out this morning.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "furniture_chair_contradiction",
+      "taxonomy": "contradiction",
+      "field": "contact_next_step",
+      "gold": {
+        "value": "hold",
+        "status": "confirmed",
+        "evidence": "I can hold one from the next batch for you.",
+        "condition": null
+      },
+      "predicted": {
+        "value": null,
+        "status": "unconfirmed",
+        "evidence": null,
+        "condition": null,
+        "reason": "contact_next_step was not established in the call",
+        "candidates": []
+      }
+    },
+    {
+      "case": "garden_centre_seedlings_uncertain",
+      "taxonomy": "uncertain_inventory",
+      "field": "timing",
+      "gold": {
+        "value": null,
+        "status": "unconfirmed",
+        "evidence": null,
+        "condition": null
+      },
+      "predicted": {
+        "value": "this morning",
+        "status": "confirmed",
+        "evidence": "We had tomato seedlings this morning.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "grocery_eggs_ambiguous",
+      "taxonomy": "ambiguous_quantity",
+      "field": "quantity_or_stock",
+      "gold": {
+        "value": null,
+        "status": "uncertain",
+        "evidence": "There are a few crates left out back.",
+        "condition": null
+      },
+      "predicted": {
+        "value": "a few crates left out back",
+        "status": "confirmed",
+        "evidence": "There are a few crates left out back.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "hardware_paint_temporal",
+      "taxonomy": "temporal_mismatch",
+      "field": "currency",
+      "gold": {
+        "value": "USD",
+        "status": "confirmed",
+        "evidence": "Last week that paint was $42.",
+        "condition": null
+      },
+      "predicted": {
+        "value": null,
+        "status": "unconfirmed",
+        "evidence": null,
+        "condition": null,
+        "reason": "no currency was established in the call",
+        "candidates": []
+      }
+    },
+    {
+      "case": "hardware_paint_temporal",
+      "taxonomy": "temporal_mismatch",
+      "field": "quantity_or_stock",
+      "gold": {
+        "value": "5 tins",
+        "status": "confirmed",
+        "evidence": "We have 5 tins in stock.",
+        "condition": null
+      },
+      "predicted": {
+        "value": null,
+        "status": "unconfirmed",
+        "evidence": null,
+        "condition": null,
+        "reason": "no supporting span in the transcript",
+        "candidates": []
+      }
+    },
+    {
+      "case": "music_store_strings_missing",
+      "taxonomy": "missing_information",
+      "field": "quantity_or_stock",
+      "gold": {
+        "value": "3 sets",
+        "status": "confirmed",
+        "evidence": "There are 3 sets left.",
+        "condition": null
+      },
+      "predicted": {
+        "value": "3 sets left",
+        "status": "confirmed",
+        "evidence": "There are 3 sets left.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "music_store_strings_missing",
+      "taxonomy": "missing_information",
+      "field": "timing",
+      "gold": {
+        "value": "in 1 hour",
+        "status": "confirmed",
+        "evidence": "Restringing is done in 1 hour if you drop it off.",
+        "condition": null
+      },
+      "predicted": {
+        "value": "1 hour",
+        "status": "confirmed",
+        "evidence": "Restringing is done in 1 hour if you drop it off.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "optician_frames_missing",
+      "taxonomy": "missing_information",
+      "field": "availability",
+      "gold": {
+        "value": "in_stock",
+        "status": "confirmed",
+        "evidence": "Yes, we carry titanium frames.",
+        "condition": null
+      },
+      "predicted": {
+        "value": "available",
+        "status": "confirmed",
+        "evidence": "Yes, we carry titanium frames.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "optician_frames_missing",
+      "taxonomy": "missing_information",
+      "field": "timing",
+      "gold": {
+        "value": "on saturdays",
+        "status": "confirmed",
+        "evidence": "Eye tests are available on Saturdays.",
+        "condition": null
+      },
+      "predicted": {
+        "value": "saturdays",
+        "status": "confirmed",
+        "evidence": "Eye tests are available on Saturdays.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "optician_frames_missing",
+      "taxonomy": "missing_information",
+      "field": "contact_next_step",
+      "gold": {
+        "value": "book online",
+        "status": "confirmed",
+        "evidence": "You can book online for the eye test.",
+        "condition": null
+      },
+      "predicted": {
+        "value": "You can book online for the eye test.",
+        "status": "confirmed",
+        "evidence": "You can book online for the eye test.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "pharmacy_vitamind_uncertain",
+      "taxonomy": "uncertain_inventory",
+      "field": "contact_next_step",
+      "gold": {
+        "value": "call back",
+        "status": "confirmed",
+        "evidence": "You could call back in the morning to check.",
+        "condition": null
+      },
+      "predicted": {
+        "value": "call back in the morning to check",
+        "status": "confirmed",
+        "evidence": "You could call back in the morning to check.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "plumber_callout_contradiction",
+      "taxonomy": "contradiction",
+      "field": "timing",
+      "gold": {
+        "value": "in 2 hours",
+        "status": "confirmed",
+        "evidence": "Someone can be there in 2 hours.",
+        "condition": null
+      },
+      "predicted": {
+        "value": "2 hours",
+        "status": "confirmed",
+        "evidence": "Someone can be there in 2 hours.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "plumber_callout_contradiction",
+      "taxonomy": "contradiction",
+      "field": "contact_next_step",
+      "gold": {
+        "value": "text",
+        "status": "confirmed",
+        "evidence": "Just text the address to us.",
+        "condition": null
+      },
+      "predicted": {
+        "value": "Just text the address to us.",
+        "status": "confirmed",
+        "evidence": "Just text the address to us.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "salon_balayage_conditional",
+      "taxonomy": "conditional_pricing",
+      "field": "currency",
+      "gold": {
+        "value": "USD",
+        "status": "confirmed",
+        "evidence": "A standard colour is $70.",
+        "condition": null
+      },
+      "predicted": {
+        "value": null,
+        "status": "unconfirmed",
+        "evidence": "USD",
+        "condition": null,
+        "reason": "no supporting span in the transcript",
+        "candidates": []
+      }
+    },
+    {
+      "case": "salon_balayage_conditional",
+      "taxonomy": "conditional_pricing",
+      "field": "timing",
+      "gold": {
+        "value": "on thursday",
+        "status": "confirmed",
+        "evidence": "We have an opening on Thursday.",
+        "condition": null
+      },
+      "predicted": {
+        "value": "thursday",
+        "status": "confirmed",
+        "evidence": "We have an opening on Thursday.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "salon_balayage_conditional",
+      "taxonomy": "conditional_pricing",
+      "field": "contact_next_step",
+      "gold": {
+        "value": "book online",
+        "status": "confirmed",
+        "evidence": "You can book online anytime.",
+        "condition": null
+      },
+      "predicted": {
+        "value": "You can book online anytime.",
+        "status": "confirmed",
+        "evidence": "You can book online anytime.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "salon_timing_contradiction",
+      "taxonomy": "contradiction",
+      "field": "timing",
+      "gold": {
+        "value": null,
+        "status": "conflicting",
+        "evidence": "Sorry, that opening is at 4 pm, not 3 pm.",
+        "condition": null
+      },
+      "predicted": {
+        "value": "4 pm today",
+        "status": "confirmed",
+        "evidence": "Sorry, that opening is at 4 pm, not 3 pm.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "salon_timing_contradiction",
+      "taxonomy": "contradiction",
+      "field": "contact_next_step",
+      "gold": {
+        "value": "book online",
+        "status": "confirmed",
+        "evidence": "You can book online to grab it.",
+        "condition": null
+      },
+      "predicted": {
+        "value": "You can book online to grab it.",
+        "status": "confirmed",
+        "evidence": "You can book online to grab it.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "shoe_store_temporal",
+      "taxonomy": "temporal_mismatch",
+      "field": "quantity_or_stock",
+      "gold": {
+        "value": "2 pairs",
+        "status": "confirmed",
+        "evidence": "Only 2 pairs left in that size.",
+        "condition": null
+      },
+      "predicted": {
+        "value": "Only 2 pairs left in that size.",
+        "status": "confirmed",
+        "evidence": "Only 2 pairs left in that size.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "toy_store_kite_uncertain",
+      "taxonomy": "uncertain_inventory",
+      "field": "availability",
+      "gold": {
+        "value": null,
+        "status": "uncertain",
+        "evidence": "I believe there is one left in the window.",
+        "condition": null
+      },
+      "predicted": {
+        "value": "available",
+        "status": "confirmed",
+        "evidence": "We did have rainbow kites last week.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "toy_store_kite_uncertain",
+      "taxonomy": "uncertain_inventory",
+      "field": "timing",
+      "gold": {
+        "value": null,
+        "status": "unconfirmed",
+        "evidence": null,
+        "condition": null
+      },
+      "predicted": {
+        "value": "today",
+        "status": "uncertain",
+        "evidence": "I believe there is one left in the window.",
+        "condition": null,
+        "reason": "hedged in the call ('i believe'); not a confirmed fact",
+        "candidates": []
+      }
+    },
+    {
+      "case": "tyre_shop_conditional",
+      "taxonomy": "conditional_pricing",
+      "field": "timing",
+      "gold": {
+        "value": "in 45 minutes",
+        "status": "confirmed",
+        "evidence": "We can get it fitted in 45 minutes.",
+        "condition": null
+      },
+      "predicted": {
+        "value": "45 minutes",
+        "status": "confirmed",
+        "evidence": "We can get it fitted in 45 minutes.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "tyre_shop_conditional",
+      "taxonomy": "conditional_pricing",
+      "field": "contact_next_step",
+      "gold": {
+        "value": "book in",
+        "status": "confirmed",
+        "evidence": "Just book in when you are ready.",
+        "condition": null
+      },
+      "predicted": {
+        "value": "Just book in when you are ready.",
+        "status": "confirmed",
+        "evidence": "Just book in when you are ready.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "tyre_shop_contradiction",
+      "taxonomy": "contradiction",
+      "field": "quantity_or_stock",
+      "gold": {
+        "value": "4 tyres",
+        "status": "confirmed",
+        "evidence": "There are 4 tyres left in that size.",
+        "condition": null
+      },
+      "predicted": {
+        "value": "4 tyres left in that size",
+        "status": "confirmed",
+        "evidence": "There are 4 tyres left in that size.",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    },
+    {
+      "case": "tyre_shop_contradiction",
+      "taxonomy": "contradiction",
+      "field": "timing",
+      "gold": {
+        "value": "in 30 minutes",
+        "status": "confirmed",
+        "evidence": "We can fit them in 30 minutes.",
+        "condition": null
+      },
+      "predicted": {
+        "value": "30 minutes",
+        "status": "confirmed",
+        "evidence": "We can fit them in 30 minutes",
+        "condition": null,
+        "reason": null,
+        "candidates": []
+      }
+    }
+  ],
+  "cases": [
+    {
+      "id": "bakery_sourdough_clean",
+      "taxonomy": "clean",
+      "fields": {
+        "price": {
+          "gold_status": "confirmed",
+          "gold_value": 8,
+          "pred_status": "confirmed",
+          "pred_value": 8.0,
+          "pred_condition": null,
+          "correct": true
+        },
+        "currency": {
+          "gold_status": "confirmed",
+          "gold_value": "USD",
+          "pred_status": "confirmed",
+          "pred_value": "USD",
+          "pred_condition": null,
+          "correct": true
+        },
+        "availability": {
+          "gold_status": "confirmed",
+          "gold_value": "in_stock",
+          "pred_status": "confirmed",
+          "pred_value": "in_stock",
+          "pred_condition": null,
+          "correct": true
+        },
+        "quantity_or_stock": {
+          "gold_status": "confirmed",
+          "gold_value": "12 loaves",
+          "pred_status": "confirmed",
+          "pred_value": "12 loaves",
+          "pred_condition": null,
+          "correct": true
+        },
+        "delivery_or_pickup": {
+          "gold_status": "confirmed",
+          "gold_value": "pickup",
+          "pred_status": "confirmed",
+          "pred_value": "pickup",
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "confirmed",
+          "pred_value": "any time today",
+          "pred_condition": null,
+          "correct": false
+        },
+        "contact_next_step": {
+          "gold_status": "confirmed",
+          "gold_value": "reserve",
+          "pred_status": "confirmed",
+          "pred_value": "I can reserve one under your name.",
+          "pred_condition": null,
+          "correct": false
+        }
+      }
+    },
+    {
+      "id": "bike_shop_tuneup_clean",
+      "taxonomy": "clean",
+      "fields": {
+        "price": {
+          "gold_status": "confirmed",
+          "gold_value": 60,
+          "pred_status": "confirmed",
+          "pred_value": 60.0,
+          "pred_condition": null,
+          "correct": true
+        },
+        "currency": {
+          "gold_status": "confirmed",
+          "gold_value": "USD",
+          "pred_status": "confirmed",
+          "pred_value": "USD",
+          "pred_condition": null,
+          "correct": true
+        },
+        "availability": {
+          "gold_status": "confirmed",
+          "gold_value": "available",
+          "pred_status": "confirmed",
+          "pred_value": "available",
+          "pred_condition": null,
+          "correct": true
+        },
+        "quantity_or_stock": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "delivery_or_pickup": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "confirmed",
+          "gold_value": "2 hours",
+          "pred_status": "confirmed",
+          "pred_value": "about 2 hours",
+          "pred_condition": null,
+          "correct": false
+        },
+        "contact_next_step": {
+          "gold_status": "confirmed",
+          "gold_value": "book online",
+          "pred_status": "confirmed",
+          "pred_value": "You can book online through our website.",
+          "pred_condition": null,
+          "correct": false
+        }
+      }
+    },
+    {
+      "id": "bookstore_boxset_ambiguous",
+      "taxonomy": "ambiguous_quantity",
+      "fields": {
+        "price": {
+          "gold_status": "confirmed",
+          "gold_value": 12,
+          "pred_status": "confirmed",
+          "pred_value": 12.0,
+          "pred_condition": "per book",
+          "correct": true
+        },
+        "currency": {
+          "gold_status": "confirmed",
+          "gold_value": "USD",
+          "pred_status": "confirmed",
+          "pred_value": "USD",
+          "pred_condition": null,
+          "correct": true
+        },
+        "availability": {
+          "gold_status": "confirmed",
+          "gold_value": "in_stock",
+          "pred_status": "confirmed",
+          "pred_value": "in_stock",
+          "pred_condition": null,
+          "correct": true
+        },
+        "quantity_or_stock": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "delivery_or_pickup": {
+          "gold_status": "confirmed",
+          "gold_value": "delivery",
+          "pred_status": "confirmed",
+          "pred_value": "delivery",
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "confirmed",
+          "pred_value": "tomorrow",
+          "pred_condition": null,
+          "correct": false
+        },
+        "contact_next_step": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        }
+      }
+    },
+    {
+      "id": "cafe_cake_conditional",
+      "taxonomy": "conditional_pricing",
+      "fields": {
+        "price": {
+          "gold_status": "confirmed",
+          "gold_value": 40,
+          "pred_status": "confirmed",
+          "pred_value": 40.0,
+          "pred_condition": null,
+          "correct": false
+        },
+        "currency": {
+          "gold_status": "confirmed",
+          "gold_value": "USD",
+          "pred_status": "confirmed",
+          "pred_value": "USD",
+          "pred_condition": null,
+          "correct": true
+        },
+        "availability": {
+          "gold_status": "confirmed",
+          "gold_value": "available",
+          "pred_status": "confirmed",
+          "pred_value": "available",
+          "pred_condition": null,
+          "correct": true
+        },
+        "quantity_or_stock": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "delivery_or_pickup": {
+          "gold_status": "confirmed",
+          "gold_value": "delivery",
+          "pred_status": "confirmed",
+          "pred_value": "delivery",
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "confirmed",
+          "gold_value": "on friday",
+          "pred_status": "confirmed",
+          "pred_value": "friday",
+          "pred_condition": null,
+          "correct": false
+        },
+        "contact_next_step": {
+          "gold_status": "confirmed",
+          "gold_value": "call back",
+          "pred_status": "confirmed",
+          "pred_value": "Call us back to confirm the order.",
+          "pred_condition": null,
+          "correct": false
+        }
+      }
+    },
+    {
+      "id": "cafe_soup_temporal",
+      "taxonomy": "temporal_mismatch",
+      "fields": {
+        "price": {
+          "gold_status": "confirmed",
+          "gold_value": 8,
+          "pred_status": "confirmed",
+          "pred_value": 8.0,
+          "pred_condition": null,
+          "correct": true
+        },
+        "currency": {
+          "gold_status": "confirmed",
+          "gold_value": "USD",
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": false
+        },
+        "availability": {
+          "gold_status": "confirmed",
+          "gold_value": "in_stock",
+          "pred_status": "confirmed",
+          "pred_value": "in_stock",
+          "pred_condition": null,
+          "correct": true
+        },
+        "quantity_or_stock": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "delivery_or_pickup": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "conflicting",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": false
+        },
+        "contact_next_step": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        }
+      }
+    },
+    {
+      "id": "cake_wedding_starting_price",
+      "taxonomy": "unsupported_inference",
+      "fields": {
+        "price": {
+          "gold_status": "uncertain",
+          "gold_value": 300,
+          "pred_status": "uncertain",
+          "pred_value": 300.0,
+          "pred_condition": "starting price",
+          "correct": true
+        },
+        "currency": {
+          "gold_status": "confirmed",
+          "gold_value": "USD",
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": false
+        },
+        "availability": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "quantity_or_stock": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "delivery_or_pickup": {
+          "gold_status": "confirmed",
+          "gold_value": "delivery",
+          "pred_status": "confirmed",
+          "pred_value": "delivery",
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "confirmed",
+          "pred_value": "the day",
+          "pred_condition": null,
+          "correct": false
+        },
+        "contact_next_step": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "confirmed",
+          "pred_value": "Book a tasting through our website to get started.",
+          "pred_condition": null,
+          "correct": false
+        }
+      }
+    },
+    {
+      "id": "dry_cleaner_suit_missing",
+      "taxonomy": "missing_information",
+      "fields": {
+        "price": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "currency": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "availability": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "quantity_or_stock": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "delivery_or_pickup": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "confirmed",
+          "gold_value": "two days",
+          "pred_status": "confirmed",
+          "pred_value": "two days",
+          "pred_condition": null,
+          "correct": true
+        },
+        "contact_next_step": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        }
+      }
+    },
+    {
+      "id": "electronics_battery_uncertain",
+      "taxonomy": "uncertain_inventory",
+      "fields": {
+        "price": {
+          "gold_status": "uncertain",
+          "gold_value": 85,
+          "pred_status": "uncertain",
+          "pred_value": 85.0,
+          "pred_condition": null,
+          "correct": true
+        },
+        "currency": {
+          "gold_status": "confirmed",
+          "gold_value": "USD",
+          "pred_status": "confirmed",
+          "pred_value": "USD",
+          "pred_condition": null,
+          "correct": true
+        },
+        "availability": {
+          "gold_status": "uncertain",
+          "gold_value": null,
+          "pred_status": "uncertain",
+          "pred_value": "available",
+          "pred_condition": null,
+          "correct": true
+        },
+        "quantity_or_stock": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "delivery_or_pickup": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "confirmed",
+          "pred_value": "tomorrow",
+          "pred_condition": null,
+          "correct": false
+        },
+        "contact_next_step": {
+          "gold_status": "confirmed",
+          "gold_value": "call back",
+          "pred_status": "confirmed",
+          "pred_value": "Best to call back tomorrow and I can check the shelf.",
+          "pred_condition": null,
+          "correct": false
+        }
+      }
+    },
+    {
+      "id": "florist_delivery_fee_inference",
+      "taxonomy": "unsupported_inference",
+      "fields": {
+        "price": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "currency": {
+          "gold_status": "confirmed",
+          "gold_value": "USD",
+          "pred_status": "confirmed",
+          "pred_value": "USD",
+          "pred_condition": null,
+          "correct": true
+        },
+        "availability": {
+          "gold_status": "confirmed",
+          "gold_value": "in_stock",
+          "pred_status": "confirmed",
+          "pred_value": "in_stock",
+          "pred_condition": null,
+          "correct": true
+        },
+        "quantity_or_stock": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "delivery_or_pickup": {
+          "gold_status": "confirmed",
+          "gold_value": "delivery",
+          "pred_status": "confirmed",
+          "pred_value": "delivery",
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "confirmed",
+          "gold_value": "this afternoon",
+          "pred_status": "confirmed",
+          "pred_value": "this afternoon",
+          "pred_condition": null,
+          "correct": true
+        },
+        "contact_next_step": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        }
+      }
+    },
+    {
+      "id": "florist_roses_clean",
+      "taxonomy": "clean",
+      "fields": {
+        "price": {
+          "gold_status": "confirmed",
+          "gold_value": 45,
+          "pred_status": "confirmed",
+          "pred_value": 45.0,
+          "pred_condition": null,
+          "correct": true
+        },
+        "currency": {
+          "gold_status": "confirmed",
+          "gold_value": "USD",
+          "pred_status": "confirmed",
+          "pred_value": "USD",
+          "pred_condition": null,
+          "correct": true
+        },
+        "availability": {
+          "gold_status": "confirmed",
+          "gold_value": "in_stock",
+          "pred_status": "confirmed",
+          "pred_value": "in_stock",
+          "pred_condition": null,
+          "correct": true
+        },
+        "quantity_or_stock": {
+          "gold_status": "confirmed",
+          "gold_value": "20 bunches",
+          "pred_status": "confirmed",
+          "pred_value": "20 bunches",
+          "pred_condition": null,
+          "correct": true
+        },
+        "delivery_or_pickup": {
+          "gold_status": "confirmed",
+          "gold_value": "delivery",
+          "pred_status": "confirmed",
+          "pred_value": "delivery",
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "confirmed",
+          "gold_value": "by 5 pm",
+          "pred_status": "confirmed",
+          "pred_value": "by 5 pm",
+          "pred_condition": null,
+          "correct": true
+        },
+        "contact_next_step": {
+          "gold_status": "confirmed",
+          "gold_value": "call back",
+          "pred_status": "confirmed",
+          "pred_value": "Just give us a call back to place the order.",
+          "pred_condition": null,
+          "correct": false
+        }
+      }
+    },
+    {
+      "id": "florist_roses_conditional",
+      "taxonomy": "conditional_pricing",
+      "fields": {
+        "price": {
+          "gold_status": "confirmed",
+          "gold_value": 35,
+          "pred_status": "confirmed",
+          "pred_value": 35.0,
+          "pred_condition": "dozen standard",
+          "correct": true
+        },
+        "currency": {
+          "gold_status": "confirmed",
+          "gold_value": "USD",
+          "pred_status": "confirmed",
+          "pred_value": "USD",
+          "pred_condition": null,
+          "correct": true
+        },
+        "availability": {
+          "gold_status": "confirmed",
+          "gold_value": "in_stock",
+          "pred_status": "confirmed",
+          "pred_value": "in_stock",
+          "pred_condition": null,
+          "correct": true
+        },
+        "quantity_or_stock": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "delivery_or_pickup": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "uncertain",
+          "gold_value": null,
+          "pred_status": "uncertain",
+          "pred_value": "tomorrow",
+          "pred_condition": null,
+          "correct": true
+        },
+        "contact_next_step": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        }
+      }
+    },
+    {
+      "id": "furniture_chair_contradiction",
+      "taxonomy": "contradiction",
+      "fields": {
+        "price": {
+          "gold_status": "confirmed",
+          "gold_value": 150,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": false
+        },
+        "currency": {
+          "gold_status": "confirmed",
+          "gold_value": "USD",
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": false
+        },
+        "availability": {
+          "gold_status": "conflicting",
+          "gold_value": null,
+          "pred_status": "confirmed",
+          "pred_value": "out_of_stock",
+          "pred_condition": null,
+          "correct": false
+        },
+        "quantity_or_stock": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "delivery_or_pickup": {
+          "gold_status": "confirmed",
+          "gold_value": "delivery",
+          "pred_status": "confirmed",
+          "pred_value": "delivery",
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "contact_next_step": {
+          "gold_status": "confirmed",
+          "gold_value": "hold",
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": false
+        }
+      }
+    },
+    {
+      "id": "garden_centre_seedlings_uncertain",
+      "taxonomy": "uncertain_inventory",
+      "fields": {
+        "price": {
+          "gold_status": "confirmed",
+          "gold_value": 7,
+          "pred_status": "confirmed",
+          "pred_value": 7.0,
+          "pred_condition": null,
+          "correct": true
+        },
+        "currency": {
+          "gold_status": "confirmed",
+          "gold_value": "USD",
+          "pred_status": "confirmed",
+          "pred_value": "USD",
+          "pred_condition": null,
+          "correct": true
+        },
+        "availability": {
+          "gold_status": "uncertain",
+          "gold_value": null,
+          "pred_status": "uncertain",
+          "pred_value": "available",
+          "pred_condition": null,
+          "correct": true
+        },
+        "quantity_or_stock": {
+          "gold_status": "uncertain",
+          "gold_value": null,
+          "pred_status": "uncertain",
+          "pred_value": "a few trays left",
+          "pred_condition": null,
+          "correct": true
+        },
+        "delivery_or_pickup": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "confirmed",
+          "pred_value": "this morning",
+          "pred_condition": null,
+          "correct": false
+        },
+        "contact_next_step": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        }
+      }
+    },
+    {
+      "id": "grocery_eggs_ambiguous",
+      "taxonomy": "ambiguous_quantity",
+      "fields": {
+        "price": {
+          "gold_status": "confirmed",
+          "gold_value": 6,
+          "pred_status": "confirmed",
+          "pred_value": 6.0,
+          "pred_condition": null,
+          "correct": true
+        },
+        "currency": {
+          "gold_status": "confirmed",
+          "gold_value": "USD",
+          "pred_status": "confirmed",
+          "pred_value": "USD",
+          "pred_condition": null,
+          "correct": true
+        },
+        "availability": {
+          "gold_status": "confirmed",
+          "gold_value": "in_stock",
+          "pred_status": "confirmed",
+          "pred_value": "in_stock",
+          "pred_condition": null,
+          "correct": true
+        },
+        "quantity_or_stock": {
+          "gold_status": "uncertain",
+          "gold_value": null,
+          "pred_status": "confirmed",
+          "pred_value": "a few crates left out back",
+          "pred_condition": null,
+          "correct": false
+        },
+        "delivery_or_pickup": {
+          "gold_status": "confirmed",
+          "gold_value": "delivery",
+          "pred_status": "confirmed",
+          "pred_value": "delivery",
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "contact_next_step": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        }
+      }
+    },
+    {
+      "id": "grocery_milk_confusion",
+      "taxonomy": "entity_confusion",
+      "fields": {
+        "price": {
+          "gold_status": "confirmed",
+          "gold_value": 5,
+          "pred_status": "confirmed",
+          "pred_value": 5.0,
+          "pred_condition": null,
+          "correct": true
+        },
+        "currency": {
+          "gold_status": "confirmed",
+          "gold_value": "USD",
+          "pred_status": "confirmed",
+          "pred_value": "USD",
+          "pred_condition": null,
+          "correct": true
+        },
+        "availability": {
+          "gold_status": "confirmed",
+          "gold_value": "in_stock",
+          "pred_status": "confirmed",
+          "pred_value": "in_stock",
+          "pred_condition": null,
+          "correct": true
+        },
+        "quantity_or_stock": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "delivery_or_pickup": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "contact_next_step": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        }
+      }
+    },
+    {
+      "id": "grocery_oatmilk_correction",
+      "taxonomy": "contradiction",
+      "fields": {
+        "price": {
+          "gold_status": "confirmed",
+          "gold_value": 5,
+          "pred_status": "confirmed",
+          "pred_value": 5.0,
+          "pred_condition": null,
+          "correct": true
+        },
+        "currency": {
+          "gold_status": "confirmed",
+          "gold_value": "USD",
+          "pred_status": "confirmed",
+          "pred_value": "USD",
+          "pred_condition": null,
+          "correct": true
+        },
+        "availability": {
+          "gold_status": "confirmed",
+          "gold_value": "in_stock",
+          "pred_status": "confirmed",
+          "pred_value": "in_stock",
+          "pred_condition": null,
+          "correct": true
+        },
+        "quantity_or_stock": {
+          "gold_status": "confirmed",
+          "gold_value": "9 cartons",
+          "pred_status": "confirmed",
+          "pred_value": "9 cartons",
+          "pred_condition": null,
+          "correct": true
+        },
+        "delivery_or_pickup": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "contact_next_step": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        }
+      }
+    },
+    {
+      "id": "hardware_paint_temporal",
+      "taxonomy": "temporal_mismatch",
+      "fields": {
+        "price": {
+          "gold_status": "confirmed",
+          "gold_value": 48,
+          "pred_status": "confirmed",
+          "pred_value": 48.0,
+          "pred_condition": null,
+          "correct": true
+        },
+        "currency": {
+          "gold_status": "confirmed",
+          "gold_value": "USD",
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": false
+        },
+        "availability": {
+          "gold_status": "confirmed",
+          "gold_value": "in_stock",
+          "pred_status": "confirmed",
+          "pred_value": "in_stock",
+          "pred_condition": null,
+          "correct": true
+        },
+        "quantity_or_stock": {
+          "gold_status": "confirmed",
+          "gold_value": "5 tins",
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": false
+        },
+        "delivery_or_pickup": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "contact_next_step": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        }
+      }
+    },
+    {
+      "id": "hardware_screws_ambiguous",
+      "taxonomy": "ambiguous_quantity",
+      "fields": {
+        "price": {
+          "gold_status": "confirmed",
+          "gold_value": 9,
+          "pred_status": "confirmed",
+          "pred_value": 9.0,
+          "pred_condition": null,
+          "correct": true
+        },
+        "currency": {
+          "gold_status": "confirmed",
+          "gold_value": "USD",
+          "pred_status": "confirmed",
+          "pred_value": "USD",
+          "pred_condition": null,
+          "correct": true
+        },
+        "availability": {
+          "gold_status": "confirmed",
+          "gold_value": "in_stock",
+          "pred_status": "confirmed",
+          "pred_value": "in_stock",
+          "pred_condition": null,
+          "correct": true
+        },
+        "quantity_or_stock": {
+          "gold_status": "uncertain",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "delivery_or_pickup": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "contact_next_step": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        }
+      }
+    },
+    {
+      "id": "music_store_strings_missing",
+      "taxonomy": "missing_information",
+      "fields": {
+        "price": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "currency": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "availability": {
+          "gold_status": "confirmed",
+          "gold_value": "in_stock",
+          "pred_status": "confirmed",
+          "pred_value": "in_stock",
+          "pred_condition": null,
+          "correct": true
+        },
+        "quantity_or_stock": {
+          "gold_status": "confirmed",
+          "gold_value": "3 sets",
+          "pred_status": "confirmed",
+          "pred_value": "3 sets left",
+          "pred_condition": null,
+          "correct": false
+        },
+        "delivery_or_pickup": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "confirmed",
+          "gold_value": "in 1 hour",
+          "pred_status": "confirmed",
+          "pred_value": "1 hour",
+          "pred_condition": null,
+          "correct": false
+        },
+        "contact_next_step": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        }
+      }
+    },
+    {
+      "id": "optician_frames_missing",
+      "taxonomy": "missing_information",
+      "fields": {
+        "price": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "currency": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "availability": {
+          "gold_status": "confirmed",
+          "gold_value": "in_stock",
+          "pred_status": "confirmed",
+          "pred_value": "available",
+          "pred_condition": null,
+          "correct": false
+        },
+        "quantity_or_stock": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "delivery_or_pickup": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "confirmed",
+          "gold_value": "on saturdays",
+          "pred_status": "confirmed",
+          "pred_value": "saturdays",
+          "pred_condition": null,
+          "correct": false
+        },
+        "contact_next_step": {
+          "gold_status": "confirmed",
+          "gold_value": "book online",
+          "pred_status": "confirmed",
+          "pred_value": "You can book online for the eye test.",
+          "pred_condition": null,
+          "correct": false
+        }
+      }
+    },
+    {
+      "id": "pet_store_dogfood_clean",
+      "taxonomy": "clean",
+      "fields": {
+        "price": {
+          "gold_status": "confirmed",
+          "gold_value": 38,
+          "pred_status": "confirmed",
+          "pred_value": 38.0,
+          "pred_condition": null,
+          "correct": true
+        },
+        "currency": {
+          "gold_status": "confirmed",
+          "gold_value": "USD",
+          "pred_status": "confirmed",
+          "pred_value": "USD",
+          "pred_condition": null,
+          "correct": true
+        },
+        "availability": {
+          "gold_status": "confirmed",
+          "gold_value": "in_stock",
+          "pred_status": "confirmed",
+          "pred_value": "in_stock",
+          "pred_condition": null,
+          "correct": true
+        },
+        "quantity_or_stock": {
+          "gold_status": "confirmed",
+          "gold_value": "6 bags",
+          "pred_status": "confirmed",
+          "pred_value": "6 bags",
+          "pred_condition": null,
+          "correct": true
+        },
+        "delivery_or_pickup": {
+          "gold_status": "confirmed",
+          "gold_value": "pickup",
+          "pred_status": "confirmed",
+          "pred_value": "pickup",
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "contact_next_step": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        }
+      }
+    },
+    {
+      "id": "pharmacy_antihistamine_missing",
+      "taxonomy": "missing_information",
+      "fields": {
+        "price": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "currency": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "availability": {
+          "gold_status": "confirmed",
+          "gold_value": "in_stock",
+          "pred_status": "confirmed",
+          "pred_value": "in_stock",
+          "pred_condition": null,
+          "correct": true
+        },
+        "quantity_or_stock": {
+          "gold_status": "confirmed",
+          "gold_value": "24 pack",
+          "pred_status": "confirmed",
+          "pred_value": "24 pack",
+          "pred_condition": null,
+          "correct": true
+        },
+        "delivery_or_pickup": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "contact_next_step": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        }
+      }
+    },
+    {
+      "id": "pharmacy_d2d3_confusion",
+      "taxonomy": "entity_confusion",
+      "fields": {
+        "price": {
+          "gold_status": "confirmed",
+          "gold_value": 14,
+          "pred_status": "confirmed",
+          "pred_value": 14.0,
+          "pred_condition": null,
+          "correct": true
+        },
+        "currency": {
+          "gold_status": "confirmed",
+          "gold_value": "USD",
+          "pred_status": "confirmed",
+          "pred_value": "USD",
+          "pred_condition": null,
+          "correct": true
+        },
+        "availability": {
+          "gold_status": "confirmed",
+          "gold_value": "in_stock",
+          "pred_status": "confirmed",
+          "pred_value": "in_stock",
+          "pred_condition": null,
+          "correct": true
+        },
+        "quantity_or_stock": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "delivery_or_pickup": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "contact_next_step": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        }
+      }
+    },
+    {
+      "id": "pharmacy_vitamind_uncertain",
+      "taxonomy": "uncertain_inventory",
+      "fields": {
+        "price": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "currency": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "availability": {
+          "gold_status": "uncertain",
+          "gold_value": null,
+          "pred_status": "uncertain",
+          "pred_value": "available",
+          "pred_condition": null,
+          "correct": true
+        },
+        "quantity_or_stock": {
+          "gold_status": "uncertain",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "delivery_or_pickup": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "contact_next_step": {
+          "gold_status": "confirmed",
+          "gold_value": "call back",
+          "pred_status": "confirmed",
+          "pred_value": "call back in the morning to check",
+          "pred_condition": null,
+          "correct": false
+        }
+      }
+    },
+    {
+      "id": "plumber_callout_contradiction",
+      "taxonomy": "contradiction",
+      "fields": {
+        "price": {
+          "gold_status": "conflicting",
+          "gold_value": null,
+          "pred_status": "conflicting",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "currency": {
+          "gold_status": "confirmed",
+          "gold_value": "USD",
+          "pred_status": "confirmed",
+          "pred_value": "USD",
+          "pred_condition": null,
+          "correct": true
+        },
+        "availability": {
+          "gold_status": "confirmed",
+          "gold_value": "available",
+          "pred_status": "confirmed",
+          "pred_value": "available",
+          "pred_condition": null,
+          "correct": true
+        },
+        "quantity_or_stock": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "delivery_or_pickup": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "confirmed",
+          "gold_value": "in 2 hours",
+          "pred_status": "confirmed",
+          "pred_value": "2 hours",
+          "pred_condition": null,
+          "correct": false
+        },
+        "contact_next_step": {
+          "gold_status": "confirmed",
+          "gold_value": "text",
+          "pred_status": "confirmed",
+          "pred_value": "Just text the address to us.",
+          "pred_condition": null,
+          "correct": false
+        }
+      }
+    },
+    {
+      "id": "salon_balayage_conditional",
+      "taxonomy": "conditional_pricing",
+      "fields": {
+        "price": {
+          "gold_status": "uncertain",
+          "gold_value": null,
+          "pred_status": "uncertain",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "currency": {
+          "gold_status": "confirmed",
+          "gold_value": "USD",
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": false
+        },
+        "availability": {
+          "gold_status": "confirmed",
+          "gold_value": "available",
+          "pred_status": "confirmed",
+          "pred_value": "available",
+          "pred_condition": null,
+          "correct": true
+        },
+        "quantity_or_stock": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "delivery_or_pickup": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "confirmed",
+          "gold_value": "on thursday",
+          "pred_status": "confirmed",
+          "pred_value": "thursday",
+          "pred_condition": null,
+          "correct": false
+        },
+        "contact_next_step": {
+          "gold_status": "confirmed",
+          "gold_value": "book online",
+          "pred_status": "confirmed",
+          "pred_value": "You can book online anytime.",
+          "pred_condition": null,
+          "correct": false
+        }
+      }
+    },
+    {
+      "id": "salon_timing_contradiction",
+      "taxonomy": "contradiction",
+      "fields": {
+        "price": {
+          "gold_status": "confirmed",
+          "gold_value": 30,
+          "pred_status": "confirmed",
+          "pred_value": 30.0,
+          "pred_condition": null,
+          "correct": true
+        },
+        "currency": {
+          "gold_status": "confirmed",
+          "gold_value": "USD",
+          "pred_status": "confirmed",
+          "pred_value": "USD",
+          "pred_condition": null,
+          "correct": true
+        },
+        "availability": {
+          "gold_status": "confirmed",
+          "gold_value": "available",
+          "pred_status": "confirmed",
+          "pred_value": "available",
+          "pred_condition": null,
+          "correct": true
+        },
+        "quantity_or_stock": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "delivery_or_pickup": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "conflicting",
+          "gold_value": null,
+          "pred_status": "confirmed",
+          "pred_value": "4 pm today",
+          "pred_condition": null,
+          "correct": false
+        },
+        "contact_next_step": {
+          "gold_status": "confirmed",
+          "gold_value": "book online",
+          "pred_status": "confirmed",
+          "pred_value": "You can book online to grab it.",
+          "pred_condition": null,
+          "correct": false
+        }
+      }
+    },
+    {
+      "id": "salon_toner_confusion",
+      "taxonomy": "entity_confusion",
+      "fields": {
+        "price": {
+          "gold_status": "confirmed",
+          "gold_value": 19,
+          "pred_status": "confirmed",
+          "pred_value": 19.0,
+          "pred_condition": null,
+          "correct": true
+        },
+        "currency": {
+          "gold_status": "confirmed",
+          "gold_value": "USD",
+          "pred_status": "confirmed",
+          "pred_value": "USD",
+          "pred_condition": null,
+          "correct": true
+        },
+        "availability": {
+          "gold_status": "confirmed",
+          "gold_value": "in_stock",
+          "pred_status": "confirmed",
+          "pred_value": "in_stock",
+          "pred_condition": null,
+          "correct": true
+        },
+        "quantity_or_stock": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "delivery_or_pickup": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "contact_next_step": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        }
+      }
+    },
+    {
+      "id": "shoe_store_temporal",
+      "taxonomy": "temporal_mismatch",
+      "fields": {
+        "price": {
+          "gold_status": "confirmed",
+          "gold_value": 110,
+          "pred_status": "confirmed",
+          "pred_value": 110.0,
+          "pred_condition": null,
+          "correct": true
+        },
+        "currency": {
+          "gold_status": "confirmed",
+          "gold_value": "USD",
+          "pred_status": "confirmed",
+          "pred_value": "USD",
+          "pred_condition": null,
+          "correct": true
+        },
+        "availability": {
+          "gold_status": "confirmed",
+          "gold_value": "in_stock",
+          "pred_status": "confirmed",
+          "pred_value": "in_stock",
+          "pred_condition": null,
+          "correct": true
+        },
+        "quantity_or_stock": {
+          "gold_status": "confirmed",
+          "gold_value": "2 pairs",
+          "pred_status": "confirmed",
+          "pred_value": "Only 2 pairs left in that size.",
+          "pred_condition": null,
+          "correct": false
+        },
+        "delivery_or_pickup": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "contact_next_step": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        }
+      }
+    },
+    {
+      "id": "toy_store_kite_uncertain",
+      "taxonomy": "uncertain_inventory",
+      "fields": {
+        "price": {
+          "gold_status": "uncertain",
+          "gold_value": null,
+          "pred_status": "uncertain",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "currency": {
+          "gold_status": "confirmed",
+          "gold_value": "USD",
+          "pred_status": "confirmed",
+          "pred_value": "USD",
+          "pred_condition": null,
+          "correct": true
+        },
+        "availability": {
+          "gold_status": "uncertain",
+          "gold_value": null,
+          "pred_status": "confirmed",
+          "pred_value": "available",
+          "pred_condition": null,
+          "correct": false
+        },
+        "quantity_or_stock": {
+          "gold_status": "uncertain",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "delivery_or_pickup": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "uncertain",
+          "pred_value": "today",
+          "pred_condition": null,
+          "correct": false
+        },
+        "contact_next_step": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        }
+      }
+    },
+    {
+      "id": "tyre_shop_conditional",
+      "taxonomy": "conditional_pricing",
+      "fields": {
+        "price": {
+          "gold_status": "confirmed",
+          "gold_value": 145,
+          "pred_status": "confirmed",
+          "pred_value": 145.0,
+          "pred_condition": "fitted",
+          "correct": true
+        },
+        "currency": {
+          "gold_status": "confirmed",
+          "gold_value": "USD",
+          "pred_status": "confirmed",
+          "pred_value": "USD",
+          "pred_condition": null,
+          "correct": true
+        },
+        "availability": {
+          "gold_status": "confirmed",
+          "gold_value": "in_stock",
+          "pred_status": "confirmed",
+          "pred_value": "in_stock",
+          "pred_condition": null,
+          "correct": true
+        },
+        "quantity_or_stock": {
+          "gold_status": "confirmed",
+          "gold_value": "8 tyres",
+          "pred_status": "confirmed",
+          "pred_value": "8 tyres",
+          "pred_condition": null,
+          "correct": true
+        },
+        "delivery_or_pickup": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "confirmed",
+          "gold_value": "in 45 minutes",
+          "pred_status": "confirmed",
+          "pred_value": "45 minutes",
+          "pred_condition": null,
+          "correct": false
+        },
+        "contact_next_step": {
+          "gold_status": "confirmed",
+          "gold_value": "book in",
+          "pred_status": "confirmed",
+          "pred_value": "Just book in when you are ready.",
+          "pred_condition": null,
+          "correct": false
+        }
+      }
+    },
+    {
+      "id": "tyre_shop_contradiction",
+      "taxonomy": "contradiction",
+      "fields": {
+        "price": {
+          "gold_status": "conflicting",
+          "gold_value": null,
+          "pred_status": "conflicting",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "currency": {
+          "gold_status": "confirmed",
+          "gold_value": "USD",
+          "pred_status": "confirmed",
+          "pred_value": "USD",
+          "pred_condition": null,
+          "correct": true
+        },
+        "availability": {
+          "gold_status": "confirmed",
+          "gold_value": "in_stock",
+          "pred_status": "confirmed",
+          "pred_value": "in_stock",
+          "pred_condition": null,
+          "correct": true
+        },
+        "quantity_or_stock": {
+          "gold_status": "confirmed",
+          "gold_value": "4 tyres",
+          "pred_status": "confirmed",
+          "pred_value": "4 tyres left in that size",
+          "pred_condition": null,
+          "correct": false
+        },
+        "delivery_or_pickup": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        },
+        "timing": {
+          "gold_status": "confirmed",
+          "gold_value": "in 30 minutes",
+          "pred_status": "confirmed",
+          "pred_value": "30 minutes",
+          "pred_condition": null,
+          "correct": false
+        },
+        "contact_next_step": {
+          "gold_status": "unconfirmed",
+          "gold_value": null,
+          "pred_status": "unconfirmed",
+          "pred_value": null,
+          "pred_condition": null,
+          "correct": true
+        }
+      }
+    }
+  ]
+}

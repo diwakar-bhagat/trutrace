@@ -1,0 +1,76 @@
+{
+ "id": "campaign_07_out_of_stock",
+ "business_name": "Garden Gate Flowers",
+ "business_type": "Florist",
+ "product": "red roses",
+ "question": "Red roses, a dozen, delivery today",
+ "requested_fields": [
+  "price",
+  "currency",
+  "availability",
+  "quantity_or_stock",
+  "delivery_or_pickup",
+  "timing",
+  "contact_next_step"
+ ],
+ "taxonomy": "clean",
+ "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:06] Seller: A dozen red roses is $36.\n[00:13] Seller: But we are sold out of red roses today, the next batch is tomorrow.\n[00:21] Seller: I can reserve a dozen from tomorrow's batch if you like.",
+ "gold": {
+  "price": {
+   "value": 36,
+   "status": "confirmed",
+   "evidence": "[00:06] Seller: A dozen red roses is $36.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:06"
+  },
+  "currency": {
+   "value": "USD",
+   "status": "confirmed",
+   "evidence": "[00:06] Seller: A dozen red roses is $36.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:06"
+  },
+  "availability": {
+   "value": "out_of_stock",
+   "status": "confirmed",
+   "evidence": "[00:13] Seller: But we are sold out of red roses today, the next batch is tomorrow.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:13"
+  },
+  "quantity_or_stock": {
+   "value": null,
+   "status": "unconfirmed",
+   "evidence": null,
+   "condition": null,
+   "speaker": null,
+   "timestamp": null
+  },
+  "delivery_or_pickup": {
+   "value": null,
+   "status": "unconfirmed",
+   "evidence": null,
+   "condition": null,
+   "speaker": null,
+   "timestamp": null
+  },
+  "timing": {
+   "value": null,
+   "status": "unconfirmed",
+   "evidence": null,
+   "condition": null,
+   "speaker": null,
+   "timestamp": null
+  },
+  "contact_next_step": {
+   "value": "reserve",
+   "status": "confirmed",
+   "evidence": "[00:21] Seller: I can reserve a dozen from tomorrow's batch if you like.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:21"
+  }
+ }
+}

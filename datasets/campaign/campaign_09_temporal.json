@@ -1,0 +1,76 @@
+{
+ "id": "campaign_09_temporal",
+ "business_name": "Sunrise Florist",
+ "business_type": "Florist",
+ "product": "red roses",
+ "question": "Red roses, a dozen, delivery today",
+ "requested_fields": [
+  "price",
+  "currency",
+  "availability",
+  "quantity_or_stock",
+  "delivery_or_pickup",
+  "timing",
+  "contact_next_step"
+ ],
+ "taxonomy": "temporal_mismatch",
+ "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: Last week a dozen red roses was $30.\n[00:12] Seller: This week it is $36 a dozen.\n[00:19] Seller: They are in stock and we deliver today by 2 pm.",
+ "gold": {
+  "price": {
+   "value": 36,
+   "status": "confirmed",
+   "evidence": "[00:12] Seller: This week it is $36 a dozen.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:12"
+  },
+  "currency": {
+   "value": "USD",
+   "status": "confirmed",
+   "evidence": "[00:12] Seller: This week it is $36 a dozen.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:12"
+  },
+  "availability": {
+   "value": "in_stock",
+   "status": "confirmed",
+   "evidence": "[00:19] Seller: They are in stock and we deliver today by 2 pm.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:19"
+  },
+  "quantity_or_stock": {
+   "value": null,
+   "status": "unconfirmed",
+   "evidence": null,
+   "condition": null,
+   "speaker": null,
+   "timestamp": null
+  },
+  "delivery_or_pickup": {
+   "value": "delivery",
+   "status": "confirmed",
+   "evidence": "[00:19] Seller: They are in stock and we deliver today by 2 pm.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:19"
+  },
+  "timing": {
+   "value": "by 2 pm",
+   "status": "confirmed",
+   "evidence": "[00:19] Seller: They are in stock and we deliver today by 2 pm.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:19"
+  },
+  "contact_next_step": {
+   "value": null,
+   "status": "unconfirmed",
+   "evidence": null,
+   "condition": null,
+   "speaker": null,
+   "timestamp": null
+  }
+ }
+}

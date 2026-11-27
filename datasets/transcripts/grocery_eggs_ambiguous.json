@@ -1,0 +1,62 @@
+{
+  "id": "grocery_eggs_ambiguous",
+  "business_name": "Corner Grocer",
+  "business_type": "Grocery store",
+  "product": "free-range eggs",
+  "question": "Do you have free-range eggs, how much is a dozen, and how many do you have left?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "ambiguous_quantity",
+  "transcript": "Agent: Do you have free-range eggs? How much is a dozen? How many do you have left?\nSeller: Yes, we have free-range eggs in stock. A dozen is $6. There are a few crates left out back. We can deliver grocery orders over $30.",
+  "gold": {
+    "price": {
+      "value": 6,
+      "status": "confirmed",
+      "evidence": "A dozen is $6.",
+      "condition": null
+    },
+    "currency": {
+      "value": "USD",
+      "status": "confirmed",
+      "evidence": "A dozen is $6.",
+      "condition": null
+    },
+    "availability": {
+      "value": "in_stock",
+      "status": "confirmed",
+      "evidence": "Yes, we have free-range eggs in stock.",
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": null,
+      "status": "uncertain",
+      "evidence": "There are a few crates left out back.",
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": "delivery",
+      "status": "confirmed",
+      "evidence": "We can deliver grocery orders over $30.",
+      "condition": null
+    },
+    "timing": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    }
+  }
+}

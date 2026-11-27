@@ -1,0 +1,62 @@
+{
+  "id": "bike_shop_tuneup_clean",
+  "business_name": "Spoke & Hub",
+  "business_type": "Bike shop",
+  "product": "bike tune-up",
+  "question": "Can I book a bike tune-up this week, what does it cost, and how long does it take?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "clean",
+  "transcript": "Agent: Can I book a bike tune-up this week? What does it cost? How long does it take?\nSeller: We can fit you in for a tune-up this week. A full tune-up is $60. The tune-up takes about 2 hours. You can book online through our website.",
+  "gold": {
+    "price": {
+      "value": 60,
+      "status": "confirmed",
+      "evidence": "A full tune-up is $60.",
+      "condition": null
+    },
+    "currency": {
+      "value": "USD",
+      "status": "confirmed",
+      "evidence": "A full tune-up is $60.",
+      "condition": null
+    },
+    "availability": {
+      "value": "available",
+      "status": "confirmed",
+      "evidence": "We can fit you in for a tune-up this week.",
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "timing": {
+      "value": "2 hours",
+      "status": "confirmed",
+      "evidence": "The tune-up takes about 2 hours.",
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": "book online",
+      "status": "confirmed",
+      "evidence": "You can book online through our website.",
+      "condition": null
+    }
+  }
+}

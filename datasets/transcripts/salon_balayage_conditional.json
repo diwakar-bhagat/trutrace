@@ -1,0 +1,62 @@
+{
+  "id": "salon_balayage_conditional",
+  "business_name": "Velvet Scissors",
+  "business_type": "Salon",
+  "product": "balayage",
+  "question": "How much is a balayage, and do you have any appointments this week?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "conditional_pricing",
+  "transcript": "Agent: How much is a balayage? Do you have any appointments this week?\nSeller: A standard colour is $70. Balayage would be more, I am not sure of the exact price for that. We have an opening on Thursday. You can book online anytime.",
+  "gold": {
+    "price": {
+      "value": null,
+      "status": "uncertain",
+      "evidence": "Balayage would be more, I am not sure of the exact price for that.",
+      "condition": null
+    },
+    "currency": {
+      "value": "USD",
+      "status": "confirmed",
+      "evidence": "A standard colour is $70.",
+      "condition": null
+    },
+    "availability": {
+      "value": "available",
+      "status": "confirmed",
+      "evidence": "We have an opening on Thursday.",
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "timing": {
+      "value": "on thursday",
+      "status": "confirmed",
+      "evidence": "We have an opening on Thursday.",
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": "book online",
+      "status": "confirmed",
+      "evidence": "You can book online anytime.",
+      "condition": null
+    }
+  }
+}

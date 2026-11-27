@@ -1,0 +1,2726 @@
+{
+  "evalId": "eval-PSk-2026-11-27T05:16:48",
+  "results": {
+    "version": 3,
+    "timestamp": "2026-11-27T05:16:48.433Z",
+    "prompts": [
+      {
+        "raw": "\"\"\"Promptfoo prompt function: the Prompt Lab version baseline-naive@1.0.0.\n\nReturns the exact prompt text the TruTrace pipeline assembles for\nthat version (app.prompts.build_prompt), so the comparison matrix\nshows and runs the real prompt, not a copy pasted into a config.\n\"\"\"\n\nimport os\nimport sys\n\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\n\nfrom app.prompts import build_prompt  # noqa: E402\nfrom workbench import prompt_store  # noqa: E402\n\n\ndef get_prompt(context):\n    prompt_store.load_all()\n    vars_ = context[\"vars\"]\n    return build_prompt(vars_[\"question\"], vars_[\"transcript\"], \"baseline-naive@1.0.0\")\n",
+        "label": "baseline-naive@1.0.0",
+        "id": "b2f6e3736f48f48d92485314940193651c7d36db73275d625417cd7ff8d21d1a",
+        "provider": "TruTrace pipeline (offline provider)",
+        "metrics": {
+          "score": 7.428571428571427,
+          "testPassCount": 2,
+          "testFailCount": 8,
+          "testErrorCount": 0,
+          "testCacheHitCount": 0,
+          "assertPassCount": 2,
+          "assertFailCount": 8,
+          "totalLatencyMs": 1195,
+          "tokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 10,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              }
+            }
+          },
+          "namedScores": {
+            "FieldAccuracy": 7.428571428571427,
+            "field_accuracy": 7.428571428571427,
+            "unsupported_claims": 9
+          },
+          "namedScoresCount": {
+            "FieldAccuracy": 10,
+            "field_accuracy": 10,
+            "unsupported_claims": 10
+          },
+          "namedScoreWeights": {
+            "FieldAccuracy": 10,
+            "field_accuracy": 10,
+            "unsupported_claims": 10
+          },
+          "cost": 0
+        }
+      },
+      {
+        "raw": "\"\"\"Promptfoo prompt function: the Prompt Lab version trutrace@1.0.0.\n\nReturns the exact prompt text the TruTrace pipeline assembles for\nthat version (app.prompts.build_prompt), so the comparison matrix\nshows and runs the real prompt, not a copy pasted into a config.\n\"\"\"\n\nimport os\nimport sys\n\nsys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))\n\nfrom app.prompts import build_prompt  # noqa: E402\nfrom workbench import prompt_store  # noqa: E402\n\n\ndef get_prompt(context):\n    prompt_store.load_all()\n    vars_ = context[\"vars\"]\n    return build_prompt(vars_[\"question\"], vars_[\"transcript\"], \"trutrace@1.0.0\")\n",
+        "label": "trutrace@1.0.0",
+        "id": "787328639c4585f4650efa5672a830aafcf41cdf65abc51a52b18a8e58909b55",
+        "provider": "TruTrace pipeline (offline provider)",
+        "metrics": {
+          "score": 7.999999999999999,
+          "testPassCount": 3,
+          "testFailCount": 7,
+          "testErrorCount": 0,
+          "testCacheHitCount": 0,
+          "assertPassCount": 3,
+          "assertFailCount": 7,
+          "totalLatencyMs": 1252,
+          "tokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 10,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              }
+            }
+          },
+          "namedScores": {
+            "FieldAccuracy": 7.999999999999999,
+            "field_accuracy": 7.999999999999999,
+            "unsupported_claims": 4
+          },
+          "namedScoresCount": {
+            "FieldAccuracy": 10,
+            "field_accuracy": 10,
+            "unsupported_claims": 10
+          },
+          "namedScoreWeights": {
+            "FieldAccuracy": 10,
+            "field_accuracy": 10,
+            "unsupported_claims": 10
+          },
+          "cost": 0
+        }
+      }
+    ],
+    "results": [
+      {
+        "cost": 0,
+        "error": "6/7 fields correct, 0 unsupported claims (gold labels AI drafted, pending human review)",
+        "gradingResult": {
+          "pass": false,
+          "score": 0.8571428571428571,
+          "reason": "6/7 fields correct, 0 unsupported claims (gold labels AI drafted, pending human review)",
+          "namedScores": {
+            "FieldAccuracy": 0.8571428571428571,
+            "field_accuracy": 0.8571428571428571,
+            "unsupported_claims": 0
+          },
+          "namedScoreWeights": {
+            "FieldAccuracy": 1,
+            "field_accuracy": 1,
+            "unsupported_claims": 1
+          },
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0.8571428571428571,
+              "reason": "6/7 fields correct, 0 unsupported claims (gold labels AI drafted, pending human review)",
+              "namedScores": {
+                "field_accuracy": 0.8571428571428571,
+                "unsupported_claims": 0
+              },
+              "assertion": {
+                "type": "python",
+                "value": "file://assert_fields.py",
+                "metric": "FieldAccuracy"
+              }
+            }
+          ]
+        },
+        "id": "2986e528-2dae-4b8b-8c6f-7c8c49e69b79",
+        "latencyMs": 437,
+        "namedScores": {
+          "FieldAccuracy": 0.8571428571428571,
+          "field_accuracy": 0.8571428571428571,
+          "unsupported_claims": 0
+        },
+        "prompt": {
+          "raw": "You extract a structured answer from a phone call between an agent\nand a local business. The business was asked: \"Red roses, a dozen, delivery today\"\n\nExtract exactly this schema:\n{\n  \"price\": number or null,\n  \"currency\": \"USD\" or null,\n  \"availability\": \"in_stock\" | \"out_of_stock\" | \"available\" | null,\n  \"quantity_or_stock\": string or null,\n  \"delivery_or_pickup\": \"delivery\" | \"pickup\" | null,\n  \"timing\": string or null,\n  \"contact_next_step\": string or null\n}\n\nRules:\n- Only state what the seller actually confirmed on the call. If a field was\n  never confirmed, return null for it. Never guess a quantity, never round\n  a vague or hedged answer into a fact.\n- If the seller gives two different prices, return all of them under\n  \"price_candidates\" instead of picking one. Do the same for conflicting\n  times under \"timing_candidates\".\n- For every non-null field, include an \"evidence\" object mapping the field\n  name to the exact sentence from the transcript that supports it, copied\n  word for word. If you cannot quote a supporting sentence, the field\n  must be null.\n- A price quoted for a different product, a delivery or setup fee, or a\n  price the seller says has changed is not the product's price.\n- Return JSON only, no commentary.\n\nTranscript:\n\"\"\"\n[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:07] Seller: Uh, red roses, a dozen is around $35, I think.\n[00:13] Seller: They are usually in stock, we get them most mornings.\n[00:19] Seller: Delivery today, uh, probably tomorrow morning is safer, to be honest.\n[00:26] Seller: You can order on our website.\n\"\"\"\n\nRespond with a JSON object with the schema fields, a \"price_candidates\"\nlist of {\"value\": number, \"evidence\": sentence}, a \"timing_candidates\"\nlist of {\"value\": string, \"evidence\": sentence}, and an \"evidence\"\nobject.",
+          "label": "trutrace@1.0.0",
+          "config": {}
+        },
+        "promptId": "787328639c4585f4650efa5672a830aafcf41cdf65abc51a52b18a8e58909b55",
+        "promptIdx": 1,
+        "provider": {
+          "id": "file://trutrace_provider.py",
+          "label": "TruTrace pipeline (offline provider)"
+        },
+        "response": {
+          "output": "{\"price\": {\"value\": 35.0, \"status\": \"uncertain\", \"condition\": null, \"evidence\": \"[00:07] Seller: Uh, red roses, a dozen is around $35, I think.\"}, \"currency\": {\"value\": \"USD\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:07] Seller: Uh, red roses, a dozen is around $35, I think.\"}, \"availability\": {\"value\": \"in_stock\", \"status\": \"uncertain\", \"condition\": null, \"evidence\": \"[00:13] Seller: They are usually in stock, we get them most mornings.\"}, \"quantity_or_stock\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"delivery_or_pickup\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"timing\": {\"value\": \"tomorrow morning\", \"status\": \"uncertain\", \"condition\": null, \"evidence\": \"[00:19] Seller: Delivery today, uh, probably tomorrow morning is safer, to be honest.\"}, \"contact_next_step\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}}",
+          "cached": false
+        },
+        "score": 0.8571428571428571,
+        "success": false,
+        "testCase": {
+          "description": "campaign_01_showcase_hedged",
+          "vars": {
+            "case_id": "campaign_01_showcase_hedged",
+            "question": "Red roses, a dozen, delivery today",
+            "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:07] Seller: Uh, red roses, a dozen is around $35, I think.\n[00:13] Seller: They are usually in stock, we get them most mornings.\n[00:19] Seller: Delivery today, uh, probably tomorrow morning is safer, to be honest.\n[00:26] Seller: You can order on our website."
+          },
+          "assert": [
+            {
+              "type": "python",
+              "value": "file://assert_fields.py",
+              "metric": "FieldAccuracy"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "case_id": "campaign_01_showcase_hedged",
+          "question": "Red roses, a dozen, delivery today",
+          "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:07] Seller: Uh, red roses, a dozen is around $35, I think.\n[00:13] Seller: They are usually in stock, we get them most mornings.\n[00:19] Seller: Delivery today, uh, probably tomorrow morning is safer, to be honest.\n[00:26] Seller: You can order on our website."
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 1
+      },
+      {
+        "cost": 0,
+        "error": "3/7 fields correct, 3 unsupported claims (gold labels AI drafted, pending human review)",
+        "gradingResult": {
+          "pass": false,
+          "score": 0.42857142857142855,
+          "reason": "3/7 fields correct, 3 unsupported claims (gold labels AI drafted, pending human review)",
+          "namedScores": {
+            "FieldAccuracy": 0.42857142857142855,
+            "field_accuracy": 0.42857142857142855,
+            "unsupported_claims": 3
+          },
+          "namedScoreWeights": {
+            "FieldAccuracy": 1,
+            "field_accuracy": 1,
+            "unsupported_claims": 1
+          },
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0.42857142857142855,
+              "reason": "3/7 fields correct, 3 unsupported claims (gold labels AI drafted, pending human review)",
+              "namedScores": {
+                "field_accuracy": 0.42857142857142855,
+                "unsupported_claims": 3
+              },
+              "assertion": {
+                "type": "python",
+                "value": "file://assert_fields.py",
+                "metric": "FieldAccuracy"
+              }
+            }
+          ]
+        },
+        "id": "5d796d9a-dbdf-4712-8b31-ff9af6ffd438",
+        "latencyMs": 369,
+        "namedScores": {
+          "FieldAccuracy": 0.42857142857142855,
+          "field_accuracy": 0.42857142857142855,
+          "unsupported_claims": 3
+        },
+        "prompt": {
+          "raw": "You extract a structured answer from a phone call between an agent\nand a local business. The business was asked: \"Red roses, a dozen, delivery today\"\n\nExtract exactly this schema:\n{\n  \"price\": number or null,\n  \"currency\": \"USD\" or null,\n  \"availability\": \"in_stock\" | \"out_of_stock\" | \"available\" | null,\n  \"quantity_or_stock\": string or null,\n  \"delivery_or_pickup\": \"delivery\" | \"pickup\" | null,\n  \"timing\": string or null,\n  \"contact_next_step\": string or null\n}\n\nTranscript:\n\"\"\"\n[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:07] Seller: Uh, red roses, a dozen is around $35, I think.\n[00:13] Seller: They are usually in stock, we get them most mornings.\n[00:19] Seller: Delivery today, uh, probably tomorrow morning is safer, to be honest.\n[00:26] Seller: You can order on our website.\n\"\"\"\n\nRespond with a JSON object with the schema fields only.",
+          "label": "baseline-naive@1.0.0",
+          "config": {}
+        },
+        "promptId": "b2f6e3736f48f48d92485314940193651c7d36db73275d625417cd7ff8d21d1a",
+        "promptIdx": 0,
+        "provider": {
+          "id": "file://trutrace_provider.py",
+          "label": "TruTrace pipeline (offline provider)"
+        },
+        "response": {
+          "output": "{\"price\": {\"value\": 35.0, \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:07] Seller: Uh, red roses, a dozen is around $35, I think.\"}, \"currency\": {\"value\": \"USD\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:07] Seller: Uh, red roses, a dozen is around $35, I think.\"}, \"availability\": {\"value\": \"in_stock\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:13] Seller: They are usually in stock, we get them most mornings.\"}, \"quantity_or_stock\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"delivery_or_pickup\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"timing\": {\"value\": \"tomorrow morning\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:19] Seller: Delivery today, uh, probably tomorrow morning is safer, to be honest.\"}, \"contact_next_step\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}}",
+          "cached": false
+        },
+        "score": 0.42857142857142855,
+        "success": false,
+        "testCase": {
+          "description": "campaign_01_showcase_hedged",
+          "vars": {
+            "case_id": "campaign_01_showcase_hedged",
+            "question": "Red roses, a dozen, delivery today",
+            "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:07] Seller: Uh, red roses, a dozen is around $35, I think.\n[00:13] Seller: They are usually in stock, we get them most mornings.\n[00:19] Seller: Delivery today, uh, probably tomorrow morning is safer, to be honest.\n[00:26] Seller: You can order on our website."
+          },
+          "assert": [
+            {
+              "type": "python",
+              "value": "file://assert_fields.py",
+              "metric": "FieldAccuracy"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "case_id": "campaign_01_showcase_hedged",
+          "question": "Red roses, a dozen, delivery today",
+          "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:07] Seller: Uh, red roses, a dozen is around $35, I think.\n[00:13] Seller: They are usually in stock, we get them most mornings.\n[00:19] Seller: Delivery today, uh, probably tomorrow morning is safer, to be honest.\n[00:26] Seller: You can order on our website."
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 1
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {
+            "FieldAccuracy": 1,
+            "field_accuracy": 1,
+            "unsupported_claims": 0
+          },
+          "namedScoreWeights": {
+            "FieldAccuracy": 1,
+            "field_accuracy": 1,
+            "unsupported_claims": 1
+          },
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "7/7 fields correct, 0 unsupported claims (gold labels AI drafted, pending human review)",
+              "namedScores": {
+                "field_accuracy": 1,
+                "unsupported_claims": 0
+              },
+              "assertion": {
+                "type": "python",
+                "value": "file://assert_fields.py",
+                "metric": "FieldAccuracy"
+              }
+            }
+          ]
+        },
+        "id": "78e8fd74-caf3-440d-82de-ca7f66d202fa",
+        "latencyMs": 400,
+        "namedScores": {
+          "FieldAccuracy": 1,
+          "field_accuracy": 1,
+          "unsupported_claims": 0
+        },
+        "prompt": {
+          "raw": "You extract a structured answer from a phone call between an agent\nand a local business. The business was asked: \"Red roses, a dozen, delivery today\"\n\nExtract exactly this schema:\n{\n  \"price\": number or null,\n  \"currency\": \"USD\" or null,\n  \"availability\": \"in_stock\" | \"out_of_stock\" | \"available\" | null,\n  \"quantity_or_stock\": string or null,\n  \"delivery_or_pickup\": \"delivery\" | \"pickup\" | null,\n  \"timing\": string or null,\n  \"contact_next_step\": string or null\n}\n\nTranscript:\n\"\"\"\n[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: Yes, a dozen red roses is $38.\n[00:11] Seller: We have plenty in stock, fresh this morning.\n[00:17] Seller: We can deliver today by 6 pm.\n[00:24] Seller: I can book you in right now.\n\"\"\"\n\nRespond with a JSON object with the schema fields only.",
+          "label": "baseline-naive@1.0.0",
+          "config": {}
+        },
+        "promptId": "b2f6e3736f48f48d92485314940193651c7d36db73275d625417cd7ff8d21d1a",
+        "promptIdx": 0,
+        "provider": {
+          "id": "file://trutrace_provider.py",
+          "label": "TruTrace pipeline (offline provider)"
+        },
+        "response": {
+          "output": "{\"price\": {\"value\": 38.0, \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:05] Seller: Yes, a dozen red roses is $38.\"}, \"currency\": {\"value\": \"USD\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:05] Seller: Yes, a dozen red roses is $38.\"}, \"availability\": {\"value\": \"in_stock\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:11] Seller: We have plenty in stock, fresh this morning.\"}, \"quantity_or_stock\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"delivery_or_pickup\": {\"value\": \"delivery\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:17] Seller: We can deliver today by 6 pm.\"}, \"timing\": {\"value\": \"by 6 pm\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:17] Seller: We can deliver today by 6 pm.\"}, \"contact_next_step\": {\"value\": \"book in\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:24] Seller: I can book you in right now.\"}}",
+          "cached": false
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "campaign_02_clean_confirm",
+          "vars": {
+            "case_id": "campaign_02_clean_confirm",
+            "question": "Red roses, a dozen, delivery today",
+            "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: Yes, a dozen red roses is $38.\n[00:11] Seller: We have plenty in stock, fresh this morning.\n[00:17] Seller: We can deliver today by 6 pm.\n[00:24] Seller: I can book you in right now."
+          },
+          "assert": [
+            {
+              "type": "python",
+              "value": "file://assert_fields.py",
+              "metric": "FieldAccuracy"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "case_id": "campaign_02_clean_confirm",
+          "question": "Red roses, a dozen, delivery today",
+          "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: Yes, a dozen red roses is $38.\n[00:11] Seller: We have plenty in stock, fresh this morning.\n[00:17] Seller: We can deliver today by 6 pm.\n[00:24] Seller: I can book you in right now."
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {
+            "FieldAccuracy": 1,
+            "field_accuracy": 1,
+            "unsupported_claims": 0
+          },
+          "namedScoreWeights": {
+            "FieldAccuracy": 1,
+            "field_accuracy": 1,
+            "unsupported_claims": 1
+          },
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "7/7 fields correct, 0 unsupported claims (gold labels AI drafted, pending human review)",
+              "namedScores": {
+                "field_accuracy": 1,
+                "unsupported_claims": 0
+              },
+              "assertion": {
+                "type": "python",
+                "value": "file://assert_fields.py",
+                "metric": "FieldAccuracy"
+              }
+            }
+          ]
+        },
+        "id": "498ba7d9-bf5b-4791-be3e-4f9a6a9bfd9a",
+        "latencyMs": 369,
+        "namedScores": {
+          "FieldAccuracy": 1,
+          "field_accuracy": 1,
+          "unsupported_claims": 0
+        },
+        "prompt": {
+          "raw": "You extract a structured answer from a phone call between an agent\nand a local business. The business was asked: \"Red roses, a dozen, delivery today\"\n\nExtract exactly this schema:\n{\n  \"price\": number or null,\n  \"currency\": \"USD\" or null,\n  \"availability\": \"in_stock\" | \"out_of_stock\" | \"available\" | null,\n  \"quantity_or_stock\": string or null,\n  \"delivery_or_pickup\": \"delivery\" | \"pickup\" | null,\n  \"timing\": string or null,\n  \"contact_next_step\": string or null\n}\n\nRules:\n- Only state what the seller actually confirmed on the call. If a field was\n  never confirmed, return null for it. Never guess a quantity, never round\n  a vague or hedged answer into a fact.\n- If the seller gives two different prices, return all of them under\n  \"price_candidates\" instead of picking one. Do the same for conflicting\n  times under \"timing_candidates\".\n- For every non-null field, include an \"evidence\" object mapping the field\n  name to the exact sentence from the transcript that supports it, copied\n  word for word. If you cannot quote a supporting sentence, the field\n  must be null.\n- A price quoted for a different product, a delivery or setup fee, or a\n  price the seller says has changed is not the product's price.\n- Return JSON only, no commentary.\n\nTranscript:\n\"\"\"\n[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: Yes, a dozen red roses is $38.\n[00:11] Seller: We have plenty in stock, fresh this morning.\n[00:17] Seller: We can deliver today by 6 pm.\n[00:24] Seller: I can book you in right now.\n\"\"\"\n\nRespond with a JSON object with the schema fields, a \"price_candidates\"\nlist of {\"value\": number, \"evidence\": sentence}, a \"timing_candidates\"\nlist of {\"value\": string, \"evidence\": sentence}, and an \"evidence\"\nobject.",
+          "label": "trutrace@1.0.0",
+          "config": {}
+        },
+        "promptId": "787328639c4585f4650efa5672a830aafcf41cdf65abc51a52b18a8e58909b55",
+        "promptIdx": 1,
+        "provider": {
+          "id": "file://trutrace_provider.py",
+          "label": "TruTrace pipeline (offline provider)"
+        },
+        "response": {
+          "output": "{\"price\": {\"value\": 38.0, \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:05] Seller: Yes, a dozen red roses is $38.\"}, \"currency\": {\"value\": \"USD\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:05] Seller: Yes, a dozen red roses is $38.\"}, \"availability\": {\"value\": \"in_stock\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:11] Seller: We have plenty in stock, fresh this morning.\"}, \"quantity_or_stock\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"delivery_or_pickup\": {\"value\": \"delivery\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:17] Seller: We can deliver today by 6 pm.\"}, \"timing\": {\"value\": \"by 6 pm\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:17] Seller: We can deliver today by 6 pm.\"}, \"contact_next_step\": {\"value\": \"book in\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:24] Seller: I can book you in right now.\"}}",
+          "cached": false
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "campaign_02_clean_confirm",
+          "vars": {
+            "case_id": "campaign_02_clean_confirm",
+            "question": "Red roses, a dozen, delivery today",
+            "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: Yes, a dozen red roses is $38.\n[00:11] Seller: We have plenty in stock, fresh this morning.\n[00:17] Seller: We can deliver today by 6 pm.\n[00:24] Seller: I can book you in right now."
+          },
+          "assert": [
+            {
+              "type": "python",
+              "value": "file://assert_fields.py",
+              "metric": "FieldAccuracy"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "case_id": "campaign_02_clean_confirm",
+          "question": "Red roses, a dozen, delivery today",
+          "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: Yes, a dozen red roses is $38.\n[00:11] Seller: We have plenty in stock, fresh this morning.\n[00:17] Seller: We can deliver today by 6 pm.\n[00:24] Seller: I can book you in right now."
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "error": "6/7 fields correct, 1 unsupported claims (gold labels AI drafted, pending human review)",
+        "gradingResult": {
+          "pass": false,
+          "score": 0.8571428571428571,
+          "reason": "6/7 fields correct, 1 unsupported claims (gold labels AI drafted, pending human review)",
+          "namedScores": {
+            "FieldAccuracy": 0.8571428571428571,
+            "field_accuracy": 0.8571428571428571,
+            "unsupported_claims": 1
+          },
+          "namedScoreWeights": {
+            "FieldAccuracy": 1,
+            "field_accuracy": 1,
+            "unsupported_claims": 1
+          },
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0.8571428571428571,
+              "reason": "6/7 fields correct, 1 unsupported claims (gold labels AI drafted, pending human review)",
+              "namedScores": {
+                "field_accuracy": 0.8571428571428571,
+                "unsupported_claims": 1
+              },
+              "assertion": {
+                "type": "python",
+                "value": "file://assert_fields.py",
+                "metric": "FieldAccuracy"
+              }
+            }
+          ]
+        },
+        "id": "94a632c7-c4bf-4b4c-b023-c2e0bab9648c",
+        "latencyMs": 88,
+        "namedScores": {
+          "FieldAccuracy": 0.8571428571428571,
+          "field_accuracy": 0.8571428571428571,
+          "unsupported_claims": 1
+        },
+        "prompt": {
+          "raw": "You extract a structured answer from a phone call between an agent\nand a local business. The business was asked: \"Red roses, a dozen, delivery today\"\n\nExtract exactly this schema:\n{\n  \"price\": number or null,\n  \"currency\": \"USD\" or null,\n  \"availability\": \"in_stock\" | \"out_of_stock\" | \"available\" | null,\n  \"quantity_or_stock\": string or null,\n  \"delivery_or_pickup\": \"delivery\" | \"pickup\" | null,\n  \"timing\": string or null,\n  \"contact_next_step\": string or null\n}\n\nTranscript:\n\"\"\"\n[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:06] Seller: A dozen red roses is $35.\n[00:12] Seller: And yes, they are in stock.\n[00:20] Seller: Hmm, the price list here says $40 a dozen.\n[00:27] Seller: We deliver, it would reach by 5 pm today.\n\"\"\"\n\nRespond with a JSON object with the schema fields only.",
+          "label": "baseline-naive@1.0.0",
+          "config": {}
+        },
+        "promptId": "b2f6e3736f48f48d92485314940193651c7d36db73275d625417cd7ff8d21d1a",
+        "promptIdx": 0,
+        "provider": {
+          "id": "file://trutrace_provider.py",
+          "label": "TruTrace pipeline (offline provider)"
+        },
+        "response": {
+          "output": "{\"price\": {\"value\": 35.0, \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:06] Seller: A dozen red roses is $35.\"}, \"currency\": {\"value\": \"USD\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:06] Seller: A dozen red roses is $35.\"}, \"availability\": {\"value\": \"in_stock\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:12] Seller: And yes, they are in stock.\"}, \"quantity_or_stock\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"delivery_or_pickup\": {\"value\": \"delivery\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:27] Seller: We deliver, it would reach by 5 pm today.\"}, \"timing\": {\"value\": \"by 5 pm\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:27] Seller: We deliver, it would reach by 5 pm today.\"}, \"contact_next_step\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}}",
+          "cached": false
+        },
+        "score": 0.8571428571428571,
+        "success": false,
+        "testCase": {
+          "description": "campaign_03_contradiction",
+          "vars": {
+            "case_id": "campaign_03_contradiction",
+            "question": "Red roses, a dozen, delivery today",
+            "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:06] Seller: A dozen red roses is $35.\n[00:12] Seller: And yes, they are in stock.\n[00:20] Seller: Hmm, the price list here says $40 a dozen.\n[00:27] Seller: We deliver, it would reach by 5 pm today."
+          },
+          "assert": [
+            {
+              "type": "python",
+              "value": "file://assert_fields.py",
+              "metric": "FieldAccuracy"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 2,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "case_id": "campaign_03_contradiction",
+          "question": "Red roses, a dozen, delivery today",
+          "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:06] Seller: A dozen red roses is $35.\n[00:12] Seller: And yes, they are in stock.\n[00:20] Seller: Hmm, the price list here says $40 a dozen.\n[00:27] Seller: We deliver, it would reach by 5 pm today."
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 1
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {
+            "FieldAccuracy": 1,
+            "field_accuracy": 1,
+            "unsupported_claims": 0
+          },
+          "namedScoreWeights": {
+            "FieldAccuracy": 1,
+            "field_accuracy": 1,
+            "unsupported_claims": 1
+          },
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "7/7 fields correct, 0 unsupported claims (gold labels AI drafted, pending human review)",
+              "namedScores": {
+                "field_accuracy": 1,
+                "unsupported_claims": 0
+              },
+              "assertion": {
+                "type": "python",
+                "value": "file://assert_fields.py",
+                "metric": "FieldAccuracy"
+              }
+            }
+          ]
+        },
+        "id": "bca91e1a-1b3c-44c2-893f-8a70e270fa48",
+        "latencyMs": 31,
+        "namedScores": {
+          "FieldAccuracy": 1,
+          "field_accuracy": 1,
+          "unsupported_claims": 0
+        },
+        "prompt": {
+          "raw": "You extract a structured answer from a phone call between an agent\nand a local business. The business was asked: \"Red roses, a dozen, delivery today\"\n\nExtract exactly this schema:\n{\n  \"price\": number or null,\n  \"currency\": \"USD\" or null,\n  \"availability\": \"in_stock\" | \"out_of_stock\" | \"available\" | null,\n  \"quantity_or_stock\": string or null,\n  \"delivery_or_pickup\": \"delivery\" | \"pickup\" | null,\n  \"timing\": string or null,\n  \"contact_next_step\": string or null\n}\n\nRules:\n- Only state what the seller actually confirmed on the call. If a field was\n  never confirmed, return null for it. Never guess a quantity, never round\n  a vague or hedged answer into a fact.\n- If the seller gives two different prices, return all of them under\n  \"price_candidates\" instead of picking one. Do the same for conflicting\n  times under \"timing_candidates\".\n- For every non-null field, include an \"evidence\" object mapping the field\n  name to the exact sentence from the transcript that supports it, copied\n  word for word. If you cannot quote a supporting sentence, the field\n  must be null.\n- A price quoted for a different product, a delivery or setup fee, or a\n  price the seller says has changed is not the product's price.\n- Return JSON only, no commentary.\n\nTranscript:\n\"\"\"\n[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:06] Seller: A dozen red roses is $35.\n[00:12] Seller: And yes, they are in stock.\n[00:20] Seller: Hmm, the price list here says $40 a dozen.\n[00:27] Seller: We deliver, it would reach by 5 pm today.\n\"\"\"\n\nRespond with a JSON object with the schema fields, a \"price_candidates\"\nlist of {\"value\": number, \"evidence\": sentence}, a \"timing_candidates\"\nlist of {\"value\": string, \"evidence\": sentence}, and an \"evidence\"\nobject.",
+          "label": "trutrace@1.0.0",
+          "config": {}
+        },
+        "promptId": "787328639c4585f4650efa5672a830aafcf41cdf65abc51a52b18a8e58909b55",
+        "promptIdx": 1,
+        "provider": {
+          "id": "file://trutrace_provider.py",
+          "label": "TruTrace pipeline (offline provider)"
+        },
+        "response": {
+          "output": "{\"price\": {\"value\": null, \"status\": \"conflicting\", \"condition\": null, \"evidence\": \"[00:20] Seller: Hmm, the price list here says $40 a dozen.\"}, \"currency\": {\"value\": \"USD\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:06] Seller: A dozen red roses is $35.\"}, \"availability\": {\"value\": \"in_stock\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:12] Seller: And yes, they are in stock.\"}, \"quantity_or_stock\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"delivery_or_pickup\": {\"value\": \"delivery\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:27] Seller: We deliver, it would reach by 5 pm today.\"}, \"timing\": {\"value\": \"by 5 pm\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:27] Seller: We deliver, it would reach by 5 pm today.\"}, \"contact_next_step\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}}",
+          "cached": false
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "campaign_03_contradiction",
+          "vars": {
+            "case_id": "campaign_03_contradiction",
+            "question": "Red roses, a dozen, delivery today",
+            "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:06] Seller: A dozen red roses is $35.\n[00:12] Seller: And yes, they are in stock.\n[00:20] Seller: Hmm, the price list here says $40 a dozen.\n[00:27] Seller: We deliver, it would reach by 5 pm today."
+          },
+          "assert": [
+            {
+              "type": "python",
+              "value": "file://assert_fields.py",
+              "metric": "FieldAccuracy"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 2,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "case_id": "campaign_03_contradiction",
+          "question": "Red roses, a dozen, delivery today",
+          "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:06] Seller: A dozen red roses is $35.\n[00:12] Seller: And yes, they are in stock.\n[00:20] Seller: Hmm, the price list here says $40 a dozen.\n[00:27] Seller: We deliver, it would reach by 5 pm today."
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "error": "5/7 fields correct, 0 unsupported claims (gold labels AI drafted, pending human review)",
+        "gradingResult": {
+          "pass": false,
+          "score": 0.7142857142857143,
+          "reason": "5/7 fields correct, 0 unsupported claims (gold labels AI drafted, pending human review)",
+          "namedScores": {
+            "FieldAccuracy": 0.7142857142857143,
+            "field_accuracy": 0.7142857142857143,
+            "unsupported_claims": 0
+          },
+          "namedScoreWeights": {
+            "FieldAccuracy": 1,
+            "field_accuracy": 1,
+            "unsupported_claims": 1
+          },
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0.7142857142857143,
+              "reason": "5/7 fields correct, 0 unsupported claims (gold labels AI drafted, pending human review)",
+              "namedScores": {
+                "field_accuracy": 0.7142857142857143,
+                "unsupported_claims": 0
+              },
+              "assertion": {
+                "type": "python",
+                "value": "file://assert_fields.py",
+                "metric": "FieldAccuracy"
+              }
+            }
+          ]
+        },
+        "id": "73f42913-750c-46a1-a6d2-2793b254ce6e",
+        "latencyMs": 81,
+        "namedScores": {
+          "FieldAccuracy": 0.7142857142857143,
+          "field_accuracy": 0.7142857142857143,
+          "unsupported_claims": 0
+        },
+        "prompt": {
+          "raw": "You extract a structured answer from a phone call between an agent\nand a local business. The business was asked: \"Red roses, a dozen, delivery today\"\n\nExtract exactly this schema:\n{\n  \"price\": number or null,\n  \"currency\": \"USD\" or null,\n  \"availability\": \"in_stock\" | \"out_of_stock\" | \"available\" | null,\n  \"quantity_or_stock\": string or null,\n  \"delivery_or_pickup\": \"delivery\" | \"pickup\" | null,\n  \"timing\": string or null,\n  \"contact_next_step\": string or null\n}\n\nRules:\n- Only state what the seller actually confirmed on the call. If a field was\n  never confirmed, return null for it. Never guess a quantity, never round\n  a vague or hedged answer into a fact.\n- If the seller gives two different prices, return all of them under\n  \"price_candidates\" instead of picking one. Do the same for conflicting\n  times under \"timing_candidates\".\n- For every non-null field, include an \"evidence\" object mapping the field\n  name to the exact sentence from the transcript that supports it, copied\n  word for word. If you cannot quote a supporting sentence, the field\n  must be null.\n- A price quoted for a different product, a delivery or setup fee, or a\n  price the seller says has changed is not the product's price.\n- Return JSON only, no commentary.\n\nTranscript:\n\"\"\"\n[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: For a standard dozen red roses it is $35.\n[00:12] Seller: The premium long-stem dozen is $50.\n[00:18] Seller: Both are in stock today.\n[00:25] Seller: Delivery today is fine, it would get there by 4 pm.\n\"\"\"\n\nRespond with a JSON object with the schema fields, a \"price_candidates\"\nlist of {\"value\": number, \"evidence\": sentence}, a \"timing_candidates\"\nlist of {\"value\": string, \"evidence\": sentence}, and an \"evidence\"\nobject.",
+          "label": "trutrace@1.0.0",
+          "config": {}
+        },
+        "promptId": "787328639c4585f4650efa5672a830aafcf41cdf65abc51a52b18a8e58909b55",
+        "promptIdx": 1,
+        "provider": {
+          "id": "file://trutrace_provider.py",
+          "label": "TruTrace pipeline (offline provider)"
+        },
+        "response": {
+          "output": "{\"price\": {\"value\": null, \"status\": \"conflicting\", \"condition\": null, \"evidence\": \"[00:12] Seller: The premium long-stem dozen is $50.\"}, \"currency\": {\"value\": \"USD\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:05] Seller: For a standard dozen red roses it is $35.\"}, \"availability\": {\"value\": \"in_stock\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:18] Seller: Both are in stock today.\"}, \"quantity_or_stock\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"delivery_or_pickup\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"timing\": {\"value\": \"by 4 pm\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:25] Seller: Delivery today is fine, it would get there by 4 pm.\"}, \"contact_next_step\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}}",
+          "cached": false
+        },
+        "score": 0.7142857142857143,
+        "success": false,
+        "testCase": {
+          "description": "campaign_04_conditional",
+          "vars": {
+            "case_id": "campaign_04_conditional",
+            "question": "Red roses, a dozen, delivery today",
+            "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: For a standard dozen red roses it is $35.\n[00:12] Seller: The premium long-stem dozen is $50.\n[00:18] Seller: Both are in stock today.\n[00:25] Seller: Delivery today is fine, it would get there by 4 pm."
+          },
+          "assert": [
+            {
+              "type": "python",
+              "value": "file://assert_fields.py",
+              "metric": "FieldAccuracy"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 3,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "case_id": "campaign_04_conditional",
+          "question": "Red roses, a dozen, delivery today",
+          "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: For a standard dozen red roses it is $35.\n[00:12] Seller: The premium long-stem dozen is $50.\n[00:18] Seller: Both are in stock today.\n[00:25] Seller: Delivery today is fine, it would get there by 4 pm."
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 1
+      },
+      {
+        "cost": 0,
+        "error": "5/7 fields correct, 1 unsupported claims (gold labels AI drafted, pending human review)",
+        "gradingResult": {
+          "pass": false,
+          "score": 0.7142857142857143,
+          "reason": "5/7 fields correct, 1 unsupported claims (gold labels AI drafted, pending human review)",
+          "namedScores": {
+            "FieldAccuracy": 0.7142857142857143,
+            "field_accuracy": 0.7142857142857143,
+            "unsupported_claims": 1
+          },
+          "namedScoreWeights": {
+            "FieldAccuracy": 1,
+            "field_accuracy": 1,
+            "unsupported_claims": 1
+          },
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0.7142857142857143,
+              "reason": "5/7 fields correct, 1 unsupported claims (gold labels AI drafted, pending human review)",
+              "namedScores": {
+                "field_accuracy": 0.7142857142857143,
+                "unsupported_claims": 1
+              },
+              "assertion": {
+                "type": "python",
+                "value": "file://assert_fields.py",
+                "metric": "FieldAccuracy"
+              }
+            }
+          ]
+        },
+        "id": "f89a426c-9063-46fa-b66e-eacde84f85b6",
+        "latencyMs": 53,
+        "namedScores": {
+          "FieldAccuracy": 0.7142857142857143,
+          "field_accuracy": 0.7142857142857143,
+          "unsupported_claims": 1
+        },
+        "prompt": {
+          "raw": "You extract a structured answer from a phone call between an agent\nand a local business. The business was asked: \"Red roses, a dozen, delivery today\"\n\nExtract exactly this schema:\n{\n  \"price\": number or null,\n  \"currency\": \"USD\" or null,\n  \"availability\": \"in_stock\" | \"out_of_stock\" | \"available\" | null,\n  \"quantity_or_stock\": string or null,\n  \"delivery_or_pickup\": \"delivery\" | \"pickup\" | null,\n  \"timing\": string or null,\n  \"contact_next_step\": string or null\n}\n\nTranscript:\n\"\"\"\n[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: For a standard dozen red roses it is $35.\n[00:12] Seller: The premium long-stem dozen is $50.\n[00:18] Seller: Both are in stock today.\n[00:25] Seller: Delivery today is fine, it would get there by 4 pm.\n\"\"\"\n\nRespond with a JSON object with the schema fields only.",
+          "label": "baseline-naive@1.0.0",
+          "config": {}
+        },
+        "promptId": "b2f6e3736f48f48d92485314940193651c7d36db73275d625417cd7ff8d21d1a",
+        "promptIdx": 0,
+        "provider": {
+          "id": "file://trutrace_provider.py",
+          "label": "TruTrace pipeline (offline provider)"
+        },
+        "response": {
+          "output": "{\"price\": {\"value\": 35.0, \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:05] Seller: For a standard dozen red roses it is $35.\"}, \"currency\": {\"value\": \"USD\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:05] Seller: For a standard dozen red roses it is $35.\"}, \"availability\": {\"value\": \"in_stock\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:18] Seller: Both are in stock today.\"}, \"quantity_or_stock\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"delivery_or_pickup\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"timing\": {\"value\": \"by 4 pm\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:25] Seller: Delivery today is fine, it would get there by 4 pm.\"}, \"contact_next_step\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}}",
+          "cached": false
+        },
+        "score": 0.7142857142857143,
+        "success": false,
+        "testCase": {
+          "description": "campaign_04_conditional",
+          "vars": {
+            "case_id": "campaign_04_conditional",
+            "question": "Red roses, a dozen, delivery today",
+            "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: For a standard dozen red roses it is $35.\n[00:12] Seller: The premium long-stem dozen is $50.\n[00:18] Seller: Both are in stock today.\n[00:25] Seller: Delivery today is fine, it would get there by 4 pm."
+          },
+          "assert": [
+            {
+              "type": "python",
+              "value": "file://assert_fields.py",
+              "metric": "FieldAccuracy"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 3,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "case_id": "campaign_04_conditional",
+          "question": "Red roses, a dozen, delivery today",
+          "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: For a standard dozen red roses it is $35.\n[00:12] Seller: The premium long-stem dozen is $50.\n[00:18] Seller: Both are in stock today.\n[00:25] Seller: Delivery today is fine, it would get there by 4 pm."
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 1
+      },
+      {
+        "cost": 0,
+        "error": "6/7 fields correct, 0 unsupported claims (gold labels AI drafted, pending human review)",
+        "gradingResult": {
+          "pass": false,
+          "score": 0.8571428571428571,
+          "reason": "6/7 fields correct, 0 unsupported claims (gold labels AI drafted, pending human review)",
+          "namedScores": {
+            "FieldAccuracy": 0.8571428571428571,
+            "field_accuracy": 0.8571428571428571,
+            "unsupported_claims": 0
+          },
+          "namedScoreWeights": {
+            "FieldAccuracy": 1,
+            "field_accuracy": 1,
+            "unsupported_claims": 1
+          },
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0.8571428571428571,
+              "reason": "6/7 fields correct, 0 unsupported claims (gold labels AI drafted, pending human review)",
+              "namedScores": {
+                "field_accuracy": 0.8571428571428571,
+                "unsupported_claims": 0
+              },
+              "assertion": {
+                "type": "python",
+                "value": "file://assert_fields.py",
+                "metric": "FieldAccuracy"
+              }
+            }
+          ]
+        },
+        "id": "56e43554-127b-456f-bc36-ed9f4b1d6050",
+        "latencyMs": 111,
+        "namedScores": {
+          "FieldAccuracy": 0.8571428571428571,
+          "field_accuracy": 0.8571428571428571,
+          "unsupported_claims": 0
+        },
+        "prompt": {
+          "raw": "You extract a structured answer from a phone call between an agent\nand a local business. The business was asked: \"Red roses, a dozen, delivery today\"\n\nExtract exactly this schema:\n{\n  \"price\": number or null,\n  \"currency\": \"USD\" or null,\n  \"availability\": \"in_stock\" | \"out_of_stock\" | \"available\" | null,\n  \"quantity_or_stock\": string or null,\n  \"delivery_or_pickup\": \"delivery\" | \"pickup\" | null,\n  \"timing\": string or null,\n  \"contact_next_step\": string or null\n}\n\nTranscript:\n\"\"\"\n[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:06] Seller: Red roses, yes, we have them in stock.\n[00:13] Seller: I would need to check the price list for a dozen, I do not have it in front of me.\n[00:21] Seller: Delivery today is fine, it would reach by 7 pm.\n[00:28] Seller: Call us back in ten minutes and I will have the price.\n\"\"\"\n\nRespond with a JSON object with the schema fields only.",
+          "label": "baseline-naive@1.0.0",
+          "config": {}
+        },
+        "promptId": "b2f6e3736f48f48d92485314940193651c7d36db73275d625417cd7ff8d21d1a",
+        "promptIdx": 0,
+        "provider": {
+          "id": "file://trutrace_provider.py",
+          "label": "TruTrace pipeline (offline provider)"
+        },
+        "response": {
+          "output": "{\"price\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"currency\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"availability\": {\"value\": \"in_stock\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:06] Seller: Red roses, yes, we have them in stock.\"}, \"quantity_or_stock\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"delivery_or_pickup\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"timing\": {\"value\": \"by 7 pm\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:21] Seller: Delivery today is fine, it would reach by 7 pm.\"}, \"contact_next_step\": {\"value\": \"call back\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:28] Seller: Call us back in ten minutes and I will have the price.\"}}",
+          "cached": false
+        },
+        "score": 0.8571428571428571,
+        "success": false,
+        "testCase": {
+          "description": "campaign_05_missing_price",
+          "vars": {
+            "case_id": "campaign_05_missing_price",
+            "question": "Red roses, a dozen, delivery today",
+            "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:06] Seller: Red roses, yes, we have them in stock.\n[00:13] Seller: I would need to check the price list for a dozen, I do not have it in front of me.\n[00:21] Seller: Delivery today is fine, it would reach by 7 pm.\n[00:28] Seller: Call us back in ten minutes and I will have the price."
+          },
+          "assert": [
+            {
+              "type": "python",
+              "value": "file://assert_fields.py",
+              "metric": "FieldAccuracy"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 4,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "case_id": "campaign_05_missing_price",
+          "question": "Red roses, a dozen, delivery today",
+          "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:06] Seller: Red roses, yes, we have them in stock.\n[00:13] Seller: I would need to check the price list for a dozen, I do not have it in front of me.\n[00:21] Seller: Delivery today is fine, it would reach by 7 pm.\n[00:28] Seller: Call us back in ten minutes and I will have the price."
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 1
+      },
+      {
+        "cost": 0,
+        "error": "6/7 fields correct, 0 unsupported claims (gold labels AI drafted, pending human review)",
+        "gradingResult": {
+          "pass": false,
+          "score": 0.8571428571428571,
+          "reason": "6/7 fields correct, 0 unsupported claims (gold labels AI drafted, pending human review)",
+          "namedScores": {
+            "FieldAccuracy": 0.8571428571428571,
+            "field_accuracy": 0.8571428571428571,
+            "unsupported_claims": 0
+          },
+          "namedScoreWeights": {
+            "FieldAccuracy": 1,
+            "field_accuracy": 1,
+            "unsupported_claims": 1
+          },
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0.8571428571428571,
+              "reason": "6/7 fields correct, 0 unsupported claims (gold labels AI drafted, pending human review)",
+              "namedScores": {
+                "field_accuracy": 0.8571428571428571,
+                "unsupported_claims": 0
+              },
+              "assertion": {
+                "type": "python",
+                "value": "file://assert_fields.py",
+                "metric": "FieldAccuracy"
+              }
+            }
+          ]
+        },
+        "id": "2cda58b5-0938-47e4-9253-02f108caba71",
+        "latencyMs": 91,
+        "namedScores": {
+          "FieldAccuracy": 0.8571428571428571,
+          "field_accuracy": 0.8571428571428571,
+          "unsupported_claims": 0
+        },
+        "prompt": {
+          "raw": "You extract a structured answer from a phone call between an agent\nand a local business. The business was asked: \"Red roses, a dozen, delivery today\"\n\nExtract exactly this schema:\n{\n  \"price\": number or null,\n  \"currency\": \"USD\" or null,\n  \"availability\": \"in_stock\" | \"out_of_stock\" | \"available\" | null,\n  \"quantity_or_stock\": string or null,\n  \"delivery_or_pickup\": \"delivery\" | \"pickup\" | null,\n  \"timing\": string or null,\n  \"contact_next_step\": string or null\n}\n\nRules:\n- Only state what the seller actually confirmed on the call. If a field was\n  never confirmed, return null for it. Never guess a quantity, never round\n  a vague or hedged answer into a fact.\n- If the seller gives two different prices, return all of them under\n  \"price_candidates\" instead of picking one. Do the same for conflicting\n  times under \"timing_candidates\".\n- For every non-null field, include an \"evidence\" object mapping the field\n  name to the exact sentence from the transcript that supports it, copied\n  word for word. If you cannot quote a supporting sentence, the field\n  must be null.\n- A price quoted for a different product, a delivery or setup fee, or a\n  price the seller says has changed is not the product's price.\n- Return JSON only, no commentary.\n\nTranscript:\n\"\"\"\n[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:06] Seller: Red roses, yes, we have them in stock.\n[00:13] Seller: I would need to check the price list for a dozen, I do not have it in front of me.\n[00:21] Seller: Delivery today is fine, it would reach by 7 pm.\n[00:28] Seller: Call us back in ten minutes and I will have the price.\n\"\"\"\n\nRespond with a JSON object with the schema fields, a \"price_candidates\"\nlist of {\"value\": number, \"evidence\": sentence}, a \"timing_candidates\"\nlist of {\"value\": string, \"evidence\": sentence}, and an \"evidence\"\nobject.",
+          "label": "trutrace@1.0.0",
+          "config": {}
+        },
+        "promptId": "787328639c4585f4650efa5672a830aafcf41cdf65abc51a52b18a8e58909b55",
+        "promptIdx": 1,
+        "provider": {
+          "id": "file://trutrace_provider.py",
+          "label": "TruTrace pipeline (offline provider)"
+        },
+        "response": {
+          "output": "{\"price\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"currency\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"availability\": {\"value\": \"in_stock\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:06] Seller: Red roses, yes, we have them in stock.\"}, \"quantity_or_stock\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"delivery_or_pickup\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"timing\": {\"value\": \"by 7 pm\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:21] Seller: Delivery today is fine, it would reach by 7 pm.\"}, \"contact_next_step\": {\"value\": \"call back\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:28] Seller: Call us back in ten minutes and I will have the price.\"}}",
+          "cached": false
+        },
+        "score": 0.8571428571428571,
+        "success": false,
+        "testCase": {
+          "description": "campaign_05_missing_price",
+          "vars": {
+            "case_id": "campaign_05_missing_price",
+            "question": "Red roses, a dozen, delivery today",
+            "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:06] Seller: Red roses, yes, we have them in stock.\n[00:13] Seller: I would need to check the price list for a dozen, I do not have it in front of me.\n[00:21] Seller: Delivery today is fine, it would reach by 7 pm.\n[00:28] Seller: Call us back in ten minutes and I will have the price."
+          },
+          "assert": [
+            {
+              "type": "python",
+              "value": "file://assert_fields.py",
+              "metric": "FieldAccuracy"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 4,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "case_id": "campaign_05_missing_price",
+          "question": "Red roses, a dozen, delivery today",
+          "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:06] Seller: Red roses, yes, we have them in stock.\n[00:13] Seller: I would need to check the price list for a dozen, I do not have it in front of me.\n[00:21] Seller: Delivery today is fine, it would reach by 7 pm.\n[00:28] Seller: Call us back in ten minutes and I will have the price."
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 1
+      },
+      {
+        "cost": 0,
+        "error": "2/7 fields correct, 0 unsupported claims (gold labels AI drafted, pending human review)",
+        "gradingResult": {
+          "pass": false,
+          "score": 0.2857142857142857,
+          "reason": "2/7 fields correct, 0 unsupported claims (gold labels AI drafted, pending human review)",
+          "namedScores": {
+            "FieldAccuracy": 0.2857142857142857,
+            "field_accuracy": 0.2857142857142857,
+            "unsupported_claims": 0
+          },
+          "namedScoreWeights": {
+            "FieldAccuracy": 1,
+            "field_accuracy": 1,
+            "unsupported_claims": 1
+          },
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0.2857142857142857,
+              "reason": "2/7 fields correct, 0 unsupported claims (gold labels AI drafted, pending human review)",
+              "namedScores": {
+                "field_accuracy": 0.2857142857142857,
+                "unsupported_claims": 0
+              },
+              "assertion": {
+                "type": "python",
+                "value": "file://assert_fields.py",
+                "metric": "FieldAccuracy"
+              }
+            }
+          ]
+        },
+        "id": "a4517a20-32e9-464f-b9f4-1e5d385d1fe6",
+        "latencyMs": 67,
+        "namedScores": {
+          "FieldAccuracy": 0.2857142857142857,
+          "field_accuracy": 0.2857142857142857,
+          "unsupported_claims": 0
+        },
+        "prompt": {
+          "raw": "You extract a structured answer from a phone call between an agent\nand a local business. The business was asked: \"Red roses, a dozen, delivery today\"\n\nExtract exactly this schema:\n{\n  \"price\": number or null,\n  \"currency\": \"USD\" or null,\n  \"availability\": \"in_stock\" | \"out_of_stock\" | \"available\" | null,\n  \"quantity_or_stock\": string or null,\n  \"delivery_or_pickup\": \"delivery\" | \"pickup\" | null,\n  \"timing\": string or null,\n  \"contact_next_step\": string or null\n}\n\nTranscript:\n\"\"\"\n[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: Yeah, uh, read, red roses, a dozen, that is thirty-eight dollars.\n[00:12] Seller: We have got, um, plenty on the shelf, fresh batch [inaudible].\n[00:19] Seller: Delivery today, yeah, by, uh, five pm.\n[00:26] Seller: Just, uh, order through the app.\n\"\"\"\n\nRespond with a JSON object with the schema fields only.",
+          "label": "baseline-naive@1.0.0",
+          "config": {}
+        },
+        "promptId": "b2f6e3736f48f48d92485314940193651c7d36db73275d625417cd7ff8d21d1a",
+        "promptIdx": 0,
+        "provider": {
+          "id": "file://trutrace_provider.py",
+          "label": "TruTrace pipeline (offline provider)"
+        },
+        "response": {
+          "output": "{\"price\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"currency\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"availability\": {\"value\": \"in_stock\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:12] Seller: We have got, um, plenty on the shelf, fresh batch [inaudible].\"}, \"quantity_or_stock\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"delivery_or_pickup\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"timing\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"contact_next_step\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}}",
+          "cached": false
+        },
+        "score": 0.2857142857142857,
+        "success": false,
+        "testCase": {
+          "description": "campaign_06_asr_noise",
+          "vars": {
+            "case_id": "campaign_06_asr_noise",
+            "question": "Red roses, a dozen, delivery today",
+            "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: Yeah, uh, read, red roses, a dozen, that is thirty-eight dollars.\n[00:12] Seller: We have got, um, plenty on the shelf, fresh batch [inaudible].\n[00:19] Seller: Delivery today, yeah, by, uh, five pm.\n[00:26] Seller: Just, uh, order through the app."
+          },
+          "assert": [
+            {
+              "type": "python",
+              "value": "file://assert_fields.py",
+              "metric": "FieldAccuracy"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 5,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "case_id": "campaign_06_asr_noise",
+          "question": "Red roses, a dozen, delivery today",
+          "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: Yeah, uh, read, red roses, a dozen, that is thirty-eight dollars.\n[00:12] Seller: We have got, um, plenty on the shelf, fresh batch [inaudible].\n[00:19] Seller: Delivery today, yeah, by, uh, five pm.\n[00:26] Seller: Just, uh, order through the app."
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 1
+      },
+      {
+        "cost": 0,
+        "error": "2/7 fields correct, 0 unsupported claims (gold labels AI drafted, pending human review)",
+        "gradingResult": {
+          "pass": false,
+          "score": 0.2857142857142857,
+          "reason": "2/7 fields correct, 0 unsupported claims (gold labels AI drafted, pending human review)",
+          "namedScores": {
+            "FieldAccuracy": 0.2857142857142857,
+            "field_accuracy": 0.2857142857142857,
+            "unsupported_claims": 0
+          },
+          "namedScoreWeights": {
+            "FieldAccuracy": 1,
+            "field_accuracy": 1,
+            "unsupported_claims": 1
+          },
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0.2857142857142857,
+              "reason": "2/7 fields correct, 0 unsupported claims (gold labels AI drafted, pending human review)",
+              "namedScores": {
+                "field_accuracy": 0.2857142857142857,
+                "unsupported_claims": 0
+              },
+              "assertion": {
+                "type": "python",
+                "value": "file://assert_fields.py",
+                "metric": "FieldAccuracy"
+              }
+            }
+          ]
+        },
+        "id": "c02195cc-e433-42de-9118-ca4aa37fd799",
+        "latencyMs": 133,
+        "namedScores": {
+          "FieldAccuracy": 0.2857142857142857,
+          "field_accuracy": 0.2857142857142857,
+          "unsupported_claims": 0
+        },
+        "prompt": {
+          "raw": "You extract a structured answer from a phone call between an agent\nand a local business. The business was asked: \"Red roses, a dozen, delivery today\"\n\nExtract exactly this schema:\n{\n  \"price\": number or null,\n  \"currency\": \"USD\" or null,\n  \"availability\": \"in_stock\" | \"out_of_stock\" | \"available\" | null,\n  \"quantity_or_stock\": string or null,\n  \"delivery_or_pickup\": \"delivery\" | \"pickup\" | null,\n  \"timing\": string or null,\n  \"contact_next_step\": string or null\n}\n\nRules:\n- Only state what the seller actually confirmed on the call. If a field was\n  never confirmed, return null for it. Never guess a quantity, never round\n  a vague or hedged answer into a fact.\n- If the seller gives two different prices, return all of them under\n  \"price_candidates\" instead of picking one. Do the same for conflicting\n  times under \"timing_candidates\".\n- For every non-null field, include an \"evidence\" object mapping the field\n  name to the exact sentence from the transcript that supports it, copied\n  word for word. If you cannot quote a supporting sentence, the field\n  must be null.\n- A price quoted for a different product, a delivery or setup fee, or a\n  price the seller says has changed is not the product's price.\n- Return JSON only, no commentary.\n\nTranscript:\n\"\"\"\n[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: Yeah, uh, read, red roses, a dozen, that is thirty-eight dollars.\n[00:12] Seller: We have got, um, plenty on the shelf, fresh batch [inaudible].\n[00:19] Seller: Delivery today, yeah, by, uh, five pm.\n[00:26] Seller: Just, uh, order through the app.\n\"\"\"\n\nRespond with a JSON object with the schema fields, a \"price_candidates\"\nlist of {\"value\": number, \"evidence\": sentence}, a \"timing_candidates\"\nlist of {\"value\": string, \"evidence\": sentence}, and an \"evidence\"\nobject.",
+          "label": "trutrace@1.0.0",
+          "config": {}
+        },
+        "promptId": "787328639c4585f4650efa5672a830aafcf41cdf65abc51a52b18a8e58909b55",
+        "promptIdx": 1,
+        "provider": {
+          "id": "file://trutrace_provider.py",
+          "label": "TruTrace pipeline (offline provider)"
+        },
+        "response": {
+          "output": "{\"price\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"currency\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"availability\": {\"value\": \"in_stock\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:12] Seller: We have got, um, plenty on the shelf, fresh batch [inaudible].\"}, \"quantity_or_stock\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"delivery_or_pickup\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"timing\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"contact_next_step\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}}",
+          "cached": false
+        },
+        "score": 0.2857142857142857,
+        "success": false,
+        "testCase": {
+          "description": "campaign_06_asr_noise",
+          "vars": {
+            "case_id": "campaign_06_asr_noise",
+            "question": "Red roses, a dozen, delivery today",
+            "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: Yeah, uh, read, red roses, a dozen, that is thirty-eight dollars.\n[00:12] Seller: We have got, um, plenty on the shelf, fresh batch [inaudible].\n[00:19] Seller: Delivery today, yeah, by, uh, five pm.\n[00:26] Seller: Just, uh, order through the app."
+          },
+          "assert": [
+            {
+              "type": "python",
+              "value": "file://assert_fields.py",
+              "metric": "FieldAccuracy"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 5,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "case_id": "campaign_06_asr_noise",
+          "question": "Red roses, a dozen, delivery today",
+          "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: Yeah, uh, read, red roses, a dozen, that is thirty-eight dollars.\n[00:12] Seller: We have got, um, plenty on the shelf, fresh batch [inaudible].\n[00:19] Seller: Delivery today, yeah, by, uh, five pm.\n[00:26] Seller: Just, uh, order through the app."
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 1
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {
+            "FieldAccuracy": 1,
+            "field_accuracy": 1,
+            "unsupported_claims": 0
+          },
+          "namedScoreWeights": {
+            "FieldAccuracy": 1,
+            "field_accuracy": 1,
+            "unsupported_claims": 1
+          },
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "7/7 fields correct, 0 unsupported claims (gold labels AI drafted, pending human review)",
+              "namedScores": {
+                "field_accuracy": 1,
+                "unsupported_claims": 0
+              },
+              "assertion": {
+                "type": "python",
+                "value": "file://assert_fields.py",
+                "metric": "FieldAccuracy"
+              }
+            }
+          ]
+        },
+        "id": "4ce196b2-ad8a-476a-b59f-a24e56baee2b",
+        "latencyMs": 12,
+        "namedScores": {
+          "FieldAccuracy": 1,
+          "field_accuracy": 1,
+          "unsupported_claims": 0
+        },
+        "prompt": {
+          "raw": "You extract a structured answer from a phone call between an agent\nand a local business. The business was asked: \"Red roses, a dozen, delivery today\"\n\nExtract exactly this schema:\n{\n  \"price\": number or null,\n  \"currency\": \"USD\" or null,\n  \"availability\": \"in_stock\" | \"out_of_stock\" | \"available\" | null,\n  \"quantity_or_stock\": string or null,\n  \"delivery_or_pickup\": \"delivery\" | \"pickup\" | null,\n  \"timing\": string or null,\n  \"contact_next_step\": string or null\n}\n\nTranscript:\n\"\"\"\n[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:06] Seller: A dozen red roses is $36.\n[00:13] Seller: But we are sold out of red roses today, the next batch is tomorrow.\n[00:21] Seller: I can reserve a dozen from tomorrow's batch if you like.\n\"\"\"\n\nRespond with a JSON object with the schema fields only.",
+          "label": "baseline-naive@1.0.0",
+          "config": {}
+        },
+        "promptId": "b2f6e3736f48f48d92485314940193651c7d36db73275d625417cd7ff8d21d1a",
+        "promptIdx": 0,
+        "provider": {
+          "id": "file://trutrace_provider.py",
+          "label": "TruTrace pipeline (offline provider)"
+        },
+        "response": {
+          "output": "{\"price\": {\"value\": 36.0, \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:06] Seller: A dozen red roses is $36.\"}, \"currency\": {\"value\": \"USD\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:06] Seller: A dozen red roses is $36.\"}, \"availability\": {\"value\": \"out_of_stock\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:13] Seller: But we are sold out of red roses today, the next batch is tomorrow.\"}, \"quantity_or_stock\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"delivery_or_pickup\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"timing\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"contact_next_step\": {\"value\": \"reserve\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:21] Seller: I can reserve a dozen from tomorrow's batch if you like.\"}}",
+          "cached": false
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "campaign_07_out_of_stock",
+          "vars": {
+            "case_id": "campaign_07_out_of_stock",
+            "question": "Red roses, a dozen, delivery today",
+            "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:06] Seller: A dozen red roses is $36.\n[00:13] Seller: But we are sold out of red roses today, the next batch is tomorrow.\n[00:21] Seller: I can reserve a dozen from tomorrow's batch if you like."
+          },
+          "assert": [
+            {
+              "type": "python",
+              "value": "file://assert_fields.py",
+              "metric": "FieldAccuracy"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 6,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "case_id": "campaign_07_out_of_stock",
+          "question": "Red roses, a dozen, delivery today",
+          "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:06] Seller: A dozen red roses is $36.\n[00:13] Seller: But we are sold out of red roses today, the next batch is tomorrow.\n[00:21] Seller: I can reserve a dozen from tomorrow's batch if you like."
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "All assertions passed",
+          "namedScores": {
+            "FieldAccuracy": 1,
+            "field_accuracy": 1,
+            "unsupported_claims": 0
+          },
+          "namedScoreWeights": {
+            "FieldAccuracy": 1,
+            "field_accuracy": 1,
+            "unsupported_claims": 1
+          },
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": true,
+              "score": 1,
+              "reason": "7/7 fields correct, 0 unsupported claims (gold labels AI drafted, pending human review)",
+              "namedScores": {
+                "field_accuracy": 1,
+                "unsupported_claims": 0
+              },
+              "assertion": {
+                "type": "python",
+                "value": "file://assert_fields.py",
+                "metric": "FieldAccuracy"
+              }
+            }
+          ]
+        },
+        "id": "b89fa7b7-156e-45b2-95a1-c22f4f3f8597",
+        "latencyMs": 76,
+        "namedScores": {
+          "FieldAccuracy": 1,
+          "field_accuracy": 1,
+          "unsupported_claims": 0
+        },
+        "prompt": {
+          "raw": "You extract a structured answer from a phone call between an agent\nand a local business. The business was asked: \"Red roses, a dozen, delivery today\"\n\nExtract exactly this schema:\n{\n  \"price\": number or null,\n  \"currency\": \"USD\" or null,\n  \"availability\": \"in_stock\" | \"out_of_stock\" | \"available\" | null,\n  \"quantity_or_stock\": string or null,\n  \"delivery_or_pickup\": \"delivery\" | \"pickup\" | null,\n  \"timing\": string or null,\n  \"contact_next_step\": string or null\n}\n\nRules:\n- Only state what the seller actually confirmed on the call. If a field was\n  never confirmed, return null for it. Never guess a quantity, never round\n  a vague or hedged answer into a fact.\n- If the seller gives two different prices, return all of them under\n  \"price_candidates\" instead of picking one. Do the same for conflicting\n  times under \"timing_candidates\".\n- For every non-null field, include an \"evidence\" object mapping the field\n  name to the exact sentence from the transcript that supports it, copied\n  word for word. If you cannot quote a supporting sentence, the field\n  must be null.\n- A price quoted for a different product, a delivery or setup fee, or a\n  price the seller says has changed is not the product's price.\n- Return JSON only, no commentary.\n\nTranscript:\n\"\"\"\n[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:06] Seller: A dozen red roses is $36.\n[00:13] Seller: But we are sold out of red roses today, the next batch is tomorrow.\n[00:21] Seller: I can reserve a dozen from tomorrow's batch if you like.\n\"\"\"\n\nRespond with a JSON object with the schema fields, a \"price_candidates\"\nlist of {\"value\": number, \"evidence\": sentence}, a \"timing_candidates\"\nlist of {\"value\": string, \"evidence\": sentence}, and an \"evidence\"\nobject.",
+          "label": "trutrace@1.0.0",
+          "config": {}
+        },
+        "promptId": "787328639c4585f4650efa5672a830aafcf41cdf65abc51a52b18a8e58909b55",
+        "promptIdx": 1,
+        "provider": {
+          "id": "file://trutrace_provider.py",
+          "label": "TruTrace pipeline (offline provider)"
+        },
+        "response": {
+          "output": "{\"price\": {\"value\": 36.0, \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:06] Seller: A dozen red roses is $36.\"}, \"currency\": {\"value\": \"USD\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:06] Seller: A dozen red roses is $36.\"}, \"availability\": {\"value\": \"out_of_stock\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:13] Seller: But we are sold out of red roses today, the next batch is tomorrow.\"}, \"quantity_or_stock\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"delivery_or_pickup\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"timing\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"contact_next_step\": {\"value\": \"reserve\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:21] Seller: I can reserve a dozen from tomorrow's batch if you like.\"}}",
+          "cached": false
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "campaign_07_out_of_stock",
+          "vars": {
+            "case_id": "campaign_07_out_of_stock",
+            "question": "Red roses, a dozen, delivery today",
+            "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:06] Seller: A dozen red roses is $36.\n[00:13] Seller: But we are sold out of red roses today, the next batch is tomorrow.\n[00:21] Seller: I can reserve a dozen from tomorrow's batch if you like."
+          },
+          "assert": [
+            {
+              "type": "python",
+              "value": "file://assert_fields.py",
+              "metric": "FieldAccuracy"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 6,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "case_id": "campaign_07_out_of_stock",
+          "question": "Red roses, a dozen, delivery today",
+          "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:06] Seller: A dozen red roses is $36.\n[00:13] Seller: But we are sold out of red roses today, the next batch is tomorrow.\n[00:21] Seller: I can reserve a dozen from tomorrow's batch if you like."
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "error": "6/7 fields correct, 1 unsupported claims (gold labels AI drafted, pending human review)",
+        "gradingResult": {
+          "pass": false,
+          "score": 0.8571428571428571,
+          "reason": "6/7 fields correct, 1 unsupported claims (gold labels AI drafted, pending human review)",
+          "namedScores": {
+            "FieldAccuracy": 0.8571428571428571,
+            "field_accuracy": 0.8571428571428571,
+            "unsupported_claims": 1
+          },
+          "namedScoreWeights": {
+            "FieldAccuracy": 1,
+            "field_accuracy": 1,
+            "unsupported_claims": 1
+          },
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0.8571428571428571,
+              "reason": "6/7 fields correct, 1 unsupported claims (gold labels AI drafted, pending human review)",
+              "namedScores": {
+                "field_accuracy": 0.8571428571428571,
+                "unsupported_claims": 1
+              },
+              "assertion": {
+                "type": "python",
+                "value": "file://assert_fields.py",
+                "metric": "FieldAccuracy"
+              }
+            }
+          ]
+        },
+        "id": "f2c3feb7-d81f-49bc-86e1-43383a614c23",
+        "latencyMs": 76,
+        "namedScores": {
+          "FieldAccuracy": 0.8571428571428571,
+          "field_accuracy": 0.8571428571428571,
+          "unsupported_claims": 1
+        },
+        "prompt": {
+          "raw": "You extract a structured answer from a phone call between an agent\nand a local business. The business was asked: \"Red roses, a dozen, delivery today\"\n\nExtract exactly this schema:\n{\n  \"price\": number or null,\n  \"currency\": \"USD\" or null,\n  \"availability\": \"in_stock\" | \"out_of_stock\" | \"available\" | null,\n  \"quantity_or_stock\": string or null,\n  \"delivery_or_pickup\": \"delivery\" | \"pickup\" | null,\n  \"timing\": string or null,\n  \"contact_next_step\": string or null\n}\n\nTranscript:\n\"\"\"\n[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: A dozen red roses is $42, that price is firm.\n[00:12] Seller: Stock, I think there should be a few bunches left.\n[00:19] Seller: We can deliver today by 3 pm if they are there.\n[00:26] Seller: Text us to confirm.\n\"\"\"\n\nRespond with a JSON object with the schema fields only.",
+          "label": "baseline-naive@1.0.0",
+          "config": {}
+        },
+        "promptId": "b2f6e3736f48f48d92485314940193651c7d36db73275d625417cd7ff8d21d1a",
+        "promptIdx": 0,
+        "provider": {
+          "id": "file://trutrace_provider.py",
+          "label": "TruTrace pipeline (offline provider)"
+        },
+        "response": {
+          "output": "{\"price\": {\"value\": 42.0, \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:05] Seller: A dozen red roses is $42, that price is firm.\"}, \"currency\": {\"value\": \"USD\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:05] Seller: A dozen red roses is $42, that price is firm.\"}, \"availability\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"quantity_or_stock\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"delivery_or_pickup\": {\"value\": \"delivery\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:19] Seller: We can deliver today by 3 pm if they are there.\"}, \"timing\": {\"value\": \"by 3 pm\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:19] Seller: We can deliver today by 3 pm if they are there.\"}, \"contact_next_step\": {\"value\": \"text\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:26] Seller: Text us to confirm.\"}}",
+          "cached": false
+        },
+        "score": 0.8571428571428571,
+        "success": false,
+        "testCase": {
+          "description": "campaign_08_hedged_stock",
+          "vars": {
+            "case_id": "campaign_08_hedged_stock",
+            "question": "Red roses, a dozen, delivery today",
+            "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: A dozen red roses is $42, that price is firm.\n[00:12] Seller: Stock, I think there should be a few bunches left.\n[00:19] Seller: We can deliver today by 3 pm if they are there.\n[00:26] Seller: Text us to confirm."
+          },
+          "assert": [
+            {
+              "type": "python",
+              "value": "file://assert_fields.py",
+              "metric": "FieldAccuracy"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 7,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "case_id": "campaign_08_hedged_stock",
+          "question": "Red roses, a dozen, delivery today",
+          "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: A dozen red roses is $42, that price is firm.\n[00:12] Seller: Stock, I think there should be a few bunches left.\n[00:19] Seller: We can deliver today by 3 pm if they are there.\n[00:26] Seller: Text us to confirm."
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 1
+      },
+      {
+        "cost": 0,
+        "error": "6/7 fields correct, 1 unsupported claims (gold labels AI drafted, pending human review)",
+        "gradingResult": {
+          "pass": false,
+          "score": 0.8571428571428571,
+          "reason": "6/7 fields correct, 1 unsupported claims (gold labels AI drafted, pending human review)",
+          "namedScores": {
+            "FieldAccuracy": 0.8571428571428571,
+            "field_accuracy": 0.8571428571428571,
+            "unsupported_claims": 1
+          },
+          "namedScoreWeights": {
+            "FieldAccuracy": 1,
+            "field_accuracy": 1,
+            "unsupported_claims": 1
+          },
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0.8571428571428571,
+              "reason": "6/7 fields correct, 1 unsupported claims (gold labels AI drafted, pending human review)",
+              "namedScores": {
+                "field_accuracy": 0.8571428571428571,
+                "unsupported_claims": 1
+              },
+              "assertion": {
+                "type": "python",
+                "value": "file://assert_fields.py",
+                "metric": "FieldAccuracy"
+              }
+            }
+          ]
+        },
+        "id": "72d0a859-9dda-4428-bf3d-2fd0320cac93",
+        "latencyMs": 10,
+        "namedScores": {
+          "FieldAccuracy": 0.8571428571428571,
+          "field_accuracy": 0.8571428571428571,
+          "unsupported_claims": 1
+        },
+        "prompt": {
+          "raw": "You extract a structured answer from a phone call between an agent\nand a local business. The business was asked: \"Red roses, a dozen, delivery today\"\n\nExtract exactly this schema:\n{\n  \"price\": number or null,\n  \"currency\": \"USD\" or null,\n  \"availability\": \"in_stock\" | \"out_of_stock\" | \"available\" | null,\n  \"quantity_or_stock\": string or null,\n  \"delivery_or_pickup\": \"delivery\" | \"pickup\" | null,\n  \"timing\": string or null,\n  \"contact_next_step\": string or null\n}\n\nRules:\n- Only state what the seller actually confirmed on the call. If a field was\n  never confirmed, return null for it. Never guess a quantity, never round\n  a vague or hedged answer into a fact.\n- If the seller gives two different prices, return all of them under\n  \"price_candidates\" instead of picking one. Do the same for conflicting\n  times under \"timing_candidates\".\n- For every non-null field, include an \"evidence\" object mapping the field\n  name to the exact sentence from the transcript that supports it, copied\n  word for word. If you cannot quote a supporting sentence, the field\n  must be null.\n- A price quoted for a different product, a delivery or setup fee, or a\n  price the seller says has changed is not the product's price.\n- Return JSON only, no commentary.\n\nTranscript:\n\"\"\"\n[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: A dozen red roses is $42, that price is firm.\n[00:12] Seller: Stock, I think there should be a few bunches left.\n[00:19] Seller: We can deliver today by 3 pm if they are there.\n[00:26] Seller: Text us to confirm.\n\"\"\"\n\nRespond with a JSON object with the schema fields, a \"price_candidates\"\nlist of {\"value\": number, \"evidence\": sentence}, a \"timing_candidates\"\nlist of {\"value\": string, \"evidence\": sentence}, and an \"evidence\"\nobject.",
+          "label": "trutrace@1.0.0",
+          "config": {}
+        },
+        "promptId": "787328639c4585f4650efa5672a830aafcf41cdf65abc51a52b18a8e58909b55",
+        "promptIdx": 1,
+        "provider": {
+          "id": "file://trutrace_provider.py",
+          "label": "TruTrace pipeline (offline provider)"
+        },
+        "response": {
+          "output": "{\"price\": {\"value\": 42.0, \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:05] Seller: A dozen red roses is $42, that price is firm.\"}, \"currency\": {\"value\": \"USD\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:05] Seller: A dozen red roses is $42, that price is firm.\"}, \"availability\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"quantity_or_stock\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"delivery_or_pickup\": {\"value\": \"delivery\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:19] Seller: We can deliver today by 3 pm if they are there.\"}, \"timing\": {\"value\": \"by 3 pm\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:19] Seller: We can deliver today by 3 pm if they are there.\"}, \"contact_next_step\": {\"value\": \"text\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:26] Seller: Text us to confirm.\"}}",
+          "cached": false
+        },
+        "score": 0.8571428571428571,
+        "success": false,
+        "testCase": {
+          "description": "campaign_08_hedged_stock",
+          "vars": {
+            "case_id": "campaign_08_hedged_stock",
+            "question": "Red roses, a dozen, delivery today",
+            "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: A dozen red roses is $42, that price is firm.\n[00:12] Seller: Stock, I think there should be a few bunches left.\n[00:19] Seller: We can deliver today by 3 pm if they are there.\n[00:26] Seller: Text us to confirm."
+          },
+          "assert": [
+            {
+              "type": "python",
+              "value": "file://assert_fields.py",
+              "metric": "FieldAccuracy"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 7,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "case_id": "campaign_08_hedged_stock",
+          "question": "Red roses, a dozen, delivery today",
+          "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: A dozen red roses is $42, that price is firm.\n[00:12] Seller: Stock, I think there should be a few bunches left.\n[00:19] Seller: We can deliver today by 3 pm if they are there.\n[00:26] Seller: Text us to confirm."
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 1
+      },
+      {
+        "cost": 0,
+        "error": "6/7 fields correct, 1 unsupported claims (gold labels AI drafted, pending human review)",
+        "gradingResult": {
+          "pass": false,
+          "score": 0.8571428571428571,
+          "reason": "6/7 fields correct, 1 unsupported claims (gold labels AI drafted, pending human review)",
+          "namedScores": {
+            "FieldAccuracy": 0.8571428571428571,
+            "field_accuracy": 0.8571428571428571,
+            "unsupported_claims": 1
+          },
+          "namedScoreWeights": {
+            "FieldAccuracy": 1,
+            "field_accuracy": 1,
+            "unsupported_claims": 1
+          },
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0.8571428571428571,
+              "reason": "6/7 fields correct, 1 unsupported claims (gold labels AI drafted, pending human review)",
+              "namedScores": {
+                "field_accuracy": 0.8571428571428571,
+                "unsupported_claims": 1
+              },
+              "assertion": {
+                "type": "python",
+                "value": "file://assert_fields.py",
+                "metric": "FieldAccuracy"
+              }
+            }
+          ]
+        },
+        "id": "5a534c6d-8193-4c3f-87c3-bc1e74b23f4f",
+        "latencyMs": 9,
+        "namedScores": {
+          "FieldAccuracy": 0.8571428571428571,
+          "field_accuracy": 0.8571428571428571,
+          "unsupported_claims": 1
+        },
+        "prompt": {
+          "raw": "You extract a structured answer from a phone call between an agent\nand a local business. The business was asked: \"Red roses, a dozen, delivery today\"\n\nExtract exactly this schema:\n{\n  \"price\": number or null,\n  \"currency\": \"USD\" or null,\n  \"availability\": \"in_stock\" | \"out_of_stock\" | \"available\" | null,\n  \"quantity_or_stock\": string or null,\n  \"delivery_or_pickup\": \"delivery\" | \"pickup\" | null,\n  \"timing\": string or null,\n  \"contact_next_step\": string or null\n}\n\nTranscript:\n\"\"\"\n[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: Last week a dozen red roses was $30.\n[00:12] Seller: This week it is $36 a dozen.\n[00:19] Seller: They are in stock and we deliver today by 2 pm.\n\"\"\"\n\nRespond with a JSON object with the schema fields only.",
+          "label": "baseline-naive@1.0.0",
+          "config": {}
+        },
+        "promptId": "b2f6e3736f48f48d92485314940193651c7d36db73275d625417cd7ff8d21d1a",
+        "promptIdx": 0,
+        "provider": {
+          "id": "file://trutrace_provider.py",
+          "label": "TruTrace pipeline (offline provider)"
+        },
+        "response": {
+          "output": "{\"price\": {\"value\": 30.0, \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:05] Seller: Last week a dozen red roses was $30.\"}, \"currency\": {\"value\": \"USD\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:05] Seller: Last week a dozen red roses was $30.\"}, \"availability\": {\"value\": \"in_stock\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:19] Seller: They are in stock and we deliver today by 2 pm.\"}, \"quantity_or_stock\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"delivery_or_pickup\": {\"value\": \"delivery\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:19] Seller: They are in stock and we deliver today by 2 pm.\"}, \"timing\": {\"value\": \"by 2 pm\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:19] Seller: They are in stock and we deliver today by 2 pm.\"}, \"contact_next_step\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}}",
+          "cached": false
+        },
+        "score": 0.8571428571428571,
+        "success": false,
+        "testCase": {
+          "description": "campaign_09_temporal",
+          "vars": {
+            "case_id": "campaign_09_temporal",
+            "question": "Red roses, a dozen, delivery today",
+            "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: Last week a dozen red roses was $30.\n[00:12] Seller: This week it is $36 a dozen.\n[00:19] Seller: They are in stock and we deliver today by 2 pm."
+          },
+          "assert": [
+            {
+              "type": "python",
+              "value": "file://assert_fields.py",
+              "metric": "FieldAccuracy"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 8,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "case_id": "campaign_09_temporal",
+          "question": "Red roses, a dozen, delivery today",
+          "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: Last week a dozen red roses was $30.\n[00:12] Seller: This week it is $36 a dozen.\n[00:19] Seller: They are in stock and we deliver today by 2 pm."
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 1
+      },
+      {
+        "cost": 0,
+        "error": "6/7 fields correct, 1 unsupported claims (gold labels AI drafted, pending human review)",
+        "gradingResult": {
+          "pass": false,
+          "score": 0.8571428571428571,
+          "reason": "6/7 fields correct, 1 unsupported claims (gold labels AI drafted, pending human review)",
+          "namedScores": {
+            "FieldAccuracy": 0.8571428571428571,
+            "field_accuracy": 0.8571428571428571,
+            "unsupported_claims": 1
+          },
+          "namedScoreWeights": {
+            "FieldAccuracy": 1,
+            "field_accuracy": 1,
+            "unsupported_claims": 1
+          },
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0.8571428571428571,
+              "reason": "6/7 fields correct, 1 unsupported claims (gold labels AI drafted, pending human review)",
+              "namedScores": {
+                "field_accuracy": 0.8571428571428571,
+                "unsupported_claims": 1
+              },
+              "assertion": {
+                "type": "python",
+                "value": "file://assert_fields.py",
+                "metric": "FieldAccuracy"
+              }
+            }
+          ]
+        },
+        "id": "4bb3fdcd-fa2b-4fde-acbe-62177ac9a293",
+        "latencyMs": 11,
+        "namedScores": {
+          "FieldAccuracy": 0.8571428571428571,
+          "field_accuracy": 0.8571428571428571,
+          "unsupported_claims": 1
+        },
+        "prompt": {
+          "raw": "You extract a structured answer from a phone call between an agent\nand a local business. The business was asked: \"Red roses, a dozen, delivery today\"\n\nExtract exactly this schema:\n{\n  \"price\": number or null,\n  \"currency\": \"USD\" or null,\n  \"availability\": \"in_stock\" | \"out_of_stock\" | \"available\" | null,\n  \"quantity_or_stock\": string or null,\n  \"delivery_or_pickup\": \"delivery\" | \"pickup\" | null,\n  \"timing\": string or null,\n  \"contact_next_step\": string or null\n}\n\nRules:\n- Only state what the seller actually confirmed on the call. If a field was\n  never confirmed, return null for it. Never guess a quantity, never round\n  a vague or hedged answer into a fact.\n- If the seller gives two different prices, return all of them under\n  \"price_candidates\" instead of picking one. Do the same for conflicting\n  times under \"timing_candidates\".\n- For every non-null field, include an \"evidence\" object mapping the field\n  name to the exact sentence from the transcript that supports it, copied\n  word for word. If you cannot quote a supporting sentence, the field\n  must be null.\n- A price quoted for a different product, a delivery or setup fee, or a\n  price the seller says has changed is not the product's price.\n- Return JSON only, no commentary.\n\nTranscript:\n\"\"\"\n[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: Last week a dozen red roses was $30.\n[00:12] Seller: This week it is $36 a dozen.\n[00:19] Seller: They are in stock and we deliver today by 2 pm.\n\"\"\"\n\nRespond with a JSON object with the schema fields, a \"price_candidates\"\nlist of {\"value\": number, \"evidence\": sentence}, a \"timing_candidates\"\nlist of {\"value\": string, \"evidence\": sentence}, and an \"evidence\"\nobject.",
+          "label": "trutrace@1.0.0",
+          "config": {}
+        },
+        "promptId": "787328639c4585f4650efa5672a830aafcf41cdf65abc51a52b18a8e58909b55",
+        "promptIdx": 1,
+        "provider": {
+          "id": "file://trutrace_provider.py",
+          "label": "TruTrace pipeline (offline provider)"
+        },
+        "response": {
+          "output": "{\"price\": {\"value\": 36.0, \"status\": \"confirmed\", \"condition\": \"per dozen\", \"evidence\": \"[00:12] Seller: This week it is $36 a dozen.\"}, \"currency\": {\"value\": \"USD\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:05] Seller: Last week a dozen red roses was $30.\"}, \"availability\": {\"value\": \"in_stock\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:19] Seller: They are in stock and we deliver today by 2 pm.\"}, \"quantity_or_stock\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"delivery_or_pickup\": {\"value\": \"delivery\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:19] Seller: They are in stock and we deliver today by 2 pm.\"}, \"timing\": {\"value\": \"by 2 pm\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:19] Seller: They are in stock and we deliver today by 2 pm.\"}, \"contact_next_step\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}}",
+          "cached": false
+        },
+        "score": 0.8571428571428571,
+        "success": false,
+        "testCase": {
+          "description": "campaign_09_temporal",
+          "vars": {
+            "case_id": "campaign_09_temporal",
+            "question": "Red roses, a dozen, delivery today",
+            "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: Last week a dozen red roses was $30.\n[00:12] Seller: This week it is $36 a dozen.\n[00:19] Seller: They are in stock and we deliver today by 2 pm."
+          },
+          "assert": [
+            {
+              "type": "python",
+              "value": "file://assert_fields.py",
+              "metric": "FieldAccuracy"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 8,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "case_id": "campaign_09_temporal",
+          "question": "Red roses, a dozen, delivery today",
+          "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: Last week a dozen red roses was $30.\n[00:12] Seller: This week it is $36 a dozen.\n[00:19] Seller: They are in stock and we deliver today by 2 pm."
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 1
+      },
+      {
+        "cost": 0,
+        "error": "4/7 fields correct, 2 unsupported claims (gold labels AI drafted, pending human review)",
+        "gradingResult": {
+          "pass": false,
+          "score": 0.5714285714285714,
+          "reason": "4/7 fields correct, 2 unsupported claims (gold labels AI drafted, pending human review)",
+          "namedScores": {
+            "FieldAccuracy": 0.5714285714285714,
+            "field_accuracy": 0.5714285714285714,
+            "unsupported_claims": 2
+          },
+          "namedScoreWeights": {
+            "FieldAccuracy": 1,
+            "field_accuracy": 1,
+            "unsupported_claims": 1
+          },
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0.5714285714285714,
+              "reason": "4/7 fields correct, 2 unsupported claims (gold labels AI drafted, pending human review)",
+              "namedScores": {
+                "field_accuracy": 0.5714285714285714,
+                "unsupported_claims": 2
+              },
+              "assertion": {
+                "type": "python",
+                "value": "file://assert_fields.py",
+                "metric": "FieldAccuracy"
+              }
+            }
+          ]
+        },
+        "id": "9ae8e3be-7bee-408b-8204-fb4a584ed00f",
+        "latencyMs": 10,
+        "namedScores": {
+          "FieldAccuracy": 0.5714285714285714,
+          "field_accuracy": 0.5714285714285714,
+          "unsupported_claims": 2
+        },
+        "prompt": {
+          "raw": "You extract a structured answer from a phone call between an agent\nand a local business. The business was asked: \"Red roses, a dozen, delivery today\"\n\nExtract exactly this schema:\n{\n  \"price\": number or null,\n  \"currency\": \"USD\" or null,\n  \"availability\": \"in_stock\" | \"out_of_stock\" | \"available\" | null,\n  \"quantity_or_stock\": string or null,\n  \"delivery_or_pickup\": \"delivery\" | \"pickup\" | null,\n  \"timing\": string or null,\n  \"contact_next_step\": string or null\n}\n\nTranscript:\n\"\"\"\n[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: White roses are $28 a dozen today.\n[00:12] Seller: For red roses I would have to check with the supplier, no price yet.\n[00:19] Seller: We do deliver across the city, same day.\n\"\"\"\n\nRespond with a JSON object with the schema fields only.",
+          "label": "baseline-naive@1.0.0",
+          "config": {}
+        },
+        "promptId": "b2f6e3736f48f48d92485314940193651c7d36db73275d625417cd7ff8d21d1a",
+        "promptIdx": 0,
+        "provider": {
+          "id": "file://trutrace_provider.py",
+          "label": "TruTrace pipeline (offline provider)"
+        },
+        "response": {
+          "output": "{\"price\": {\"value\": 28.0, \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:05] Seller: White roses are $28 a dozen today.\"}, \"currency\": {\"value\": \"USD\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:05] Seller: White roses are $28 a dozen today.\"}, \"availability\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"quantity_or_stock\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"delivery_or_pickup\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"timing\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"contact_next_step\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}}",
+          "cached": false
+        },
+        "score": 0.5714285714285714,
+        "success": false,
+        "testCase": {
+          "description": "campaign_10_wrong_product",
+          "vars": {
+            "case_id": "campaign_10_wrong_product",
+            "question": "Red roses, a dozen, delivery today",
+            "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: White roses are $28 a dozen today.\n[00:12] Seller: For red roses I would have to check with the supplier, no price yet.\n[00:19] Seller: We do deliver across the city, same day."
+          },
+          "assert": [
+            {
+              "type": "python",
+              "value": "file://assert_fields.py",
+              "metric": "FieldAccuracy"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 9,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "case_id": "campaign_10_wrong_product",
+          "question": "Red roses, a dozen, delivery today",
+          "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: White roses are $28 a dozen today.\n[00:12] Seller: For red roses I would have to check with the supplier, no price yet.\n[00:19] Seller: We do deliver across the city, same day."
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 1
+      },
+      {
+        "cost": 0,
+        "error": "4/7 fields correct, 2 unsupported claims (gold labels AI drafted, pending human review)",
+        "gradingResult": {
+          "pass": false,
+          "score": 0.5714285714285714,
+          "reason": "4/7 fields correct, 2 unsupported claims (gold labels AI drafted, pending human review)",
+          "namedScores": {
+            "FieldAccuracy": 0.5714285714285714,
+            "field_accuracy": 0.5714285714285714,
+            "unsupported_claims": 2
+          },
+          "namedScoreWeights": {
+            "FieldAccuracy": 1,
+            "field_accuracy": 1,
+            "unsupported_claims": 1
+          },
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          },
+          "componentResults": [
+            {
+              "pass": false,
+              "score": 0.5714285714285714,
+              "reason": "4/7 fields correct, 2 unsupported claims (gold labels AI drafted, pending human review)",
+              "namedScores": {
+                "field_accuracy": 0.5714285714285714,
+                "unsupported_claims": 2
+              },
+              "assertion": {
+                "type": "python",
+                "value": "file://assert_fields.py",
+                "metric": "FieldAccuracy"
+              }
+            }
+          ]
+        },
+        "id": "0c6e864b-70cc-45fd-8225-43e3c35453de",
+        "latencyMs": 13,
+        "namedScores": {
+          "FieldAccuracy": 0.5714285714285714,
+          "field_accuracy": 0.5714285714285714,
+          "unsupported_claims": 2
+        },
+        "prompt": {
+          "raw": "You extract a structured answer from a phone call between an agent\nand a local business. The business was asked: \"Red roses, a dozen, delivery today\"\n\nExtract exactly this schema:\n{\n  \"price\": number or null,\n  \"currency\": \"USD\" or null,\n  \"availability\": \"in_stock\" | \"out_of_stock\" | \"available\" | null,\n  \"quantity_or_stock\": string or null,\n  \"delivery_or_pickup\": \"delivery\" | \"pickup\" | null,\n  \"timing\": string or null,\n  \"contact_next_step\": string or null\n}\n\nRules:\n- Only state what the seller actually confirmed on the call. If a field was\n  never confirmed, return null for it. Never guess a quantity, never round\n  a vague or hedged answer into a fact.\n- If the seller gives two different prices, return all of them under\n  \"price_candidates\" instead of picking one. Do the same for conflicting\n  times under \"timing_candidates\".\n- For every non-null field, include an \"evidence\" object mapping the field\n  name to the exact sentence from the transcript that supports it, copied\n  word for word. If you cannot quote a supporting sentence, the field\n  must be null.\n- A price quoted for a different product, a delivery or setup fee, or a\n  price the seller says has changed is not the product's price.\n- Return JSON only, no commentary.\n\nTranscript:\n\"\"\"\n[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: White roses are $28 a dozen today.\n[00:12] Seller: For red roses I would have to check with the supplier, no price yet.\n[00:19] Seller: We do deliver across the city, same day.\n\"\"\"\n\nRespond with a JSON object with the schema fields, a \"price_candidates\"\nlist of {\"value\": number, \"evidence\": sentence}, a \"timing_candidates\"\nlist of {\"value\": string, \"evidence\": sentence}, and an \"evidence\"\nobject.",
+          "label": "trutrace@1.0.0",
+          "config": {}
+        },
+        "promptId": "787328639c4585f4650efa5672a830aafcf41cdf65abc51a52b18a8e58909b55",
+        "promptIdx": 1,
+        "provider": {
+          "id": "file://trutrace_provider.py",
+          "label": "TruTrace pipeline (offline provider)"
+        },
+        "response": {
+          "output": "{\"price\": {\"value\": 28.0, \"status\": \"confirmed\", \"condition\": \"per dozen\", \"evidence\": \"[00:05] Seller: White roses are $28 a dozen today.\"}, \"currency\": {\"value\": \"USD\", \"status\": \"confirmed\", \"condition\": null, \"evidence\": \"[00:05] Seller: White roses are $28 a dozen today.\"}, \"availability\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"quantity_or_stock\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"delivery_or_pickup\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"timing\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}, \"contact_next_step\": {\"value\": null, \"status\": \"unconfirmed\", \"condition\": null, \"evidence\": null}}",
+          "cached": false
+        },
+        "score": 0.5714285714285714,
+        "success": false,
+        "testCase": {
+          "description": "campaign_10_wrong_product",
+          "vars": {
+            "case_id": "campaign_10_wrong_product",
+            "question": "Red roses, a dozen, delivery today",
+            "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: White roses are $28 a dozen today.\n[00:12] Seller: For red roses I would have to check with the supplier, no price yet.\n[00:19] Seller: We do deliver across the city, same day."
+          },
+          "assert": [
+            {
+              "type": "python",
+              "value": "file://assert_fields.py",
+              "metric": "FieldAccuracy"
+            }
+          ],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 9,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "case_id": "campaign_10_wrong_product",
+          "question": "Red roses, a dozen, delivery today",
+          "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: White roses are $28 a dozen today.\n[00:12] Seller: For red roses I would have to check with the supplier, no price yet.\n[00:19] Seller: We do deliver across the city, same day."
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 1
+      }
+    ],
+    "stats": {
+      "successes": 5,
+      "failures": 15,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 20,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0
+        },
+        "assertions": {
+          "total": 0,
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "numRequests": 0,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          }
+        }
+      },
+      "durationMs": 9992,
+      "evaluationDurationMs": 9992
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "TruTrace campaign slice — baseline-naive@1.0.0 vs trutrace@1.0.0, offline provider, scored by evals/metrics.py",
+    "prompts": [
+      {
+        "id": "file://prompt_baseline.py:get_prompt",
+        "label": "baseline-naive@1.0.0",
+        "raw": "file:///home/hatch/workspace/projects/trutrace/promptfoo/prompt_baseline.py:get_prompt"
+      },
+      {
+        "id": "file://prompt_trutrace.py:get_prompt",
+        "label": "trutrace@1.0.0",
+        "raw": "file:///home/hatch/workspace/projects/trutrace/promptfoo/prompt_trutrace.py:get_prompt"
+      }
+    ],
+    "providers": [
+      {
+        "id": "file://trutrace_provider.py",
+        "label": "TruTrace pipeline (offline provider)"
+      }
+    ],
+    "tests": [
+      {
+        "description": "campaign_01_showcase_hedged",
+        "vars": {
+          "case_id": "campaign_01_showcase_hedged",
+          "question": "Red roses, a dozen, delivery today",
+          "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:07] Seller: Uh, red roses, a dozen is around $35, I think.\n[00:13] Seller: They are usually in stock, we get them most mornings.\n[00:19] Seller: Delivery today, uh, probably tomorrow morning is safer, to be honest.\n[00:26] Seller: You can order on our website."
+        }
+      },
+      {
+        "description": "campaign_02_clean_confirm",
+        "vars": {
+          "case_id": "campaign_02_clean_confirm",
+          "question": "Red roses, a dozen, delivery today",
+          "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: Yes, a dozen red roses is $38.\n[00:11] Seller: We have plenty in stock, fresh this morning.\n[00:17] Seller: We can deliver today by 6 pm.\n[00:24] Seller: I can book you in right now."
+        }
+      },
+      {
+        "description": "campaign_03_contradiction",
+        "vars": {
+          "case_id": "campaign_03_contradiction",
+          "question": "Red roses, a dozen, delivery today",
+          "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:06] Seller: A dozen red roses is $35.\n[00:12] Seller: And yes, they are in stock.\n[00:20] Seller: Hmm, the price list here says $40 a dozen.\n[00:27] Seller: We deliver, it would reach by 5 pm today."
+        }
+      },
+      {
+        "description": "campaign_04_conditional",
+        "vars": {
+          "case_id": "campaign_04_conditional",
+          "question": "Red roses, a dozen, delivery today",
+          "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: For a standard dozen red roses it is $35.\n[00:12] Seller: The premium long-stem dozen is $50.\n[00:18] Seller: Both are in stock today.\n[00:25] Seller: Delivery today is fine, it would get there by 4 pm."
+        }
+      },
+      {
+        "description": "campaign_05_missing_price",
+        "vars": {
+          "case_id": "campaign_05_missing_price",
+          "question": "Red roses, a dozen, delivery today",
+          "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:06] Seller: Red roses, yes, we have them in stock.\n[00:13] Seller: I would need to check the price list for a dozen, I do not have it in front of me.\n[00:21] Seller: Delivery today is fine, it would reach by 7 pm.\n[00:28] Seller: Call us back in ten minutes and I will have the price."
+        }
+      },
+      {
+        "description": "campaign_06_asr_noise",
+        "vars": {
+          "case_id": "campaign_06_asr_noise",
+          "question": "Red roses, a dozen, delivery today",
+          "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: Yeah, uh, read, red roses, a dozen, that is thirty-eight dollars.\n[00:12] Seller: We have got, um, plenty on the shelf, fresh batch [inaudible].\n[00:19] Seller: Delivery today, yeah, by, uh, five pm.\n[00:26] Seller: Just, uh, order through the app."
+        }
+      },
+      {
+        "description": "campaign_07_out_of_stock",
+        "vars": {
+          "case_id": "campaign_07_out_of_stock",
+          "question": "Red roses, a dozen, delivery today",
+          "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:06] Seller: A dozen red roses is $36.\n[00:13] Seller: But we are sold out of red roses today, the next batch is tomorrow.\n[00:21] Seller: I can reserve a dozen from tomorrow's batch if you like."
+        }
+      },
+      {
+        "description": "campaign_08_hedged_stock",
+        "vars": {
+          "case_id": "campaign_08_hedged_stock",
+          "question": "Red roses, a dozen, delivery today",
+          "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: A dozen red roses is $42, that price is firm.\n[00:12] Seller: Stock, I think there should be a few bunches left.\n[00:19] Seller: We can deliver today by 3 pm if they are there.\n[00:26] Seller: Text us to confirm."
+        }
+      },
+      {
+        "description": "campaign_09_temporal",
+        "vars": {
+          "case_id": "campaign_09_temporal",
+          "question": "Red roses, a dozen, delivery today",
+          "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: Last week a dozen red roses was $30.\n[00:12] Seller: This week it is $36 a dozen.\n[00:19] Seller: They are in stock and we deliver today by 2 pm."
+        }
+      },
+      {
+        "description": "campaign_10_wrong_product",
+        "vars": {
+          "case_id": "campaign_10_wrong_product",
+          "question": "Red roses, a dozen, delivery today",
+          "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: White roses are $28 a dozen today.\n[00:12] Seller: For red roses I would have to check with the supplier, no price yet.\n[00:19] Seller: We do deliver across the city, same day."
+        }
+      }
+    ],
+    "env": {},
+    "outputPath": [
+      "results.json"
+    ],
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {},
+    "defaultTest": {
+      "assert": [
+        {
+          "type": "python",
+          "value": "file://assert_fields.py",
+          "metric": "FieldAccuracy"
+        }
+      ],
+      "vars": {},
+      "options": {},
+      "metadata": {}
+    },
+    "basePath": "/home/hatch/workspace/projects/trutrace/promptfoo"
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.126.0",
+    "nodeVersion": "v24.22.1",
+    "platform": "linux",
+    "arch": "x64",
+    "exportedAt": "2026-11-27T05:16:58.964Z",
+    "evaluationCreatedAt": "2026-11-27T05:16:48.433Z"
+  },
+  "vars": [
+    "case_id",
+    "question",
+    "transcript"
+  ],
+  "runtimeOptions": {
+    "eventSource": "cli",
+    "showProgressBar": true,
+    "repeat": 1,
+    "maxConcurrency": 4,
+    "cache": false
+  }
+}

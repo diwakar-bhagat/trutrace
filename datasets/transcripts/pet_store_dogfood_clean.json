@@ -1,0 +1,62 @@
+{
+  "id": "pet_store_dogfood_clean",
+  "business_name": "Happy Paws",
+  "business_type": "Pet store",
+  "product": "5kg salmon dog food",
+  "question": "Do you stock the 5kg salmon dog food, how much is it, and how many bags do you have?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "clean",
+  "transcript": "Agent: Do you stock the 5kg salmon dog food? How much is it? How many bags do you have?\nSeller: Yes, we have the salmon dog food in stock. The 5kg bag is $38. There are 6 bags on the shelf. We do not deliver, it is pickup only. Just come by the store to grab one.",
+  "gold": {
+    "price": {
+      "value": 38,
+      "status": "confirmed",
+      "evidence": "The 5kg bag is $38.",
+      "condition": null
+    },
+    "currency": {
+      "value": "USD",
+      "status": "confirmed",
+      "evidence": "The 5kg bag is $38.",
+      "condition": null
+    },
+    "availability": {
+      "value": "in_stock",
+      "status": "confirmed",
+      "evidence": "Yes, we have the salmon dog food in stock.",
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": "6 bags",
+      "status": "confirmed",
+      "evidence": "There are 6 bags on the shelf.",
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": "pickup",
+      "status": "confirmed",
+      "evidence": "We do not deliver, it is pickup only.",
+      "condition": null
+    },
+    "timing": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    }
+  }
+}

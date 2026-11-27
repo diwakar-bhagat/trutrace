@@ -1,0 +1,62 @@
+{
+  "id": "electronics_battery_uncertain",
+  "business_name": "Circuit World",
+  "business_type": "Electronics store",
+  "product": "laptop battery for Dell XPS 13",
+  "question": "Do you have a replacement battery for a Dell XPS 13, and what would it cost?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "uncertain_inventory",
+  "transcript": "Agent: Do you have a replacement battery for a Dell XPS 13? What would it cost?\nSeller: We usually stock batteries for the XPS 13. A replacement battery runs about $85. Best to call back tomorrow and I can check the shelf.",
+  "gold": {
+    "price": {
+      "value": 85,
+      "status": "uncertain",
+      "evidence": "A replacement battery runs about $85.",
+      "condition": null
+    },
+    "currency": {
+      "value": "USD",
+      "status": "confirmed",
+      "evidence": "A replacement battery runs about $85.",
+      "condition": null
+    },
+    "availability": {
+      "value": null,
+      "status": "uncertain",
+      "evidence": "We usually stock batteries for the XPS 13.",
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "timing": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": "call back",
+      "status": "confirmed",
+      "evidence": "Best to call back tomorrow and I can check the shelf.",
+      "condition": null
+    }
+  }
+}

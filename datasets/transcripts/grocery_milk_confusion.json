@@ -1,0 +1,62 @@
+{
+  "id": "grocery_milk_confusion",
+  "business_name": "Corner Grocer",
+  "business_type": "Grocery store",
+  "product": "almond milk",
+  "question": "How much is the almond milk, and is it in stock?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "entity_confusion",
+  "transcript": "Agent: How much is the almond milk? Is it in stock?\nSeller: The oat milk is $4. The oat milk is sold out at the moment. The almond milk is $5. The almond milk is in stock.",
+  "gold": {
+    "price": {
+      "value": 5,
+      "status": "confirmed",
+      "evidence": "The almond milk is $5.",
+      "condition": null
+    },
+    "currency": {
+      "value": "USD",
+      "status": "confirmed",
+      "evidence": "The oat milk is $4.",
+      "condition": null
+    },
+    "availability": {
+      "value": "in_stock",
+      "status": "confirmed",
+      "evidence": "The almond milk is in stock.",
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "timing": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    }
+  }
+}

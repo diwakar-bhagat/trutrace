@@ -1,0 +1,62 @@
+{
+  "id": "plumber_callout_contradiction",
+  "business_name": "RapidFlow Plumbing",
+  "business_type": "Plumber",
+  "product": "emergency call-out",
+  "question": "What is your emergency call-out fee, and can someone come today?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "contradiction",
+  "transcript": "Agent: What is your emergency call-out fee? Can someone come today?\nSeller: The call-out fee is $60. We can fit you in today. For emergencies the call-out is $80. Someone can be there in 2 hours. Just text the address to us.",
+  "gold": {
+    "price": {
+      "value": null,
+      "status": "conflicting",
+      "evidence": "For emergencies the call-out is $80.",
+      "condition": null
+    },
+    "currency": {
+      "value": "USD",
+      "status": "confirmed",
+      "evidence": "The call-out fee is $60.",
+      "condition": null
+    },
+    "availability": {
+      "value": "available",
+      "status": "confirmed",
+      "evidence": "We can fit you in today.",
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "timing": {
+      "value": "in 2 hours",
+      "status": "confirmed",
+      "evidence": "Someone can be there in 2 hours.",
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": "text",
+      "status": "confirmed",
+      "evidence": "Just text the address to us.",
+      "condition": null
+    }
+  }
+}

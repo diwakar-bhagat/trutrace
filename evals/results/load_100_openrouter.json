@@ -1,0 +1,21 @@
+{
+ "n": 100,
+ "provider": "openrouter",
+ "model": "openai/gpt-4o-mini",
+ "configuration": "trutrace-1.0.0",
+ "mode": "real",
+ "mocked": null,
+ "wall_time_s": 374.32,
+ "throughput_transcripts_per_s": 0.267,
+ "errors": 0,
+ "error_rate": 0.0,
+ "latency_ms": {
+  "mean": 3743.2,
+  "p50": 3688.95,
+  "p95": 5100.25
+ },
+ "total_tokens": 65631,
+ "cost_usd_computed": 0.018409,
+ "cost_usd_reported": 0.018409,
+ "cost_per_transcript_usd": 0.000184
+}

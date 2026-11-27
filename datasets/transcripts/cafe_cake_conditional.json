@@ -1,0 +1,62 @@
+{
+  "id": "cafe_cake_conditional",
+  "business_name": "The Daily Grind",
+  "business_type": "Cafe and bakery",
+  "product": "chocolate cake",
+  "question": "How much is a large chocolate cake, and can you have it ready by Friday?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "conditional_pricing",
+  "transcript": "Agent: How much is a large chocolate cake? Can you have it ready by Friday?\nSeller: We have openings for Friday cake orders. A small chocolate cake is $25. The large chocolate cake is $40. We can deliver it locally. It would be ready on Friday. Call us back to confirm the order.",
+  "gold": {
+    "price": {
+      "value": 40,
+      "status": "confirmed",
+      "evidence": "The large chocolate cake is $40.",
+      "condition": "large"
+    },
+    "currency": {
+      "value": "USD",
+      "status": "confirmed",
+      "evidence": "A small chocolate cake is $25.",
+      "condition": null
+    },
+    "availability": {
+      "value": "available",
+      "status": "confirmed",
+      "evidence": "We have openings for Friday cake orders.",
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": "delivery",
+      "status": "confirmed",
+      "evidence": "We can deliver it locally.",
+      "condition": null
+    },
+    "timing": {
+      "value": "on friday",
+      "status": "confirmed",
+      "evidence": "It would be ready on Friday.",
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": "call back",
+      "status": "confirmed",
+      "evidence": "Call us back to confirm the order.",
+      "condition": null
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "id": "pharmacy_antihistamine_missing",
+  "business_name": "CarePlus Pharmacy",
+  "business_type": "Pharmacy",
+  "product": "antihistamine tablets",
+  "question": "How much are your antihistamine tablets, do you have them, and do you deliver?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "missing_information",
+  "transcript": "Agent: How much are your antihistamine tablets? Do you have them? Do you deliver?\nSeller: Yes, we have antihistamine tablets in stock. They are the 24 pack, non drowsy. Just ask at the counter when you come in.",
+  "gold": {
+    "price": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "currency": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "availability": {
+      "value": "in_stock",
+      "status": "confirmed",
+      "evidence": "Yes, we have antihistamine tablets in stock.",
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": "24 pack",
+      "status": "confirmed",
+      "evidence": "They are the 24 pack, non drowsy.",
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "timing": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "key": "baseline-naive@1.1.0",
+  "name": "baseline-naive",
+  "version": "1.1.0",
+  "parent": "baseline-naive@1.0.0",
+  "created_at": "2026-11-27T05:17:59+00:00",
+  "legacy_version": null,
+  "verification": "passthrough",
+  "params": {
+    "temperature": 0
+  },
+  "system": "You extract a structured answer from a phone call between an agent\nand a local business. The business was asked: \"{question}\"\n\nExtract exactly this schema:\n{schema}\n\nIf the seller gives an approximate or ranged price (for example 'around $35' or 'between $30 and $40'), report price as null instead of picking one exact number.\n",
+  "user": "Transcript:\n\"\"\"\n{transcript}\n\"\"\"\n\nRespond with a JSON object with the schema fields only.",
+  "notes": "Acceptance clone of baseline-naive@1.0.0 with ONE added instruction: approximate or ranged prices must be reported as null instead of one exact number."
+}

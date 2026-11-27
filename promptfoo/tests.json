@@ -1,0 +1,82 @@
+[
+  {
+    "description": "campaign_01_showcase_hedged",
+    "vars": {
+      "case_id": "campaign_01_showcase_hedged",
+      "question": "Red roses, a dozen, delivery today",
+      "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:07] Seller: Uh, red roses, a dozen is around $35, I think.\n[00:13] Seller: They are usually in stock, we get them most mornings.\n[00:19] Seller: Delivery today, uh, probably tomorrow morning is safer, to be honest.\n[00:26] Seller: You can order on our website."
+    }
+  },
+  {
+    "description": "campaign_02_clean_confirm",
+    "vars": {
+      "case_id": "campaign_02_clean_confirm",
+      "question": "Red roses, a dozen, delivery today",
+      "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: Yes, a dozen red roses is $38.\n[00:11] Seller: We have plenty in stock, fresh this morning.\n[00:17] Seller: We can deliver today by 6 pm.\n[00:24] Seller: I can book you in right now."
+    }
+  },
+  {
+    "description": "campaign_03_contradiction",
+    "vars": {
+      "case_id": "campaign_03_contradiction",
+      "question": "Red roses, a dozen, delivery today",
+      "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:06] Seller: A dozen red roses is $35.\n[00:12] Seller: And yes, they are in stock.\n[00:20] Seller: Hmm, the price list here says $40 a dozen.\n[00:27] Seller: We deliver, it would reach by 5 pm today."
+    }
+  },
+  {
+    "description": "campaign_04_conditional",
+    "vars": {
+      "case_id": "campaign_04_conditional",
+      "question": "Red roses, a dozen, delivery today",
+      "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: For a standard dozen red roses it is $35.\n[00:12] Seller: The premium long-stem dozen is $50.\n[00:18] Seller: Both are in stock today.\n[00:25] Seller: Delivery today is fine, it would get there by 4 pm."
+    }
+  },
+  {
+    "description": "campaign_05_missing_price",
+    "vars": {
+      "case_id": "campaign_05_missing_price",
+      "question": "Red roses, a dozen, delivery today",
+      "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:06] Seller: Red roses, yes, we have them in stock.\n[00:13] Seller: I would need to check the price list for a dozen, I do not have it in front of me.\n[00:21] Seller: Delivery today is fine, it would reach by 7 pm.\n[00:28] Seller: Call us back in ten minutes and I will have the price."
+    }
+  },
+  {
+    "description": "campaign_06_asr_noise",
+    "vars": {
+      "case_id": "campaign_06_asr_noise",
+      "question": "Red roses, a dozen, delivery today",
+      "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: Yeah, uh, read, red roses, a dozen, that is thirty-eight dollars.\n[00:12] Seller: We have got, um, plenty on the shelf, fresh batch [inaudible].\n[00:19] Seller: Delivery today, yeah, by, uh, five pm.\n[00:26] Seller: Just, uh, order through the app."
+    }
+  },
+  {
+    "description": "campaign_07_out_of_stock",
+    "vars": {
+      "case_id": "campaign_07_out_of_stock",
+      "question": "Red roses, a dozen, delivery today",
+      "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:06] Seller: A dozen red roses is $36.\n[00:13] Seller: But we are sold out of red roses today, the next batch is tomorrow.\n[00:21] Seller: I can reserve a dozen from tomorrow's batch if you like."
+    }
+  },
+  {
+    "description": "campaign_08_hedged_stock",
+    "vars": {
+      "case_id": "campaign_08_hedged_stock",
+      "question": "Red roses, a dozen, delivery today",
+      "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: A dozen red roses is $42, that price is firm.\n[00:12] Seller: Stock, I think there should be a few bunches left.\n[00:19] Seller: We can deliver today by 3 pm if they are there.\n[00:26] Seller: Text us to confirm."
+    }
+  },
+  {
+    "description": "campaign_09_temporal",
+    "vars": {
+      "case_id": "campaign_09_temporal",
+      "question": "Red roses, a dozen, delivery today",
+      "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: Last week a dozen red roses was $30.\n[00:12] Seller: This week it is $36 a dozen.\n[00:19] Seller: They are in stock and we deliver today by 2 pm."
+    }
+  },
+  {
+    "description": "campaign_10_wrong_product",
+    "vars": {
+      "case_id": "campaign_10_wrong_product",
+      "question": "Red roses, a dozen, delivery today",
+      "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: White roses are $28 a dozen today.\n[00:12] Seller: For red roses I would have to check with the supplier, no price yet.\n[00:19] Seller: We do deliver across the city, same day."
+    }
+  }
+]

@@ -1,0 +1,447 @@
+{
+ "provider": "openrouter",
+ "model": "openai/gpt-4o-mini",
+ "prompt_version": "baseline-naive",
+ "config": "baseline",
+ "cases_run": 3,
+ "cases_total": 12,
+ "error": {
+  "case": "florist_roses_conditional",
+  "message": "provider failed: or_call.py chat failed for model openai/gpt-4o-mini: urllib.error.HTTPError: HTTP Error 429: Too Many Requests"
+ },
+ "metrics": {
+  "extraction_accuracy": {
+   "overall": 0.7619,
+   "correct": 16,
+   "total": 21,
+   "per_field": {
+    "price": 0.3333,
+    "currency": 1.0,
+    "availability": 1.0,
+    "quantity_or_stock": 0.6667,
+    "delivery_or_pickup": 1.0,
+    "timing": 0.6667,
+    "contact_next_step": 0.6667
+   }
+  },
+  "evidence_coverage": {
+   "rate": 0.0,
+   "covered": 0,
+   "confirmed_fields": 18
+  },
+  "unsupported_claim_rate": {
+   "rate": 0.2778,
+   "unsupported": 5,
+   "confirmed_fields": 18
+  },
+  "contradiction_detection": {
+   "recall": null,
+   "detected": 0,
+   "gold_conflicting_fields": 0,
+   "details": []
+  },
+  "operational_efficiency": {
+   "mean_latency_ms": 2245.21,
+   "p50_latency_ms": 2215.88,
+   "p95_latency_ms": 2433.8,
+   "prompt_tokens": 634,
+   "completion_tokens": 206,
+   "total_tokens": 840,
+   "cost_usd_computed": 0.000219,
+   "cost_usd_reported": 0.000219,
+   "prices_used_per_1m_tokens": {
+    "input": 0.15,
+    "output": 0.6
+   }
+  }
+ },
+ "failures": [
+  {
+   "case": "bookstore_boxset_ambiguous",
+   "taxonomy": "ambiguous_quantity",
+   "field": "price",
+   "gold": {
+    "value": 12,
+    "status": "confirmed",
+    "evidence": "It is $12 a book, and there are seven books in the set.",
+    "condition": "per book",
+    "speaker": null,
+    "timestamp": null
+   },
+   "predicted": {
+    "value": 84,
+    "status": "confirmed",
+    "evidence": null,
+    "condition": null,
+    "reason": "asserted as extracted (baseline: no verification)",
+    "candidates": [],
+    "speaker": null,
+    "timestamp": null
+   }
+  },
+  {
+   "case": "bookstore_boxset_ambiguous",
+   "taxonomy": "ambiguous_quantity",
+   "field": "quantity_or_stock",
+   "gold": {
+    "value": null,
+    "status": "unconfirmed",
+    "evidence": null,
+    "condition": null,
+    "speaker": null,
+    "timestamp": null
+   },
+   "predicted": {
+    "value": "7 books",
+    "status": "confirmed",
+    "evidence": null,
+    "condition": null,
+    "reason": "asserted as extracted (baseline: no verification)",
+    "candidates": [],
+    "speaker": null,
+    "timestamp": null
+   }
+  },
+  {
+   "case": "bookstore_boxset_ambiguous",
+   "taxonomy": "ambiguous_quantity",
+   "field": "timing",
+   "gold": {
+    "value": null,
+    "status": "unconfirmed",
+    "evidence": null,
+    "condition": null,
+    "speaker": null,
+    "timestamp": null
+   },
+   "predicted": {
+    "value": "tomorrow",
+    "status": "confirmed",
+    "evidence": null,
+    "condition": null,
+    "reason": "asserted as extracted (baseline: no verification)",
+    "candidates": [],
+    "speaker": null,
+    "timestamp": null
+   }
+  },
+  {
+   "case": "florist_delivery_fee_inference",
+   "taxonomy": "unsupported_inference",
+   "field": "price",
+   "gold": {
+    "value": null,
+    "status": "unconfirmed",
+    "evidence": null,
+    "condition": null,
+    "speaker": null,
+    "timestamp": null
+   },
+   "predicted": {
+    "value": 10,
+    "status": "confirmed",
+    "evidence": null,
+    "condition": null,
+    "reason": "asserted as extracted (baseline: no verification)",
+    "candidates": [],
+    "speaker": null,
+    "timestamp": null
+   }
+  },
+  {
+   "case": "florist_roses_clean",
+   "taxonomy": "clean",
+   "field": "contact_next_step",
+   "gold": {
+    "value": "call back",
+    "status": "confirmed",
+    "evidence": "Just give us a call back to place the order.",
+    "condition": null,
+    "speaker": null,
+    "timestamp": null
+   },
+   "predicted": {
+    "value": "Just give us a call back to place the order.",
+    "status": "confirmed",
+    "evidence": null,
+    "condition": null,
+    "reason": "asserted as extracted (baseline: no verification)",
+    "candidates": [],
+    "speaker": null,
+    "timestamp": null
+   }
+  }
+ ],
+ "cases": [
+  {
+   "id": "bookstore_boxset_ambiguous",
+   "taxonomy": "ambiguous_quantity",
+   "fields": {
+    "price": {
+     "gold_status": "confirmed",
+     "gold_value": 12,
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "confirmed",
+     "pred_value": 84,
+     "pred_condition": null,
+     "correct": false,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "currency": {
+     "gold_status": "confirmed",
+     "gold_value": "USD",
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "confirmed",
+     "pred_value": "USD",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "availability": {
+     "gold_status": "confirmed",
+     "gold_value": "in_stock",
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "confirmed",
+     "pred_value": "in_stock",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "quantity_or_stock": {
+     "gold_status": "unconfirmed",
+     "gold_value": null,
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "confirmed",
+     "pred_value": "7 books",
+     "pred_condition": null,
+     "correct": false,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "delivery_or_pickup": {
+     "gold_status": "confirmed",
+     "gold_value": "delivery",
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "confirmed",
+     "pred_value": "delivery",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "timing": {
+     "gold_status": "unconfirmed",
+     "gold_value": null,
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "confirmed",
+     "pred_value": "tomorrow",
+     "pred_condition": null,
+     "correct": false,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "contact_next_step": {
+     "gold_status": "unconfirmed",
+     "gold_value": null,
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    }
+   }
+  },
+  {
+   "id": "florist_delivery_fee_inference",
+   "taxonomy": "unsupported_inference",
+   "fields": {
+    "price": {
+     "gold_status": "unconfirmed",
+     "gold_value": null,
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "confirmed",
+     "pred_value": 10,
+     "pred_condition": null,
+     "correct": false,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "currency": {
+     "gold_status": "confirmed",
+     "gold_value": "USD",
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "confirmed",
+     "pred_value": "USD",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "availability": {
+     "gold_status": "confirmed",
+     "gold_value": "in_stock",
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "confirmed",
+     "pred_value": "in_stock",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "quantity_or_stock": {
+     "gold_status": "unconfirmed",
+     "gold_value": null,
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "delivery_or_pickup": {
+     "gold_status": "confirmed",
+     "gold_value": "delivery",
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "confirmed",
+     "pred_value": "delivery",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "timing": {
+     "gold_status": "confirmed",
+     "gold_value": "this afternoon",
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "confirmed",
+     "pred_value": "this afternoon",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "contact_next_step": {
+     "gold_status": "unconfirmed",
+     "gold_value": null,
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "unconfirmed",
+     "pred_value": null,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    }
+   }
+  },
+  {
+   "id": "florist_roses_clean",
+   "taxonomy": "clean",
+   "fields": {
+    "price": {
+     "gold_status": "confirmed",
+     "gold_value": 45,
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "confirmed",
+     "pred_value": 45,
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "currency": {
+     "gold_status": "confirmed",
+     "gold_value": "USD",
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "confirmed",
+     "pred_value": "USD",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "availability": {
+     "gold_status": "confirmed",
+     "gold_value": "in_stock",
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "confirmed",
+     "pred_value": "in_stock",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "quantity_or_stock": {
+     "gold_status": "confirmed",
+     "gold_value": "20 bunches",
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "confirmed",
+     "pred_value": "20 bunches",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "delivery_or_pickup": {
+     "gold_status": "confirmed",
+     "gold_value": "delivery",
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "confirmed",
+     "pred_value": "delivery",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "timing": {
+     "gold_status": "confirmed",
+     "gold_value": "by 5 pm",
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "confirmed",
+     "pred_value": "by 5 pm",
+     "pred_condition": null,
+     "correct": true,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    },
+    "contact_next_step": {
+     "gold_status": "confirmed",
+     "gold_value": "call back",
+     "gold_speaker": null,
+     "gold_timestamp": null,
+     "pred_status": "confirmed",
+     "pred_value": "Just give us a call back to place the order.",
+     "pred_condition": null,
+     "correct": false,
+     "pred_speaker": null,
+     "pred_timestamp": null
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,62 @@
+{
+  "id": "shoe_store_temporal",
+  "business_name": "StrideRight Shoes",
+  "business_type": "Shoe store",
+  "product": "trail running shoes",
+  "question": "How much are the trail running shoes in a size 10?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "temporal_mismatch",
+  "transcript": "Agent: How much are the trail running shoes in a size 10?\nSeller: You might have seen them at $90 previously. They are $110 now. We have size 10 in stock. Only 2 pairs left in that size.",
+  "gold": {
+    "price": {
+      "value": 110,
+      "status": "confirmed",
+      "evidence": "They are $110 now.",
+      "condition": null
+    },
+    "currency": {
+      "value": "USD",
+      "status": "confirmed",
+      "evidence": "You might have seen them at $90 previously.",
+      "condition": null
+    },
+    "availability": {
+      "value": "in_stock",
+      "status": "confirmed",
+      "evidence": "We have size 10 in stock.",
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": "2 pairs",
+      "status": "confirmed",
+      "evidence": "Only 2 pairs left in that size.",
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "timing": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    }
+  }
+}

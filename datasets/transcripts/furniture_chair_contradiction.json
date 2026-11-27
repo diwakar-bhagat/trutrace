@@ -1,0 +1,62 @@
+{
+  "id": "furniture_chair_contradiction",
+  "business_name": "Oak & Ore Furniture",
+  "business_type": "Furniture store",
+  "product": "oak dining chair",
+  "question": "Do you have oak dining chairs in stock, and how much are they?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "contradiction",
+  "transcript": "Agent: Do you have oak dining chairs in stock? How much are they?\nSeller: Yes, we have oak dining chairs in stock. An oak dining chair is $150. Hold on, the system says those chairs sold out this morning. Delivery is available for furniture. I can hold one from the next batch for you.",
+  "gold": {
+    "price": {
+      "value": 150,
+      "status": "confirmed",
+      "evidence": "An oak dining chair is $150.",
+      "condition": null
+    },
+    "currency": {
+      "value": "USD",
+      "status": "confirmed",
+      "evidence": "An oak dining chair is $150.",
+      "condition": null
+    },
+    "availability": {
+      "value": null,
+      "status": "conflicting",
+      "evidence": "Hold on, the system says those chairs sold out this morning.",
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": "delivery",
+      "status": "confirmed",
+      "evidence": "Delivery is available for furniture.",
+      "condition": null
+    },
+    "timing": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": "hold",
+      "status": "confirmed",
+      "evidence": "I can hold one from the next batch for you.",
+      "condition": null
+    }
+  }
+}

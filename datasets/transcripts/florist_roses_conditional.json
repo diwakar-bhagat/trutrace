@@ -1,0 +1,62 @@
+{
+  "id": "florist_roses_conditional",
+  "business_name": "Petal & Stem",
+  "business_type": "Florist",
+  "product": "red roses",
+  "question": "How much is a standard dozen of red roses, are they available today, and can they be delivered?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "conditional_pricing",
+  "transcript": "Agent: How much is a standard dozen of red roses? Are they available today? Can they be delivered? Will you have more tomorrow?\nSeller: Yes, we have red roses today. A standard dozen is $35. The imported roses are $50 a dozen. I need to check with the manager about delivery. We should have stock tomorrow, probably.",
+  "gold": {
+    "price": {
+      "value": 35,
+      "status": "confirmed",
+      "evidence": "A standard dozen is $35.",
+      "condition": "standard dozen"
+    },
+    "currency": {
+      "value": "USD",
+      "status": "confirmed",
+      "evidence": "A standard dozen is $35.",
+      "condition": null
+    },
+    "availability": {
+      "value": "in_stock",
+      "status": "confirmed",
+      "evidence": "Yes, we have red roses today.",
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "timing": {
+      "value": null,
+      "status": "uncertain",
+      "evidence": "We should have stock tomorrow, probably.",
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    }
+  }
+}

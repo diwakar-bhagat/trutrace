@@ -1,0 +1,39 @@
+# TruTrace prompt comparison, run by Promptfoo.
+#
+# Promptfoo's job in this stack is the comparison matrix only:
+# the same dataset across prompt versions, reported side by side.
+# The prompts are the real Prompt Lab versions (the Python prompt
+# functions call app.prompts.build_prompt), execution is delegated
+# to the TruTrace pipeline (trutrace_provider.py), and correctness
+# is scored by evals/metrics.py (assert_fields.py). No evaluation
+# logic is duplicated here.
+#
+# Run (the PATH prefix makes Promptfoo's Python files run under the
+# project venv, where pydantic and the app packages live):
+#
+#   cd promptfoo
+#   PATH=../.venv/bin:$PATH npx promptfoo@latest eval \
+#     -c promptfooconfig.yaml --no-cache -o results.json
+#
+# Gold labels are AI drafted and pending human review; every
+# assertion's reason string carries that status.
+
+description: TruTrace campaign slice — baseline-naive@1.0.0 vs trutrace@1.0.0, offline provider, scored by evals/metrics.py
+
+prompts:
+  - id: file://prompt_baseline.py:get_prompt
+    label: baseline-naive@1.0.0
+  - id: file://prompt_trutrace.py:get_prompt
+    label: trutrace@1.0.0
+
+providers:
+  - id: file://trutrace_provider.py
+    label: TruTrace pipeline (offline provider)
+
+defaultTest:
+  assert:
+    - type: python
+      value: file://assert_fields.py
+      metric: FieldAccuracy
+
+tests: file://tests.json

@@ -1,0 +1,76 @@
+{
+ "id": "campaign_03_contradiction",
+ "business_name": "Rosewood Florist",
+ "business_type": "Florist",
+ "product": "red roses",
+ "question": "Red roses, a dozen, delivery today",
+ "requested_fields": [
+  "price",
+  "currency",
+  "availability",
+  "quantity_or_stock",
+  "delivery_or_pickup",
+  "timing",
+  "contact_next_step"
+ ],
+ "taxonomy": "contradiction",
+ "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:06] Seller: A dozen red roses is $35.\n[00:12] Seller: And yes, they are in stock.\n[00:20] Seller: Hmm, the price list here says $40 a dozen.\n[00:27] Seller: We deliver, it would reach by 5 pm today.",
+ "gold": {
+  "price": {
+   "value": null,
+   "status": "conflicting",
+   "evidence": "[00:20] Seller: Hmm, the price list here says $40 a dozen.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:20"
+  },
+  "currency": {
+   "value": "USD",
+   "status": "confirmed",
+   "evidence": "[00:06] Seller: A dozen red roses is $35.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:06"
+  },
+  "availability": {
+   "value": "in_stock",
+   "status": "confirmed",
+   "evidence": "[00:12] Seller: And yes, they are in stock.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:12"
+  },
+  "quantity_or_stock": {
+   "value": null,
+   "status": "unconfirmed",
+   "evidence": null,
+   "condition": null,
+   "speaker": null,
+   "timestamp": null
+  },
+  "delivery_or_pickup": {
+   "value": "delivery",
+   "status": "confirmed",
+   "evidence": "[00:27] Seller: We deliver, it would reach by 5 pm today.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:27"
+  },
+  "timing": {
+   "value": "by 5 pm",
+   "status": "confirmed",
+   "evidence": "[00:27] Seller: We deliver, it would reach by 5 pm today.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:27"
+  },
+  "contact_next_step": {
+   "value": null,
+   "status": "unconfirmed",
+   "evidence": null,
+   "condition": null,
+   "speaker": null,
+   "timestamp": null
+  }
+ }
+}

@@ -1,0 +1,62 @@
+{
+  "id": "dry_cleaner_suit_missing",
+  "business_name": "PressPerfect Cleaners",
+  "business_type": "Dry cleaner",
+  "product": "suit dry cleaning",
+  "question": "How much is suit dry cleaning, and when would it be ready?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "missing_information",
+  "transcript": "Agent: How much is suit dry cleaning? When would it be ready?\nSeller: We do clean suits here. A suit takes two days with us. You can drop it off any morning.",
+  "gold": {
+    "price": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "currency": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "availability": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "timing": {
+      "value": "two days",
+      "status": "confirmed",
+      "evidence": "A suit takes two days with us.",
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    }
+  }
+}

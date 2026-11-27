@@ -1,0 +1,62 @@
+{
+  "id": "salon_timing_contradiction",
+  "business_name": "Velvet Scissors",
+  "business_type": "Salon",
+  "product": "haircut",
+  "question": "Can I get a haircut today, and how much is it?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "contradiction",
+  "transcript": "Agent: Can I get a haircut today? How much is it?\nSeller: We have an opening at 3 pm today. A haircut is $30. Sorry, that opening is at 4 pm, not 3 pm. You can book online to grab it.",
+  "gold": {
+    "price": {
+      "value": 30,
+      "status": "confirmed",
+      "evidence": "A haircut is $30.",
+      "condition": null
+    },
+    "currency": {
+      "value": "USD",
+      "status": "confirmed",
+      "evidence": "A haircut is $30.",
+      "condition": null
+    },
+    "availability": {
+      "value": "available",
+      "status": "confirmed",
+      "evidence": "We have an opening at 3 pm today.",
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "timing": {
+      "value": null,
+      "status": "conflicting",
+      "evidence": "Sorry, that opening is at 4 pm, not 3 pm.",
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": "book online",
+      "status": "confirmed",
+      "evidence": "You can book online to grab it.",
+      "condition": null
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "id": "pharmacy_d2d3_confusion",
+  "business_name": "CarePlus Pharmacy",
+  "business_type": "Pharmacy",
+  "product": "vitamin D3",
+  "question": "How much is vitamin D3, and do you have it in stock?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "entity_confusion",
+  "transcript": "Agent: How much is vitamin D3? Do you have it in stock?\nSeller: The vitamin D2 is $11. The vitamin D3 is $14. Both are in stock.",
+  "gold": {
+    "price": {
+      "value": 14,
+      "status": "confirmed",
+      "evidence": "The vitamin D3 is $14.",
+      "condition": null
+    },
+    "currency": {
+      "value": "USD",
+      "status": "confirmed",
+      "evidence": "The vitamin D2 is $11.",
+      "condition": null
+    },
+    "availability": {
+      "value": "in_stock",
+      "status": "confirmed",
+      "evidence": "Both are in stock.",
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "timing": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    }
+  }
+}

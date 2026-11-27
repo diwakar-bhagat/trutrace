@@ -1,0 +1,21 @@
+{
+ "n": 1000,
+ "provider": "offline",
+ "model": null,
+ "configuration": "trutrace-1.0.0",
+ "mode": "simulated",
+ "mocked": "Provider behaviour: the deterministic offline rule provider ran in-process; no network calls were made and per-call latency is rule-engine time, not a live model's.",
+ "wall_time_s": 0.39,
+ "throughput_transcripts_per_s": 2535.153,
+ "errors": 0,
+ "error_rate": 0.0,
+ "latency_ms": {
+  "mean": 0.39,
+  "p50": 0.38,
+  "p95": 0.52
+ },
+ "total_tokens": null,
+ "cost_usd_computed": null,
+ "cost_usd_reported": null,
+ "cost_per_transcript_usd": null
+}

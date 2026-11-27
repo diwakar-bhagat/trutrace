@@ -1,0 +1,62 @@
+{
+  "id": "florist_roses_clean",
+  "business_name": "Petal & Stem",
+  "business_type": "Florist",
+  "product": "red roses",
+  "question": "How much is a dozen red roses, are they available today, and can they be delivered?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "clean",
+  "transcript": "Agent: Do you have red roses available today? How much is a dozen red roses? Can you deliver today?\nSeller: Yes, we have red roses in stock. A dozen red roses is $45. We have 20 bunches made up this morning. Yes, we deliver. We can have it delivered by 5 pm if you order soon. Just give us a call back to place the order.",
+  "gold": {
+    "price": {
+      "value": 45,
+      "status": "confirmed",
+      "evidence": "A dozen red roses is $45.",
+      "condition": null
+    },
+    "currency": {
+      "value": "USD",
+      "status": "confirmed",
+      "evidence": "A dozen red roses is $45.",
+      "condition": null
+    },
+    "availability": {
+      "value": "in_stock",
+      "status": "confirmed",
+      "evidence": "Yes, we have red roses in stock.",
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": "20 bunches",
+      "status": "confirmed",
+      "evidence": "We have 20 bunches made up this morning.",
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": "delivery",
+      "status": "confirmed",
+      "evidence": "Yes, we deliver.",
+      "condition": null
+    },
+    "timing": {
+      "value": "by 5 pm",
+      "status": "confirmed",
+      "evidence": "We can have it delivered by 5 pm if you order soon.",
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": "call back",
+      "status": "confirmed",
+      "evidence": "Just give us a call back to place the order.",
+      "condition": null
+    }
+  }
+}

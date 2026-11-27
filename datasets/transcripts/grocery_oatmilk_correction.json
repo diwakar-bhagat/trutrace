@@ -1,0 +1,62 @@
+{
+  "id": "grocery_oatmilk_correction",
+  "business_name": "Corner Grocer",
+  "business_type": "Grocery store",
+  "product": "oat milk",
+  "question": "How much is the oat milk, and is it in stock?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "contradiction",
+  "transcript": "Agent: How much is the oat milk? Is it in stock?\nSeller: The oat milk is $4. Yes, it is in stock. Actually the oat milk went up, it is $5 now. There are 9 cartons on the shelf.",
+  "gold": {
+    "price": {
+      "value": 5,
+      "status": "confirmed",
+      "evidence": "Actually the oat milk went up, it is $5 now.",
+      "condition": null
+    },
+    "currency": {
+      "value": "USD",
+      "status": "confirmed",
+      "evidence": "The oat milk is $4.",
+      "condition": null
+    },
+    "availability": {
+      "value": "in_stock",
+      "status": "confirmed",
+      "evidence": "Yes, it is in stock.",
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": "9 cartons",
+      "status": "confirmed",
+      "evidence": "There are 9 cartons on the shelf.",
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "timing": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    }
+  }
+}

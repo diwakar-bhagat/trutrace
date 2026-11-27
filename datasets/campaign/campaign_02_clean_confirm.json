@@ -1,0 +1,76 @@
+{
+ "id": "campaign_02_clean_confirm",
+ "business_name": "Petal Pushers",
+ "business_type": "Florist",
+ "product": "red roses",
+ "question": "Red roses, a dozen, delivery today",
+ "requested_fields": [
+  "price",
+  "currency",
+  "availability",
+  "quantity_or_stock",
+  "delivery_or_pickup",
+  "timing",
+  "contact_next_step"
+ ],
+ "taxonomy": "clean",
+ "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: Yes, a dozen red roses is $38.\n[00:11] Seller: We have plenty in stock, fresh this morning.\n[00:17] Seller: We can deliver today by 6 pm.\n[00:24] Seller: I can book you in right now.",
+ "gold": {
+  "price": {
+   "value": 38,
+   "status": "confirmed",
+   "evidence": "[00:05] Seller: Yes, a dozen red roses is $38.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:05"
+  },
+  "currency": {
+   "value": "USD",
+   "status": "confirmed",
+   "evidence": "[00:05] Seller: Yes, a dozen red roses is $38.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:05"
+  },
+  "availability": {
+   "value": "in_stock",
+   "status": "confirmed",
+   "evidence": "[00:11] Seller: We have plenty in stock, fresh this morning.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:11"
+  },
+  "quantity_or_stock": {
+   "value": null,
+   "status": "unconfirmed",
+   "evidence": null,
+   "condition": null,
+   "speaker": null,
+   "timestamp": null
+  },
+  "delivery_or_pickup": {
+   "value": "delivery",
+   "status": "confirmed",
+   "evidence": "[00:17] Seller: We can deliver today by 6 pm.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:17"
+  },
+  "timing": {
+   "value": "by 6 pm",
+   "status": "confirmed",
+   "evidence": "[00:17] Seller: We can deliver today by 6 pm.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:17"
+  },
+  "contact_next_step": {
+   "value": "book in",
+   "status": "confirmed",
+   "evidence": "[00:24] Seller: I can book you in right now.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:24"
+  }
+ }
+}

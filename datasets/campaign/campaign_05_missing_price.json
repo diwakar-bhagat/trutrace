@@ -1,0 +1,76 @@
+{
+ "id": "campaign_05_missing_price",
+ "business_name": "Corner Flowers",
+ "business_type": "Florist",
+ "product": "red roses",
+ "question": "Red roses, a dozen, delivery today",
+ "requested_fields": [
+  "price",
+  "currency",
+  "availability",
+  "quantity_or_stock",
+  "delivery_or_pickup",
+  "timing",
+  "contact_next_step"
+ ],
+ "taxonomy": "missing_information",
+ "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:06] Seller: Red roses, yes, we have them in stock.\n[00:13] Seller: I would need to check the price list for a dozen, I do not have it in front of me.\n[00:21] Seller: Delivery today is fine, it would reach by 7 pm.\n[00:28] Seller: Call us back in ten minutes and I will have the price.",
+ "gold": {
+  "price": {
+   "value": null,
+   "status": "unconfirmed",
+   "evidence": null,
+   "condition": null,
+   "speaker": null,
+   "timestamp": null
+  },
+  "currency": {
+   "value": null,
+   "status": "unconfirmed",
+   "evidence": null,
+   "condition": null,
+   "speaker": null,
+   "timestamp": null
+  },
+  "availability": {
+   "value": "in_stock",
+   "status": "confirmed",
+   "evidence": "[00:06] Seller: Red roses, yes, we have them in stock.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:06"
+  },
+  "quantity_or_stock": {
+   "value": null,
+   "status": "unconfirmed",
+   "evidence": null,
+   "condition": null,
+   "speaker": null,
+   "timestamp": null
+  },
+  "delivery_or_pickup": {
+   "value": "delivery",
+   "status": "confirmed",
+   "evidence": "[00:21] Seller: Delivery today is fine, it would reach by 7 pm.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:21"
+  },
+  "timing": {
+   "value": "by 7 pm",
+   "status": "confirmed",
+   "evidence": "[00:21] Seller: Delivery today is fine, it would reach by 7 pm.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:21"
+  },
+  "contact_next_step": {
+   "value": "call back",
+   "status": "confirmed",
+   "evidence": "[00:28] Seller: Call us back in ten minutes and I will have the price.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:28"
+  }
+ }
+}

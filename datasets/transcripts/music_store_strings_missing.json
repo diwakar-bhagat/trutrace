@@ -1,0 +1,62 @@
+{
+  "id": "music_store_strings_missing",
+  "business_name": "Fermata Music",
+  "business_type": "Music store",
+  "product": "violin strings",
+  "question": "Do you have violin strings, and do you offer same-day restringing?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "missing_information",
+  "transcript": "Agent: Do you have violin strings? Do you offer same-day restringing?\nSeller: We have violin strings in stock. There are 3 sets left. Restringing is done in 1 hour if you drop it off.",
+  "gold": {
+    "price": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "currency": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "availability": {
+      "value": "in_stock",
+      "status": "confirmed",
+      "evidence": "We have violin strings in stock.",
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": "3 sets",
+      "status": "confirmed",
+      "evidence": "There are 3 sets left.",
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "timing": {
+      "value": "in 1 hour",
+      "status": "confirmed",
+      "evidence": "Restringing is done in 1 hour if you drop it off.",
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    }
+  }
+}

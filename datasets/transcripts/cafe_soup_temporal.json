@@ -1,0 +1,62 @@
+{
+  "id": "cafe_soup_temporal",
+  "business_name": "The Daily Grind",
+  "business_type": "Cafe and bakery",
+  "product": "tomato soup",
+  "question": "Is the tomato soup on today, and how much is a bowl?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "temporal_mismatch",
+  "transcript": "Agent: Is the tomato soup on today? How much is a bowl?\nSeller: The soup was $7 yesterday. Today the tomato soup is $8. Yes, we have the tomato soup today.",
+  "gold": {
+    "price": {
+      "value": 8,
+      "status": "confirmed",
+      "evidence": "Today the tomato soup is $8.",
+      "condition": null
+    },
+    "currency": {
+      "value": "USD",
+      "status": "confirmed",
+      "evidence": "The soup was $7 yesterday.",
+      "condition": null
+    },
+    "availability": {
+      "value": "in_stock",
+      "status": "confirmed",
+      "evidence": "Yes, we have the tomato soup today.",
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "timing": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    }
+  }
+}

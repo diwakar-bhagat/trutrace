@@ -1,0 +1,76 @@
+{
+ "id": "campaign_01_showcase_hedged",
+ "business_name": "Bloom & Co",
+ "business_type": "Florist",
+ "product": "red roses",
+ "question": "Red roses, a dozen, delivery today",
+ "requested_fields": [
+  "price",
+  "currency",
+  "availability",
+  "quantity_or_stock",
+  "delivery_or_pickup",
+  "timing",
+  "contact_next_step"
+ ],
+ "taxonomy": "uncertain_inventory",
+ "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:07] Seller: Uh, red roses, a dozen is around $35, I think.\n[00:13] Seller: They are usually in stock, we get them most mornings.\n[00:19] Seller: Delivery today, uh, probably tomorrow morning is safer, to be honest.\n[00:26] Seller: You can order on our website.",
+ "gold": {
+  "price": {
+   "value": 35,
+   "status": "uncertain",
+   "evidence": "[00:07] Seller: Uh, red roses, a dozen is around $35, I think.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:07"
+  },
+  "currency": {
+   "value": "USD",
+   "status": "confirmed",
+   "evidence": "[00:07] Seller: Uh, red roses, a dozen is around $35, I think.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:07"
+  },
+  "availability": {
+   "value": null,
+   "status": "uncertain",
+   "evidence": "[00:13] Seller: They are usually in stock, we get them most mornings.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:13"
+  },
+  "quantity_or_stock": {
+   "value": null,
+   "status": "unconfirmed",
+   "evidence": null,
+   "condition": null,
+   "speaker": null,
+   "timestamp": null
+  },
+  "delivery_or_pickup": {
+   "value": "delivery",
+   "status": "uncertain",
+   "evidence": "[00:19] Seller: Delivery today, uh, probably tomorrow morning is safer, to be honest.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:19"
+  },
+  "timing": {
+   "value": "tomorrow morning",
+   "status": "uncertain",
+   "evidence": "[00:19] Seller: Delivery today, uh, probably tomorrow morning is safer, to be honest.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:19"
+  },
+  "contact_next_step": {
+   "value": "order online",
+   "status": "confirmed",
+   "evidence": "[00:26] Seller: You can order on our website.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:26"
+  }
+ }
+}

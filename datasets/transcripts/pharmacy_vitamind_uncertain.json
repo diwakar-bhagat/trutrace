@@ -1,0 +1,62 @@
+{
+  "id": "pharmacy_vitamind_uncertain",
+  "business_name": "CarePlus Pharmacy",
+  "business_type": "Pharmacy",
+  "product": "vitamin D3",
+  "question": "Do you have vitamin D3 in stock, and how much is it?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "uncertain_inventory",
+  "transcript": "Agent: Do you have vitamin D3 in stock? How much is it?\nSeller: We carry vitamin D3, though I am not sure any bottles are on the shelf right now. There might be a couple of bottles in the back. You could call back in the morning to check.",
+  "gold": {
+    "price": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "currency": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "availability": {
+      "value": null,
+      "status": "uncertain",
+      "evidence": "We carry vitamin D3, though I am not sure any bottles are on the shelf right now.",
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": null,
+      "status": "uncertain",
+      "evidence": "There might be a couple of bottles in the back.",
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "timing": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": "call back",
+      "status": "confirmed",
+      "evidence": "You could call back in the morning to check.",
+      "condition": null
+    }
+  }
+}

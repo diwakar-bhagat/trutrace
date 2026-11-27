@@ -1,0 +1,62 @@
+{
+  "id": "hardware_screws_ambiguous",
+  "business_name": "FixIt Hardware",
+  "business_type": "Hardware store",
+  "product": "wood screws",
+  "question": "Do you sell wood screws, how much are they, and are they sold by weight or by the box?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "ambiguous_quantity",
+  "transcript": "Agent: Do you sell wood screws? How much are they? Are they sold by weight or by the box?\nSeller: Yes, we carry wood screws. A box of wood screws is $9. I am not sure if that is priced by the box or by weight, the label is worn.",
+  "gold": {
+    "price": {
+      "value": 9,
+      "status": "confirmed",
+      "evidence": "A box of wood screws is $9.",
+      "condition": null
+    },
+    "currency": {
+      "value": "USD",
+      "status": "confirmed",
+      "evidence": "A box of wood screws is $9.",
+      "condition": null
+    },
+    "availability": {
+      "value": "in_stock",
+      "status": "confirmed",
+      "evidence": "Yes, we carry wood screws.",
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": null,
+      "status": "uncertain",
+      "evidence": "I am not sure if that is priced by the box or by weight, the label is worn.",
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "timing": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    }
+  }
+}

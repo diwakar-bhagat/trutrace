@@ -1,0 +1,354 @@
+{
+ "set": "campaign",
+ "runs_per_config": 3,
+ "cells": [
+  {
+   "set": "campaign",
+   "provider_tag": "offline",
+   "config": "baseline",
+   "runs": 3,
+   "cases_per_run": 10,
+   "errors": [],
+   "extraction_accuracy": {
+    "per_run": [
+     "52 of 70",
+     "52 of 70",
+     "52 of 70"
+    ],
+    "rate": {
+     "mean": 0.7429,
+     "min": 0.7429,
+     "max": 0.7429
+    }
+   },
+   "evidence_coverage": {
+    "per_run": [
+     "39 of 39",
+     "39 of 39",
+     "39 of 39"
+    ],
+    "rate": {
+     "mean": 1.0,
+     "min": 1.0,
+     "max": 1.0
+    }
+   },
+   "unsupported_claim_rate": {
+    "per_run": [
+     "9 of 39",
+     "9 of 39",
+     "9 of 39"
+    ],
+    "rate": {
+     "mean": 0.2308,
+     "min": 0.2308,
+     "max": 0.2308
+    }
+   },
+   "contradiction_detection": {
+    "per_run": [
+     "0 of 1",
+     "0 of 1",
+     "0 of 1"
+    ],
+    "recall": {
+     "mean": 0.0,
+     "min": 0.0,
+     "max": 0.0
+    }
+   },
+   "operational_efficiency": {
+    "mean_latency_ms": {
+     "mean": 0.5133,
+     "min": 0.31,
+     "max": 0.86
+    },
+    "p50_latency_ms": {
+     "mean": 0.3567,
+     "min": 0.28,
+     "max": 0.5
+    },
+    "p95_latency_ms": {
+     "mean": 1.81,
+     "min": 0.42,
+     "max": 4.21
+    },
+    "cost_usd_per_run": [
+     null,
+     null,
+     null
+    ],
+    "total_tokens_per_run": [
+     null,
+     null,
+     null
+    ]
+   },
+   "proof_accuracy": {
+    "matched": 30,
+    "total": 41
+   }
+  },
+  {
+   "set": "campaign",
+   "provider_tag": "offline",
+   "config": "current",
+   "runs": 3,
+   "cases_per_run": 10,
+   "errors": [],
+   "extraction_accuracy": {
+    "per_run": [
+     "56 of 70",
+     "56 of 70",
+     "56 of 70"
+    ],
+    "rate": {
+     "mean": 0.8,
+     "min": 0.8,
+     "max": 0.8
+    }
+   },
+   "evidence_coverage": {
+    "per_run": [
+     "34 of 34",
+     "34 of 34",
+     "34 of 34"
+    ],
+    "rate": {
+     "mean": 1.0,
+     "min": 1.0,
+     "max": 1.0
+    }
+   },
+   "unsupported_claim_rate": {
+    "per_run": [
+     "4 of 34",
+     "4 of 34",
+     "4 of 34"
+    ],
+    "rate": {
+     "mean": 0.1176,
+     "min": 0.1176,
+     "max": 0.1176
+    }
+   },
+   "contradiction_detection": {
+    "per_run": [
+     "1 of 1",
+     "1 of 1",
+     "1 of 1"
+    ],
+    "recall": {
+     "mean": 1.0,
+     "min": 1.0,
+     "max": 1.0
+    }
+   },
+   "operational_efficiency": {
+    "mean_latency_ms": {
+     "mean": 0.4767,
+     "min": 0.4,
+     "max": 0.58
+    },
+    "p50_latency_ms": {
+     "mean": 0.4567,
+     "min": 0.41,
+     "max": 0.54
+    },
+    "p95_latency_ms": {
+     "mean": 0.87,
+     "min": 0.53,
+     "max": 1.28
+    },
+    "cost_usd_per_run": [
+     null,
+     null,
+     null
+    ],
+    "total_tokens_per_run": [
+     null,
+     null,
+     null
+    ]
+   },
+   "proof_accuracy": {
+    "matched": 30,
+    "total": 41
+   }
+  },
+  {
+   "set": "campaign",
+   "provider_tag": "gpt-4o-mini",
+   "config": "baseline",
+   "runs": 3,
+   "cases_per_run": 10,
+   "errors": [],
+   "extraction_accuracy": {
+    "per_run": [
+     "40 of 70",
+     "38 of 70",
+     "40 of 70"
+    ],
+    "rate": {
+     "mean": 0.5619,
+     "min": 0.5429,
+     "max": 0.5714
+    }
+   },
+   "evidence_coverage": {
+    "per_run": [
+     "0 of 63",
+     "0 of 65",
+     "0 of 63"
+    ],
+    "rate": {
+     "mean": 0.0,
+     "min": 0.0,
+     "max": 0.0
+    }
+   },
+   "unsupported_claim_rate": {
+    "per_run": [
+     "30 of 63",
+     "32 of 65",
+     "30 of 63"
+    ],
+    "rate": {
+     "mean": 0.4816,
+     "min": 0.4762,
+     "max": 0.4923
+    }
+   },
+   "contradiction_detection": {
+    "per_run": [
+     "0 of 1",
+     "0 of 1",
+     "0 of 1"
+    ],
+    "recall": {
+     "mean": 0.0,
+     "min": 0.0,
+     "max": 0.0
+    }
+   },
+   "operational_efficiency": {
+    "mean_latency_ms": {
+     "mean": 2066.9867,
+     "min": 2023.36,
+     "max": 2091.75
+    },
+    "p50_latency_ms": {
+     "mean": 2116.48,
+     "min": 2032.8,
+     "max": 2175.28
+    },
+    "p95_latency_ms": {
+     "mean": 2422.34,
+     "min": 2374.75,
+     "max": 2478.69
+    },
+    "cost_usd_per_run": [
+     0.000793,
+     0.000791,
+     0.000792
+    ],
+    "total_tokens_per_run": [
+     3137,
+     3134,
+     3135
+    ]
+   },
+   "proof_accuracy": {
+    "matched": 0,
+    "total": 41
+   }
+  },
+  {
+   "set": "campaign",
+   "provider_tag": "gpt-4o-mini",
+   "config": "current",
+   "runs": 3,
+   "cases_per_run": 10,
+   "errors": [],
+   "extraction_accuracy": {
+    "per_run": [
+     "55 of 70",
+     "55 of 70",
+     "56 of 70"
+    ],
+    "rate": {
+     "mean": 0.7905,
+     "min": 0.7857,
+     "max": 0.8
+    }
+   },
+   "evidence_coverage": {
+    "per_run": [
+     "41 of 41",
+     "41 of 41",
+     "40 of 40"
+    ],
+    "rate": {
+     "mean": 1.0,
+     "min": 1.0,
+     "max": 1.0
+    }
+   },
+   "unsupported_claim_rate": {
+    "per_run": [
+     "12 of 41",
+     "12 of 41",
+     "11 of 40"
+    ],
+    "rate": {
+     "mean": 0.2868,
+     "min": 0.275,
+     "max": 0.2927
+    }
+   },
+   "contradiction_detection": {
+    "per_run": [
+     "1 of 1",
+     "1 of 1",
+     "1 of 1"
+    ],
+    "recall": {
+     "mean": 1.0,
+     "min": 1.0,
+     "max": 1.0
+    }
+   },
+   "operational_efficiency": {
+    "mean_latency_ms": {
+     "mean": 3604.95,
+     "min": 3554.3,
+     "max": 3652.9
+    },
+    "p50_latency_ms": {
+     "mean": 3698.7167,
+     "min": 3605.86,
+     "max": 3780.75
+    },
+    "p95_latency_ms": {
+     "mean": 4591.64,
+     "min": 4457.18,
+     "max": 4753.54
+    },
+    "cost_usd_per_run": [
+     0.00185,
+     0.001847,
+     0.001834
+    ],
+    "total_tokens_per_run": [
+     6579,
+     6573,
+     6552
+    ]
+   },
+   "proof_accuracy": {
+    "matched": 37,
+    "total": 41
+   }
+  }
+ ]
+}

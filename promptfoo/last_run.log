@@ -1,0 +1,176 @@
+Cache is disabled.
+Starting evaluation eval-PSk-2026-11-27T05:16:48
+Running 20 test cases (up to 4 at a time)...
+
+┌────────────────────────┬────────────────────────┬────────────────────────┬────────────────────────┬────────────────────────┐
+│ case_id                │ question               │ transcript             │ [TruTrace pipeline     │ [TruTrace pipeline     │
+│                        │                        │                        │ (offline provider)]    │ (offline provider)]    │
+│                        │                        │                        │ baseline-naive@1.0.0   │ trutrace@1.0.0         │
+├────────────────────────┼────────────────────────┼────────────────────────┼────────────────────────┼────────────────────────┤
+│ campaign_01_showcase_… │ Red roses, a dozen,    │ [00:00] Agent: Hi, I   │ [FAIL] {"price":       │ [FAIL] {"price":       │
+│                        │ delivery today         │ am calling about red   │ {"value": 35.0,        │ {"value": 35.0,        │
+│                        │                        │ roses. Do you have a   │ "status": "confirmed", │ "status": "uncertain", │
+│                        │                        │ dozen available for    │ "condition": null,     │ "condition": null,     │
+│                        │                        │ delivery today?        │ "evidence": "[00:07]   │ "evidence": "[00:07]   │
+│                        │                        │ [00:07] Seller: Uh,    │ Seller: Uh, red roses, │ Seller: Uh, red roses, │
+│                        │                        │ red roses, a dozen is  │ a dozen is around $35, │ a dozen is around $35, │
+│                        │                        │ around $35, I think.   │ I think."},            │ I think."},            │
+│                        │                        │ [00:13] Seller: They   │ "currency": {"value":  │ "currency": {"value":  │
+│                        │                        │ are usually in stock,  │ "USD", "status":       │ "USD", "status":       │
+│                        │                        │ we get them most       │ "confirmed",           │ "confirmed",           │
+│                        │                        │ mornings.              │ "condition": null,     │ "condition": null,     │
+│                        │                        │ [00:19] Seller:...     │ "evidence": "[00:07]   │ "evidence": "[00:07]   │
+│                        │                        │                        │ Seller: ...            │ Seller: ...            │
+├────────────────────────┼────────────────────────┼────────────────────────┼────────────────────────┼────────────────────────┤
+│ campaign_02_clean_con… │ Red roses, a dozen,    │ [00:00] Agent: Hi, I   │ [PASS] {"price":       │ [PASS] {"price":       │
+│                        │ delivery today         │ am calling about red   │ {"value": 38.0,        │ {"value": 38.0,        │
+│                        │                        │ roses. Do you have a   │ "status": "confirmed", │ "status": "confirmed", │
+│                        │                        │ dozen available for    │ "condition": null,     │ "condition": null,     │
+│                        │                        │ delivery today?        │ "evidence": "[00:05]   │ "evidence": "[00:05]   │
+│                        │                        │ [00:05] Seller: Yes, a │ Seller: Yes, a dozen   │ Seller: Yes, a dozen   │
+│                        │                        │ dozen red roses is     │ red roses is $38."},   │ red roses is $38."},   │
+│                        │                        │ $38.                   │ "currency": {"value":  │ "currency": {"value":  │
+│                        │                        │ [00:11] Seller: We     │ "USD", "status":       │ "USD", "status":       │
+│                        │                        │ have plenty in stock,  │ "confirmed",           │ "confirmed",           │
+│                        │                        │ fresh this morning.    │ "condition": null,     │ "condition": null,     │
+│                        │                        │ [00:17] Seller: We can │ "evidence": "[00:05]   │ "evidence": "[00:05]   │
+│                        │                        │ deliver today by ...   │ Seller: Yes, a dozen   │ Seller: Yes, a dozen   │
+│                        │                        │                        │ red...                 │ red...                 │
+├────────────────────────┼────────────────────────┼────────────────────────┼────────────────────────┼────────────────────────┤
+│ campaign_03_contradic… │ Red roses, a dozen,    │ [00:00] Agent: Hi, I   │ [FAIL] {"price":       │ [PASS] {"price":       │
+│                        │ delivery today         │ am calling about red   │ {"value": 35.0,        │ {"value": null,        │
+│                        │                        │ roses. Do you have a   │ "status": "confirmed", │ "status":              │
+│                        │                        │ dozen available for    │ "condition": null,     │ "conflicting",         │
+│                        │                        │ delivery today?        │ "evidence": "[00:06]   │ "condition": null,     │
+│                        │                        │ [00:06] Seller: A      │ Seller: A dozen red    │ "evidence": "[00:20]   │
+│                        │                        │ dozen red roses is     │ roses is $35."},       │ Seller: Hmm, the price │
+│                        │                        │ $35.                   │ "currency": {"value":  │ list here says $40 a   │
+│                        │                        │ [00:12] Seller: And    │ "USD", "status":       │ dozen."}, "currency":  │
+│                        │                        │ yes, they are in       │ "confirmed",           │ {"value": "USD",       │
+│                        │                        │ stock.                 │ "condition": null,     │ "status": "confirmed", │
+│                        │                        │ [00:20] Seller: Hmm,   │ "evidence": "[00:06]   │ "condition": null,     │
+│                        │                        │ the price list here    │ Seller: A dozen red    │ "evidence": "[00:06]   │
+│                        │                        │ says $40 a dozen.      │ roses is ...           │ Seller: A ...          │
+│                        │                        │ [00...                 │                        │                        │
+├────────────────────────┼────────────────────────┼────────────────────────┼────────────────────────┼────────────────────────┤
+│ campaign_04_condition… │ Red roses, a dozen,    │ [00:00] Agent: Hi, I   │ [FAIL] {"price":       │ [FAIL] {"price":       │
+│                        │ delivery today         │ am calling about red   │ {"value": 35.0,        │ {"value": null,        │
+│                        │                        │ roses. Do you have a   │ "status": "confirmed", │ "status":              │
+│                        │                        │ dozen available for    │ "condition": null,     │ "conflicting",         │
+│                        │                        │ delivery today?        │ "evidence": "[00:05]   │ "condition": null,     │
+│                        │                        │ [00:05] Seller: For a  │ Seller: For a standard │ "evidence": "[00:12]   │
+│                        │                        │ standard dozen red     │ dozen red roses it is  │ Seller: The premium    │
+│                        │                        │ roses it is $35.       │ $35."}, "currency":    │ long-stem dozen is     │
+│                        │                        │ [00:12] Seller: The    │ {"value": "USD",       │ $50."}, "currency":    │
+│                        │                        │ premium long-stem      │ "status": "confirmed", │ {"value": "USD",       │
+│                        │                        │ dozen is $50.          │ "condition": null,     │ "status": "confirmed", │
+│                        │                        │ [00:18] Seller: Both   │ "evidence": "[00:05]   │ "condition": null,     │
+│                        │                        │ are in stock toda...   │ Seller: For a...       │ "evidence": "[00:05]   │
+│                        │                        │                        │                        │ Seller: For a sta...   │
+├────────────────────────┼────────────────────────┼────────────────────────┼────────────────────────┼────────────────────────┤
+│ campaign_05_missing_p… │ Red roses, a dozen,    │ [00:00] Agent: Hi, I   │ [FAIL] {"price":       │ [FAIL] {"price":       │
+│                        │ delivery today         │ am calling about red   │ {"value": null,        │ {"value": null,        │
+│                        │                        │ roses. Do you have a   │ "status":              │ "status":              │
+│                        │                        │ dozen available for    │ "unconfirmed",         │ "unconfirmed",         │
+│                        │                        │ delivery today?        │ "condition": null,     │ "condition": null,     │
+│                        │                        │ [00:06] Seller: Red    │ "evidence": null},     │ "evidence": null},     │
+│                        │                        │ roses, yes, we have    │ "currency": {"value":  │ "currency": {"value":  │
+│                        │                        │ them in stock.         │ null, "status":        │ null, "status":        │
+│                        │                        │ [00:13] Seller: I      │ "unconfirmed",         │ "unconfirmed",         │
+│                        │                        │ would need to check    │ "condition": null,     │ "condition": null,     │
+│                        │                        │ the price list for a   │ "evidence": null},     │ "evidence": null},     │
+│                        │                        │ dozen, I do not have   │ "availability":        │ "availability":        │
+│                        │                        │ it in front o...       │ {"value": "in_stock",  │ {"value": "in_stock",  │
+│                        │                        │                        │ "status": "confirmed", │ "status": "confirmed", │
+│                        │                        │                        │ "condi...              │ "condi...              │
+├────────────────────────┼────────────────────────┼────────────────────────┼────────────────────────┼────────────────────────┤
+│ campaign_06_asr_noise  │ Red roses, a dozen,    │ [00:00] Agent: Hi, I   │ [FAIL] {"price":       │ [FAIL] {"price":       │
+│                        │ delivery today         │ am calling about red   │ {"value": null,        │ {"value": null,        │
+│                        │                        │ roses. Do you have a   │ "status":              │ "status":              │
+│                        │                        │ dozen available for    │ "unconfirmed",         │ "unconfirmed",         │
+│                        │                        │ delivery today?        │ "condition": null,     │ "condition": null,     │
+│                        │                        │ [00:05] Seller: Yeah,  │ "evidence": null},     │ "evidence": null},     │
+│                        │                        │ uh, read, red roses, a │ "currency": {"value":  │ "currency": {"value":  │
+│                        │                        │ dozen, that is         │ null, "status":        │ null, "status":        │
+│                        │                        │ thirty-eight dollars.  │ "unconfirmed",         │ "unconfirmed",         │
+│                        │                        │ [00:12] Seller: We     │ "condition": null,     │ "condition": null,     │
+│                        │                        │ have got, um, plenty   │ "evidence": null},     │ "evidence": null},     │
+│                        │                        │ on the shelf, fresh    │ "availability":        │ "availability":        │
+│                        │                        │ batch ...              │ {"value": "in_stock",  │ {"value": "in_stock",  │
+│                        │                        │                        │ "status": "confirmed", │ "status": "confirmed", │
+│                        │                        │                        │ "condi...              │ "condi...              │
+├────────────────────────┼────────────────────────┼────────────────────────┼────────────────────────┼────────────────────────┤
+│ campaign_07_out_of_st… │ Red roses, a dozen,    │ [00:00] Agent: Hi, I   │ [PASS] {"price":       │ [PASS] {"price":       │
+│                        │ delivery today         │ am calling about red   │ {"value": 36.0,        │ {"value": 36.0,        │
+│                        │                        │ roses. Do you have a   │ "status": "confirmed", │ "status": "confirmed", │
+│                        │                        │ dozen available for    │ "condition": null,     │ "condition": null,     │
+│                        │                        │ delivery today?        │ "evidence": "[00:06]   │ "evidence": "[00:06]   │
+│                        │                        │ [00:06] Seller: A      │ Seller: A dozen red    │ Seller: A dozen red    │
+│                        │                        │ dozen red roses is     │ roses is $36."},       │ roses is $36."},       │
+│                        │                        │ $36.                   │ "currency": {"value":  │ "currency": {"value":  │
+│                        │                        │ [00:13] Seller: But we │ "USD", "status":       │ "USD", "status":       │
+│                        │                        │ are sold out of red    │ "confirmed",           │ "confirmed",           │
+│                        │                        │ roses today, the next  │ "condition": null,     │ "condition": null,     │
+│                        │                        │ batch is tomorrow.     │ "evidence": "[00:06]   │ "evidence": "[00:06]   │
+│                        │                        │ [00:21] Seller: I can  │ Seller: A dozen red    │ Seller: A dozen red    │
+│                        │                        │ ...                    │ roses is ...           │ roses is ...           │
+├────────────────────────┼────────────────────────┼────────────────────────┼────────────────────────┼────────────────────────┤
+│ campaign_08_hedged_st… │ Red roses, a dozen,    │ [00:00] Agent: Hi, I   │ [FAIL] {"price":       │ [FAIL] {"price":       │
+│                        │ delivery today         │ am calling about red   │ {"value": 42.0,        │ {"value": 42.0,        │
+│                        │                        │ roses. Do you have a   │ "status": "confirmed", │ "status": "confirmed", │
+│                        │                        │ dozen available for    │ "condition": null,     │ "condition": null,     │
+│                        │                        │ delivery today?        │ "evidence": "[00:05]   │ "evidence": "[00:05]   │
+│                        │                        │ [00:05] Seller: A      │ Seller: A dozen red    │ Seller: A dozen red    │
+│                        │                        │ dozen red roses is     │ roses is $42, that     │ roses is $42, that     │
+│                        │                        │ $42, that price is     │ price is firm."},      │ price is firm."},      │
+│                        │                        │ firm.                  │ "currency": {"value":  │ "currency": {"value":  │
+│                        │                        │ [00:12] Seller: Stock, │ "USD", "status":       │ "USD", "status":       │
+│                        │                        │ I think there should   │ "confirmed",           │ "confirmed",           │
+│                        │                        │ be a few bunches left. │ "condition": null,     │ "condition": null,     │
+│                        │                        │ [00:19] Seller: We ... │ "evidence": "[00:05]   │ "evidence": "[00:05]   │
+│                        │                        │                        │ Seller: A...           │ Seller: A...           │
+├────────────────────────┼────────────────────────┼────────────────────────┼────────────────────────┼────────────────────────┤
+│ campaign_09_temporal   │ Red roses, a dozen,    │ [00:00] Agent: Hi, I   │ [FAIL] {"price":       │ [FAIL] {"price":       │
+│                        │ delivery today         │ am calling about red   │ {"value": 30.0,        │ {"value": 36.0,        │
+│                        │                        │ roses. Do you have a   │ "status": "confirmed", │ "status": "confirmed", │
+│                        │                        │ dozen available for    │ "condition": null,     │ "condition": "per      │
+│                        │                        │ delivery today?        │ "evidence": "[00:05]   │ dozen", "evidence":    │
+│                        │                        │ [00:05] Seller: Last   │ Seller: Last week a    │ "[00:12] Seller: This  │
+│                        │                        │ week a dozen red roses │ dozen red roses was    │ week it is $36 a       │
+│                        │                        │ was $30.               │ $30."}, "currency":    │ dozen."}, "currency":  │
+│                        │                        │ [00:12] Seller: This   │ {"value": "USD",       │ {"value": "USD",       │
+│                        │                        │ week it is $36 a       │ "status": "confirmed", │ "status": "confirmed", │
+│                        │                        │ dozen.                 │ "condition": null,     │ "condition": null,     │
+│                        │                        │ [00:19] Seller: They   │ "evidence": "[00:05]   │ "evidence": "[00:05]   │
+│                        │                        │ are in stock and we    │ Seller: Last week ...  │ Seller: Last week a... │
+│                        │                        │ deliver t...           │                        │                        │
+├────────────────────────┼────────────────────────┼────────────────────────┼────────────────────────┼────────────────────────┤
+│ campaign_10_wrong_pro… │ Red roses, a dozen,    │ [00:00] Agent: Hi, I   │ [FAIL] {"price":       │ [FAIL] {"price":       │
+│                        │ delivery today         │ am calling about red   │ {"value": 28.0,        │ {"value": 28.0,        │
+│                        │                        │ roses. Do you have a   │ "status": "confirmed", │ "status": "confirmed", │
+│                        │                        │ dozen available for    │ "condition": null,     │ "condition": "per      │
+│                        │                        │ delivery today?        │ "evidence": "[00:05]   │ dozen", "evidence":    │
+│                        │                        │ [00:05] Seller: White  │ Seller: White roses    │ "[00:05] Seller: White │
+│                        │                        │ roses are $28 a dozen  │ are $28 a dozen        │ roses are $28 a dozen  │
+│                        │                        │ today.                 │ today."}, "currency":  │ today."}, "currency":  │
+│                        │                        │ [00:12] Seller: For    │ {"value": "USD",       │ {"value": "USD",       │
+│                        │                        │ red roses I would have │ "status": "confirmed", │ "status": "confirmed", │
+│                        │                        │ to check with the      │ "condition": null,     │ "condition": null,     │
+│                        │                        │ supplier, no price     │ "evidence": "[00:05]   │ "evidence": "[00:05]   │
+│                        │                        │ yet.                   │ Seller: White roses    │ Seller: White...       │
+│                        │                        │ [00:19] Sell...        │ ...                    │                        │
+└────────────────────────┴────────────────────────┴────────────────────────┴────────────────────────┴────────────────────────┘
+✓ Eval complete (ID: eval-PSk-2026-11-27T05:16:48)
+
+» View results: promptfoo view
+» Share with your team: https://promptfoo.app
+» Feedback: https://promptfoo.dev/feedback
+
+
+Results:
+  ✓ 5 passed (25.00%)
+  ✗ 15 failed (75.00%)
+  0 errors (0%)
+Duration: 11s (concurrency: 4)
+
+Writing output to results.json

@@ -1,0 +1,76 @@
+{
+ "id": "campaign_04_conditional",
+ "business_name": "The Daily Bloom",
+ "business_type": "Florist",
+ "product": "red roses",
+ "question": "Red roses, a dozen, delivery today",
+ "requested_fields": [
+  "price",
+  "currency",
+  "availability",
+  "quantity_or_stock",
+  "delivery_or_pickup",
+  "timing",
+  "contact_next_step"
+ ],
+ "taxonomy": "conditional_pricing",
+ "transcript": "[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?\n[00:05] Seller: For a standard dozen red roses it is $35.\n[00:12] Seller: The premium long-stem dozen is $50.\n[00:18] Seller: Both are in stock today.\n[00:25] Seller: Delivery today is fine, it would get there by 4 pm.",
+ "gold": {
+  "price": {
+   "value": 35,
+   "status": "confirmed",
+   "evidence": "[00:05] Seller: For a standard dozen red roses it is $35.",
+   "condition": "standard dozen only",
+   "speaker": "Seller",
+   "timestamp": "00:05"
+  },
+  "currency": {
+   "value": "USD",
+   "status": "confirmed",
+   "evidence": "[00:05] Seller: For a standard dozen red roses it is $35.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:05"
+  },
+  "availability": {
+   "value": "in_stock",
+   "status": "confirmed",
+   "evidence": "[00:18] Seller: Both are in stock today.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:18"
+  },
+  "quantity_or_stock": {
+   "value": null,
+   "status": "unconfirmed",
+   "evidence": null,
+   "condition": null,
+   "speaker": null,
+   "timestamp": null
+  },
+  "delivery_or_pickup": {
+   "value": "delivery",
+   "status": "confirmed",
+   "evidence": "[00:25] Seller: Delivery today is fine, it would get there by 4 pm.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:25"
+  },
+  "timing": {
+   "value": "by 4 pm",
+   "status": "confirmed",
+   "evidence": "[00:25] Seller: Delivery today is fine, it would get there by 4 pm.",
+   "condition": null,
+   "speaker": "Seller",
+   "timestamp": "00:25"
+  },
+  "contact_next_step": {
+   "value": null,
+   "status": "unconfirmed",
+   "evidence": null,
+   "condition": null,
+   "speaker": null,
+   "timestamp": null
+  }
+ }
+}

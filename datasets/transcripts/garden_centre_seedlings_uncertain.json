@@ -1,0 +1,62 @@
+{
+  "id": "garden_centre_seedlings_uncertain",
+  "business_name": "Greenacre Garden Centre",
+  "business_type": "Garden centre",
+  "product": "tomato seedlings",
+  "question": "Do you have tomato seedlings, how much are they, and how many trays do you have?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "uncertain_inventory",
+  "transcript": "Agent: Do you have tomato seedlings? How much are they? How many trays do you have?\nSeller: We had tomato seedlings this morning. I think there are some left, but I am not sure. A tray is $7. There should be a few trays left.",
+  "gold": {
+    "price": {
+      "value": 7,
+      "status": "confirmed",
+      "evidence": "A tray is $7.",
+      "condition": null
+    },
+    "currency": {
+      "value": "USD",
+      "status": "confirmed",
+      "evidence": "A tray is $7.",
+      "condition": null
+    },
+    "availability": {
+      "value": null,
+      "status": "uncertain",
+      "evidence": "I think there are some left, but I am not sure.",
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": null,
+      "status": "uncertain",
+      "evidence": "There should be a few trays left.",
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "timing": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "id": "florist_delivery_fee_inference",
+  "business_name": "Petal & Stem",
+  "business_type": "Florist",
+  "product": "red roses",
+  "question": "Do you have red roses today, and can you deliver them?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "unsupported_inference",
+  "transcript": "Agent: Do you have red roses today? Can you deliver them?\nSeller: Yes, we have red roses in stock. Delivery is $10 within the city. We can deliver them this afternoon.",
+  "gold": {
+    "price": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "currency": {
+      "value": "USD",
+      "status": "confirmed",
+      "evidence": "Delivery is $10 within the city.",
+      "condition": null
+    },
+    "availability": {
+      "value": "in_stock",
+      "status": "confirmed",
+      "evidence": "Yes, we have red roses in stock.",
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": "delivery",
+      "status": "confirmed",
+      "evidence": "We can deliver them this afternoon.",
+      "condition": null
+    },
+    "timing": {
+      "value": "this afternoon",
+      "status": "confirmed",
+      "evidence": "We can deliver them this afternoon.",
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "key": "trutrace@1.0.0",
+  "name": "trutrace",
+  "version": "1.0.0",
+  "parent": null,
+  "created_at": "2026-11-27T05:03:08+00:00",
+  "legacy_version": "trutrace-1.0.0",
+  "verification": "full",
+  "params": {
+    "temperature": 0
+  },
+  "system": "You extract a structured answer from a phone call between an agent\nand a local business. The business was asked: \"{question}\"\n\nExtract exactly this schema:\n{schema}\n\nRules:\n- Only state what the seller actually confirmed on the call. If a field was\n  never confirmed, return null for it. Never guess a quantity, never round\n  a vague or hedged answer into a fact.\n- If the seller gives two different prices, return all of them under\n  \"price_candidates\" instead of picking one. Do the same for conflicting\n  times under \"timing_candidates\".\n- For every non-null field, include an \"evidence\" object mapping the field\n  name to the exact sentence from the transcript that supports it, copied\n  word for word. If you cannot quote a supporting sentence, the field\n  must be null.\n- A price quoted for a different product, a delivery or setup fee, or a\n  price the seller says has changed is not the product's price.\n- Return JSON only, no commentary.",
+  "user": "Transcript:\n\"\"\"\n{transcript}\n\"\"\"\n\nRespond with a JSON object with the schema fields, a \"price_candidates\"\nlist of {\"value\": number, \"evidence\": sentence}, a \"timing_candidates\"\nlist of {\"value\": string, \"evidence\": sentence}, and an \"evidence\"\nobject.",
+  "notes": "Seeded from the legacy code-defined prompt 'trutrace-1.0.0' in app/prompts.py. The harness prompt: evidence, candidates and quality rules required."
+}

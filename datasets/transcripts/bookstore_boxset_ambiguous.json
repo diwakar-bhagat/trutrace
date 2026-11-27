@@ -1,0 +1,62 @@
+{
+  "id": "bookstore_boxset_ambiguous",
+  "business_name": "Chapter One Books",
+  "business_type": "Bookstore",
+  "product": "Harry Potter box set",
+  "question": "Do you have the Harry Potter box set, and how much is it?",
+  "requested_fields": [
+    "price",
+    "currency",
+    "availability",
+    "quantity_or_stock",
+    "delivery_or_pickup",
+    "timing",
+    "contact_next_step"
+  ],
+  "taxonomy": "ambiguous_quantity",
+  "transcript": "Agent: Do you have the Harry Potter box set? How much is it?\nSeller: We have the box set in stock. It is $12 a book, and there are seven books in the set. We can deliver it to you tomorrow.",
+  "gold": {
+    "price": {
+      "value": 12,
+      "status": "confirmed",
+      "evidence": "It is $12 a book, and there are seven books in the set.",
+      "condition": "per book"
+    },
+    "currency": {
+      "value": "USD",
+      "status": "confirmed",
+      "evidence": "It is $12 a book, and there are seven books in the set.",
+      "condition": null
+    },
+    "availability": {
+      "value": "in_stock",
+      "status": "confirmed",
+      "evidence": "We have the box set in stock.",
+      "condition": null
+    },
+    "quantity_or_stock": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "delivery_or_pickup": {
+      "value": "delivery",
+      "status": "confirmed",
+      "evidence": "We can deliver it to you tomorrow.",
+      "condition": null
+    },
+    "timing": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    },
+    "contact_next_step": {
+      "value": null,
+      "status": "unconfirmed",
+      "evidence": null,
+      "condition": null
+    }
+  }
+}
