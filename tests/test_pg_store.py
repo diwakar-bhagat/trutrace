@@ -74,6 +74,18 @@ class TestSchema(unittest.TestCase):
         statements = pg_store._statements(self.sql)
         creates = [s for s in statements if s.startswith("CREATE TABLE")]
         self.assertEqual(len(creates), 5)
+        for statement in statements:
+            self.assertNotIn("--", statement)
+
+    def test_comment_semicolons_do_not_split_statements(self):
+        sql = (
+            "CREATE TABLE t (a TEXT -- a comment; with a semicolon\n"
+            ");\nCREATE TABLE u (b TEXT); -- trailing; comment\n"
+        )
+        statements = pg_store._statements(sql)
+        self.assertEqual(len(statements), 2)
+        self.assertTrue(all(s.startswith("CREATE TABLE")
+                            for s in statements))
 
 
 class TestPromptRowMapping(unittest.TestCase):

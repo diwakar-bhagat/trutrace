@@ -219,15 +219,45 @@ def _connect():
     return psycopg.connect(os.environ["DATABASE_URL"], row_factory=dict_row)
 
 
+def _strip_comments(sql_text: str) -> str:
+    """Remove -- comments (to end of line), honouring single-quoted
+    string literals. Comments in the schema may contain semicolons,
+    so they must go before any statement split."""
+    out = []
+    i, n = 0, len(sql_text)
+    in_str = False
+    while i < n:
+        ch = sql_text[i]
+        if in_str:
+            out.append(ch)
+            if ch == "'":
+                if i + 1 < n and sql_text[i + 1] == "'":
+                    out.append(sql_text[i + 1])
+                    i += 2
+                    continue
+                in_str = False
+            i += 1
+        elif ch == "'":
+            in_str = True
+            out.append(ch)
+            i += 1
+        elif ch == "-" and i + 1 < n and sql_text[i + 1] == "-":
+            while i < n and sql_text[i] != "\n":
+                i += 1
+        else:
+            out.append(ch)
+            i += 1
+    return "".join(out)
+
+
 def _statements(sql_text: str) -> list:
-    """Split a DDL script into statements. The schema file uses no
-    semicolons inside string literals or function bodies, so after
-    dropping comment lines a split on ';' is exact."""
-    lines = [
-        line for line in sql_text.splitlines()
-        if not line.strip().startswith("--")
+    """Split a DDL script into statements: strip comments first
+    (they may contain semicolons), then split on ';'. The schema
+    uses no semicolons inside string literals or function bodies,
+    so the split is exact."""
+    return [
+        s.strip() for s in _strip_comments(sql_text).split(";") if s.strip()
     ]
-    return [s.strip() for s in "\n".join(lines).split(";") if s.strip()]
 
 
 def _apply_schema(cur) -> None:
