@@ -191,6 +191,7 @@ class OpenRouterProvider:
 
         return ProviderResult(
             raw=raw,
+            raw_text=content,
             latency_ms=response.get("_latency_ms", latency_ms),
             model=response.get("model", self.model),
             usage={

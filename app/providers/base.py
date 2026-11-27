@@ -29,6 +29,11 @@ class ProviderResult:
     latency_ms: float
     model: Optional[str] = None
     usage: dict = field(default_factory=dict)  # prompt_tokens, completion_tokens, reported_cost_usd
+    # The model's response text, verbatim, when the provider has one.
+    # LLM providers set it; the offline rule provider has no response
+    # text and leaves it None. Recorded by the workbench runner so a
+    # persisted run keeps what the model actually said.
+    raw_text: Optional[str] = None
 
 
 class Provider(Protocol):

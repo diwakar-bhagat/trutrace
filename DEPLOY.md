@@ -11,7 +11,7 @@ The chosen stack, and where each piece lives:
 | Piece | Platform | Status |
 |---|---|---|
 | Backend API + workbench UI (this repo's FastAPI app) | Railway | Live at the URL above |
-| Database | PostgreSQL on Railway | Service online in the same project; `DATABASE_URL` wired to the app service; schema written (`workbench/schema.sql`); storage swap still to do |
+| Database | PostgreSQL on Railway | Live: the app reads `DATABASE_URL` and stores prompts, datasets, runs, cases and results in the five-table schema (`workbench/schema.sql`). Without `DATABASE_URL` the file store remains the local default. |
 | Frontend demo (`demo/`) | Cloudflare Pages | Separate, already live; untouched by this setup |
 
 ## How Railway runs this repo
@@ -39,7 +39,7 @@ never commit them.
 | Variable | Set by | Purpose |
 |---|---|---|
 | `OPENROUTER_API_KEY` | You | Lets the OpenRouter provider call the API directly. Locally the provider uses the connector helper instead and this variable is unset; the moment it is set, the direct API path is used. Required on Railway for any live-model run (the helper does not exist there). Without it, only the offline provider works. |
-| `DATABASE_URL` | Railway (Postgres plugin) | Connection string for the Railway PostgreSQL database. Provisioned by Railway when the Postgres service is added and linked. **Not yet read by the app** — see the storage note below. |
+| `DATABASE_URL` | Railway (Postgres plugin) | Connection string for the Railway PostgreSQL database. Provisioned by Railway when the Postgres service is added and linked. **The app reads it**: its presence selects the PostgreSQL store (see the storage section below). Never commit its value. |
 | `PORT` | Railway | Port the platform routes traffic to. Provided automatically; do not set it by hand. |
 | `TRUTRACE_PORT` | Local only | Local development port override (default 8765). Ignored whenever `PORT` is set. Do not set on Railway. |
 
@@ -58,26 +58,38 @@ No other environment variables are used by the backend today.
   never run successfully (OpenRouter returned HTTP 404 for
   `google/gemini-2.0-flash-001`) and is reported as failed / not
   verified, and Langfuse is reported as not connected, with traces
-  kept as local Langfuse-shaped records in each run's
-  `cases.jsonl`.
+  kept as Langfuse-shaped records in the store (below).
 
-**Still the file-backed store (the known limitation):**
+**Storage: the PostgreSQL swap is done (27 Nov 2026).**
 
-- Prompts and runs persist as files in `prompts/` and `runs/`,
-  exactly as they do locally. A Railway service's filesystem is
-  ephemeral, so versions and runs created through a deployed
-  workbench will **not** survive a redeploy or restart until the
-  storage swap lands. The seeded prompts and recorded runs ship
-  with the repo and are always present.
-- `workbench/schema.sql` is the PostgreSQL shape those files map
-  to, field for field. It is now idempotent (`IF NOT EXISTS`
-  throughout), so it runs cleanly on a fresh Railway Postgres and
-  can be re-run safely. It has been reviewed but **not executed**:
-  no PostgreSQL server was available on the build machine.
-- The remaining work is the storage swap inside
-  `workbench/prompt_store.py` and `workbench/runner.py` to read and
-  write PostgreSQL via `DATABASE_URL`. No API or UI change is
-  needed when it lands.
+- One selection rule (`workbench/store.py`): `DATABASE_URL` set →
+  PostgreSQL (`workbench/pg_store.py`); unset → the file store in
+  `prompts/` and `runs/`, byte for byte the old local behaviour.
+  There is no silent fallback: if the database is unreachable, the
+  app fails loudly instead of writing runs to an ephemeral
+  filesystem. `/health` and `/api/status` report which store is
+  active.
+- The schema is five tables (`workbench/schema.sql`): eval_prompts
+  (immutable versions), eval_datasets (the frozen splits as
+  versioned rows with a content hash), eval_runs (configuration,
+  metrics, status, error log, the full run record), eval_cases
+  (actual inputs and gold labels as scored), eval_results (raw
+  model responses, raw extractions, verified outputs, per-field
+  scores, token usage, latency, the full trace record). A run
+  therefore survives a redeploy with everything needed to reproduce
+  it, not just its score.
+- The server applies the schema on startup (idempotent
+  `IF NOT EXISTS` throughout) whenever `DATABASE_URL` is present,
+  and registers the repo's prompt versions and dataset splits into
+  empty tables. A registered prompt or dataset whose content later
+  differs under the same version makes startup fail rather than
+  silently serving different data.
+- **Not backfilled:** runs recorded in the old file store stay in
+  `runs/` and are not copied into the database; database runs start
+  fresh. The seeded prompts and the file-based recorded runs still
+  ship with the repo and remain the local record.
+- Gold labels remain AI drafted and pending Diwakar Bhagat's human
+  review wherever scores appear, in both stores.
 
 ## Local launch (unchanged)
 

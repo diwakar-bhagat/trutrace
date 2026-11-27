@@ -26,6 +26,7 @@ from .providers.openrouter import OpenRouterProvider
 from .schemas import (
     FIELDS,
     FieldStatus,
+    RawExtraction,
     TranscriptDoc,
     VerifiedAnswer,
     VerifiedField,
@@ -45,6 +46,13 @@ class PipelineResult:
     provider_used: Optional[str] = None
     fallback_used: bool = False
     error: Optional[str] = None
+    # What the provider reported, before verification judged it: the
+    # raw extraction, plus the model's verbatim response text when
+    # the provider has one (LLM providers; None for the offline
+    # provider). Carried so callers can persist a run completely;
+    # verification neither reads nor changes these.
+    raw_extraction: Optional[RawExtraction] = None
+    raw_text: Optional[str] = None
 
 
 def make_provider(name: str, model: Optional[str] = None) -> Provider:
@@ -90,6 +98,8 @@ def _run_with_providers(
             latency_ms=result.latency_ms,
             usage=result.usage,
             provider_used=primary_label,
+            raw_extraction=result.raw,
+            raw_text=result.raw_text,
         )
     except ProviderError as exc:
         primary_error = str(exc)
@@ -108,6 +118,8 @@ def _run_with_providers(
                 provider_used=fallback_label,
                 fallback_used=True,
                 error=f"primary failed: {primary_error}",
+                raw_extraction=result.raw,
+                raw_text=result.raw_text,
             )
         except ProviderError as exc:
             primary_error = f"{primary_error}; fallback failed: {exc}"

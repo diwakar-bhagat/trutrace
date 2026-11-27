@@ -2,7 +2,9 @@
 
 Runs one prompt version (a Prompt Lab file) with one provider/model
 against one dataset split, through the EXISTING pipeline and
-verification engine, and persists everything under runs/<run_id>/:
+verification engine, and persists everything the run produced.
+
+With the file store (no DATABASE_URL) that is runs/<run_id>/:
 
   run.json     the run: prompt snapshot (text, params, profile,
                fingerprint), provider, model, dataset split and case
@@ -14,6 +16,12 @@ verification engine, and persists everything under runs/<run_id>/:
                cost. Langfuse itself is NOT connected (no account, no
                keys); these local records are the trace, and the run
                says so.
+
+With DATABASE_URL set, the same run and trace records are written
+to PostgreSQL instead (workbench/pg_store.py): eval_runs holds the
+run record and its full configuration, eval_cases the inputs and
+gold labels, eval_results the raw responses, outputs and scores —
+so a run survives a redeployment intact.
 
 Scoring reuses the eval suite's primitives (evals.metrics
 field_correct / is_unsupported_claim, app.textutil
@@ -44,7 +52,7 @@ from app.textutil import span_in_transcript
 from evals.metrics import field_correct, is_unsupported_claim
 from evals.run_evals import PRICES
 
-from . import prompt_store
+from . import pg_store, prompt_store, store
 from .datasets import LABELS_STATUS, load_split
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -54,10 +62,11 @@ LANGFUSE_STATUS = {
     "connected": False,
     "status": "not connected",
     "note": (
-        "No Langfuse account or keys are configured. Traces are local "
-        "records in cases.jsonl, modelled on Langfuse's trace shape "
-        "(trace id, prompt version, model, input, output, latency, "
-        "token usage, evaluation outcomes)."
+        "No Langfuse account or keys are configured. Traces are "
+        "records in the workbench store (cases.jsonl files locally, "
+        "eval_results rows when PostgreSQL is the store), modelled "
+        "on Langfuse's trace shape (trace id, prompt version, model, "
+        "input, output, latency, token usage, evaluation outcomes)."
     ),
 }
 
@@ -106,7 +115,8 @@ def run_experiment(
     model_tag = _slug(model) if model else "offline"
     run_id = f"{stamp}_{_slug(prompt_key)}_{model_tag}_{split}"
     run_dir = os.path.join(RUNS_DIR, run_id)
-    os.makedirs(run_dir, exist_ok=True)
+    if not store.use_postgres():
+        os.makedirs(run_dir, exist_ok=True)
 
     per_field = {f: {"correct": 0, "total": 0} for f in FIELDS}
     correct_total = 0
@@ -146,6 +156,8 @@ def run_experiment(
                 "latency_ms": round(wall_ms, 2),
                 "usage": {},
                 "input": {"question": doc.question, "transcript": doc.transcript},
+                "raw_response": None,
+                "raw_extraction": None,
                 "output": None,
                 "evaluations": None,
             })
@@ -218,6 +230,11 @@ def run_experiment(
             "provider_used": result.provider_used,
             "fallback_used": result.fallback_used,
             "input": {"question": doc.question, "transcript": doc.transcript},
+            "raw_response": result.raw_text,
+            "raw_extraction": (
+                result.raw_extraction.model_dump(mode="json")
+                if result.raw_extraction is not None else None
+            ),
             "output": {
                 "fields": {
                     name: f.model_dump(mode="json")
@@ -304,17 +321,22 @@ def run_experiment(
         "failures": failures,
         "langfuse": LANGFUSE_STATUS,
     }
-    with open(os.path.join(run_dir, "run.json"), "w", encoding="utf-8") as fh:
-        json.dump(run, fh, indent=2, ensure_ascii=False)
-    with open(os.path.join(run_dir, "cases.jsonl"), "w", encoding="utf-8") as fh:
-        for trace in traces:
-            fh.write(json.dumps(trace, ensure_ascii=False) + "\n")
+    if store.use_postgres():
+        pg_store.save_run(run, traces, {c.id: c for c in cases})
+    else:
+        with open(os.path.join(run_dir, "run.json"), "w", encoding="utf-8") as fh:
+            json.dump(run, fh, indent=2, ensure_ascii=False)
+        with open(os.path.join(run_dir, "cases.jsonl"), "w", encoding="utf-8") as fh:
+            for trace in traces:
+                fh.write(json.dumps(trace, ensure_ascii=False) + "\n")
     return run
 
 
 # --------------------------------------------------------------------- read --
 
 def list_runs() -> list:
+    if store.use_postgres():
+        return pg_store.list_runs()
     if not os.path.isdir(RUNS_DIR):
         return []
     runs = []
@@ -327,12 +349,16 @@ def list_runs() -> list:
 
 
 def get_run(run_id: str) -> dict:
+    if store.use_postgres():
+        return pg_store.get_run(run_id)
     path = os.path.join(RUNS_DIR, run_id, "run.json")
     with open(path, encoding="utf-8") as fh:
         return json.load(fh)
 
 
 def get_case_trace(run_id: str, case_id: str) -> dict:
+    if store.use_postgres():
+        return pg_store.get_case_trace(run_id, case_id)
     path = os.path.join(RUNS_DIR, run_id, "cases.jsonl")
     with open(path, encoding="utf-8") as fh:
         for line in fh:
@@ -342,22 +368,25 @@ def get_case_trace(run_id: str, case_id: str) -> dict:
     raise KeyError(f"no case {case_id!r} in run {run_id!r}")
 
 
+def _traces_for(run_id: str) -> list:
+    if store.use_postgres():
+        return pg_store.get_traces(run_id)
+    return _read_traces(run_id)
+
+
 def list_case_summaries(run_id: str) -> list:
-    path = os.path.join(RUNS_DIR, run_id, "cases.jsonl")
     out = []
-    with open(path, encoding="utf-8") as fh:
-        for line in fh:
-            t = json.loads(line)
-            ev = t.get("evaluations") or {}
-            out.append({
-                "case_id": t["case_id"],
-                "taxonomy": t["taxonomy"],
-                "status": t["status"],
-                "correct_fields": ev.get("correct_fields"),
-                "total_fields": ev.get("total_fields"),
-                "failed_fields": ev.get("failed_fields", []),
-                "latency_ms": t.get("latency_ms"),
-            })
+    for t in _traces_for(run_id):
+        ev = t.get("evaluations") or {}
+        out.append({
+            "case_id": t["case_id"],
+            "taxonomy": t["taxonomy"],
+            "status": t["status"],
+            "correct_fields": ev.get("correct_fields"),
+            "total_fields": ev.get("total_fields"),
+            "failed_fields": ev.get("failed_fields", []),
+            "latency_ms": t.get("latency_ms"),
+        })
     return out
 
 
@@ -376,8 +405,8 @@ def compare_runs(run_id_a: str, run_id_b: str) -> dict:
     )
     per_case = []
     if same_inputs:
-        traces_a = {t["case_id"]: t for t in _read_traces(run_id_a)}
-        traces_b = {t["case_id"]: t for t in _read_traces(run_id_b)}
+        traces_a = {t["case_id"]: t for t in _traces_for(run_id_a)}
+        traces_b = {t["case_id"]: t for t in _traces_for(run_id_b)}
         for case_id in a["dataset"]["case_ids"]:
             ta, tb = traces_a.get(case_id), traces_b.get(case_id)
             if not ta or not tb or not ta.get("evaluations") or not tb.get("evaluations"):

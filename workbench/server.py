@@ -11,9 +11,12 @@ APIs behind it:
                     two runs on identical inputs, inspect one failed
                     case with its evidence and trace record
 
-Persistence in this slice is the repo itself (prompts/ and runs/ as
-files); workbench/schema.sql holds the PostgreSQL shape those files
-map to when the store moves.
+Persistence is the repo itself (prompts/ and runs/ as files) unless
+DATABASE_URL is set, in which case prompts, datasets, runs, cases
+and results live in PostgreSQL (workbench/pg_store.py, schema in
+workbench/schema.sql) and survive redeployments. The selection rule
+is workbench/store.py's; there is no silent fallback, and /health
+and /api/status report which store is active.
 
 The app runs locally with one command:
 
@@ -37,7 +40,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
-from . import prompt_store, runner
+from . import prompt_store, runner, store
 from .datasets import LABELS_STATUS, split_info
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -105,6 +108,7 @@ def health():
     return {
         "status": "ok",
         "service": "trutrace-workbench",
+        "storage": store.storage_name(),
         "providers": PROVIDER_STATUS,
         "langfuse": runner.LANGFUSE_STATUS,
     }
@@ -114,11 +118,13 @@ def health():
 def status():
     return {
         "labels_status": LABELS_STATUS,
+        "storage": store.storage_name(),
         "providers": PROVIDER_STATUS,
         "langfuse": runner.LANGFUSE_STATUS,
         "tracing": {
-            "implemented": "Local trace records in each run's "
-                           "cases.jsonl (Langfuse-shaped).",
+            "implemented": "Trace records per case in the workbench "
+                           "store (cases.jsonl locally, eval_results "
+                           "in PostgreSQL), Langfuse-shaped.",
             "direction": "Arize Phoenix, self-hosted, selected as the "
                          "tracing layer (see STACK.md). Not wired in "
                          "this slice.",

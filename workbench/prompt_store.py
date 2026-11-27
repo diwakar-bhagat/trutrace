@@ -22,6 +22,12 @@ two legacy code-defined versions (baseline-naive, trutrace-1.0.0) are
 untouched; the seed files below mirror them exactly (the seed text is
 derived from the legacy templates, and a test asserts the assembled
 prompts are byte-identical).
+
+Storage: the files are the store unless DATABASE_URL is set, in
+which case the same operations run against PostgreSQL
+(workbench/pg_store.py) and the files serve only as the registration
+source on first load. Selection is workbench/store.py's one rule;
+there is no silent fallback between the two.
 """
 
 import difflib
@@ -32,6 +38,8 @@ from datetime import datetime, timezone
 
 from app import prompts as app_prompts
 from app.config import PipelineConfig, register_config
+
+from . import pg_store, store
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROMPTS_DIR = os.path.join(ROOT, "prompts")
@@ -77,10 +85,9 @@ def _split_template(template: str):
     return head, "Transcript:\n" + tail.replace("{{", "{").replace("}}", "}")
 
 
-def seed_legacy_prompts() -> None:
-    """Write the two seed prompt files mirroring the legacy code-defined
-    versions, if they are not already on disk. Never overwrites."""
-    os.makedirs(PROMPTS_DIR, exist_ok=True)
+def _seed_records() -> list:
+    """The two seed prompt records mirroring the legacy code-defined
+    versions, as record dicts (no disk access)."""
     seeds = []
     head, user = _split_template(app_prompts._NAIVE_TEMPLATE)
     seeds.append({
@@ -102,11 +109,8 @@ def seed_legacy_prompts() -> None:
                  "prompt: evidence, candidates and quality rules "
                  "required.",
     })
-    for seed in seeds:
-        path = _path_for(seed["name"], seed["version"])
-        if os.path.exists(path):
-            continue
-        record = {
+    return [
+        {
             "key": key_of(seed["name"], seed["version"]),
             "name": seed["name"],
             "version": seed["version"],
@@ -119,6 +123,18 @@ def seed_legacy_prompts() -> None:
             "user": seed["user"],
             "notes": seed["notes"],
         }
+        for seed in seeds
+    ]
+
+
+def seed_legacy_prompts() -> None:
+    """Write the two seed prompt files mirroring the legacy code-defined
+    versions, if they are not already on disk. Never overwrites."""
+    os.makedirs(PROMPTS_DIR, exist_ok=True)
+    for record in _seed_records():
+        path = _path_for(record["name"], record["version"])
+        if os.path.exists(path):
+            continue
         with open(path, "w", encoding="utf-8") as fh:
             json.dump(record, fh, indent=2, ensure_ascii=False)
 
@@ -135,10 +151,22 @@ def _config_for(record: dict) -> PipelineConfig:
 
 
 def load_all() -> list:
-    """Seed (if needed), then register every prompt file with the
-    pipeline. Returns the prompt records, sorted by name and version."""
-    seed_legacy_prompts()
-    records = list_prompts()
+    """Seed (if needed), then register every prompt version with the
+    pipeline. Returns the prompt records, sorted by name and version.
+
+    With DATABASE_URL set, the versions live in PostgreSQL: the repo's
+    prompt files and seed records are registered into eval_prompts
+    (see pg_store.ensure_ready) and read back from there. Without it,
+    the files in prompts/ are the store, as before."""
+    if store.use_postgres():
+        registration = {r["key"]: r for r in _seed_records()}
+        for record in _read_file_records():
+            registration[record["key"]] = record
+        pg_store.ensure_ready(list(registration.values()))
+        records = pg_store.list_prompts()
+    else:
+        seed_legacy_prompts()
+        records = _read_file_records()
     for record in records:
         app_prompts.register_prompt_version(
             record["key"], record["system"], record["user"]
@@ -147,7 +175,7 @@ def load_all() -> list:
     return records
 
 
-def list_prompts() -> list:
+def _read_file_records() -> list:
     if not os.path.isdir(PROMPTS_DIR):
         return []
     records = []
@@ -160,8 +188,16 @@ def list_prompts() -> list:
     return records
 
 
+def list_prompts() -> list:
+    if store.use_postgres():
+        return pg_store.list_prompts()
+    return _read_file_records()
+
+
 def get_prompt(key: str) -> dict:
-    for record in list_prompts():
+    if store.use_postgres():
+        return pg_store.get_prompt(key)
+    for record in _read_file_records():
         if record["key"] == key:
             return record
     raise KeyError(f"no prompt version {key!r}")
@@ -191,13 +227,6 @@ def save_new_version(
         raise ValueError("name and version are required")
     if "/" in name or "/" in version or "@" in name:
         raise ValueError("name and version may not contain '/' or '@' in name")
-    os.makedirs(PROMPTS_DIR, exist_ok=True)
-    path = _path_for(name, version)
-    if os.path.exists(path):
-        raise FileExistsError(
-            f"prompt version {key_of(name, version)} already exists and "
-            "versions are immutable; save under a new version number"
-        )
     record = {
         "key": key_of(name, version),
         "name": name,
@@ -211,8 +240,18 @@ def save_new_version(
         "user": user,
         "notes": notes,
     }
-    with open(path, "w", encoding="utf-8") as fh:
-        json.dump(record, fh, indent=2, ensure_ascii=False)
+    if store.use_postgres():
+        pg_store.insert_prompt(record)
+    else:
+        os.makedirs(PROMPTS_DIR, exist_ok=True)
+        path = _path_for(name, version)
+        if os.path.exists(path):
+            raise FileExistsError(
+                f"prompt version {key_of(name, version)} already exists and "
+                "versions are immutable; save under a new version number"
+            )
+        with open(path, "w", encoding="utf-8") as fh:
+            json.dump(record, fh, indent=2, ensure_ascii=False)
     app_prompts.register_prompt_version(record["key"], system, user)
     register_config(record["key"], _config_for(record))
     return record
