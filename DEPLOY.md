@@ -1,11 +1,17 @@
 # Deploying the TruTrace backend
 
+**Live backend: https://trutrace-production.up.railway.app** (health: `/health`)
+Railway project: https://railway.com/project/7fe4bdac-d2a5-4a5c-806f-897ab4f05011
+Deployed 27 Nov 2026 from this repo's `main` branch; every push to `main` redeploys.
+`OPENROUTER_API_KEY` is set in the Railway dashboard by Diwakar; without it only the
+offline provider runs.
+
 The chosen stack, and where each piece lives:
 
 | Piece | Platform | Status |
 |---|---|---|
-| Backend API + workbench UI (this repo's FastAPI app) | Railway | Ready to deploy; not deployed yet |
-| Database | PostgreSQL on Railway | Schema written (`workbench/schema.sql`); storage swap still to do |
+| Backend API + workbench UI (this repo's FastAPI app) | Railway | Live at the URL above |
+| Database | PostgreSQL on Railway | Service online in the same project; `DATABASE_URL` wired to the app service; schema written (`workbench/schema.sql`); storage swap still to do |
 | Frontend demo (`demo/`) | Cloudflare Pages | Separate, already live; untouched by this setup |
 
 ## How Railway runs this repo
