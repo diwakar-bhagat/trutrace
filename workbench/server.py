@@ -42,6 +42,24 @@ The same app also serves the interactive product's API:
                                  field of a run (201); GET
                                  /api/runs/{id} returns the recorded
                                  reviews alongside the results
+  GET  /api/runs?kind=verify     the product's verify run history
+                                 (the default list stays benchmark
+                                 only; the two never mix)
+
+And the connected gold review flow (workbench/gold.py):
+
+  POST /api/gold/review          store a submitted human review
+                                 export as gold-v2-human-reviewed
+                                 (201); gold-v1-ai-drafted is never
+                                 overwritten
+  GET  /api/gold/status          the current gold version and the
+                                 human review coverage, if any
+  GET  /api/gold/metrics         the recorded benchmark runs scored
+                                 against the current gold by
+                                 evals/gold_metrics.py: agreement
+                                 numbers while the gold is AI
+                                 drafted, reviewed-fields-only
+                                 metrics once a human review lands
 
 Response contract (documented in STACK.md): POST /api/verify
 returns the verify run record itself (run_id, kind, per-field
@@ -64,7 +82,7 @@ import os
 import threading
 import time
 
-from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi import Body, FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
@@ -72,6 +90,7 @@ from pydantic import BaseModel
 from app.providers.base import ProviderError
 from app.schemas import FIELDS
 
+from . import gold as gold_mod
 from . import prompt_store, reviews, runner, store
 from . import verify as verify_mod
 from .datasets import LABELS_STATUS, split_info
@@ -244,6 +263,7 @@ def status():
                 "in memory; it resets when the service redeploys"
             ),
         },
+        "gold": gold_mod.gold_status(),
     }
 
 
@@ -298,7 +318,21 @@ def datasets():
 
 
 @app.get("/api/runs")
-def runs():
+def runs(kind: str = Query("benchmark")):
+    """Run lists. The default is the benchmark list, unchanged.
+    kind=verify returns the interactive product's run history
+    (summaries only; GET /api/runs/{id} carries a run in full)."""
+    if kind == "verify":
+        return {
+            "runs": [
+                runner._verify_run_summary(r)
+                for r in runner.list_verify_runs()
+            ]
+        }
+    if kind != "benchmark":
+        raise HTTPException(
+            400, f"kind must be 'benchmark' or 'verify', got {kind!r}"
+        )
     return {"runs": [runner._run_summary(r) for r in runner.list_runs()]}
 
 
@@ -415,6 +449,29 @@ def review_create(run_id: str, body: ReviewIn):
         raise HTTPException(404, f"no run {run_id!r}")
     except ValueError as exc:
         raise HTTPException(400, str(exc))
+
+
+# ------------------------------------------------ connected gold review --
+
+@app.post("/api/gold/review", status_code=201)
+def gold_review_create(payload: dict = Body(...)):
+    """Store one submitted human review export (the shape
+    tools/gold_review.html exports) as the current human gold,
+    gold-v2-human-reviewed. Returns the recorded coverage."""
+    try:
+        return gold_mod.submit_review(payload)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc))
+
+
+@app.get("/api/gold/status")
+def gold_status():
+    return gold_mod.gold_status()
+
+
+@app.get("/api/gold/metrics")
+def gold_metrics():
+    return gold_mod.gold_metrics_report()
 
 
 @app.get("/api/runs/{run_id}/cases/{case_id}")

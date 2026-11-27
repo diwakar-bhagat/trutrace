@@ -362,6 +362,41 @@ def get_run(run_id: str) -> dict:
         return json.load(fh)
 
 
+def list_verify_runs(limit: int = 20) -> list:
+    """Verify run records (the interactive product's), newest
+    first, for the product's run history. The benchmark list above
+    stays benchmark only; the two never mix."""
+    if store.use_postgres():
+        return pg_store.list_verify_runs(limit)
+    if not os.path.isdir(RUNS_DIR):
+        return []
+    runs = []
+    for name in sorted(os.listdir(RUNS_DIR), reverse=True):
+        path = os.path.join(RUNS_DIR, name, "run.json")
+        if os.path.exists(path):
+            with open(path, encoding="utf-8") as fh:
+                record = json.load(fh)
+            if record.get("kind") == "verify":
+                runs.append(record)
+    return runs[:limit]
+
+
+def _verify_run_summary(run: dict) -> dict:
+    """The history-list shape for one verify run: identity, timing
+    and the verdict counts, without the transcript or the full
+    field detail (GET /api/runs/{id} carries those)."""
+    return {
+        "run_id": run["run_id"],
+        "kind": "verify",
+        "created_at": run["created_at"],
+        "provider": run["provider"],
+        "model": run["model"],
+        "profile": (run.get("profile") or {}).get("name"),
+        "summary": run["summary"],
+        "latency_ms": run.get("latency_ms"),
+    }
+
+
 def get_case_trace(run_id: str, case_id: str) -> dict:
     if store.use_postgres():
         return pg_store.get_case_trace(run_id, case_id)

@@ -643,11 +643,25 @@ textarea:focus, input[type="text"]:focus, select:focus {
 .ctx-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
 .filebtn { display:inline-block; font-size:14px; font-weight:600;
   color:var(--blue); cursor:pointer; margin-top:10px; }
-.runbtn { display:block; width:100%; margin-top:20px; background:var(--blue);
+.runbtn { display:block; width:100%; background:var(--blue);
   color:#fff; font-weight:600; font-size:17px; padding:11px 22px;
   border-radius:9999px; }
 .runbtn:disabled { opacity:0.55; cursor:default; }
 .runbtn:active:not(:disabled) { opacity:0.85; }
+.runbar { position:sticky; bottom:0; margin-top:20px; padding:12px 0 2px;
+  background:var(--canvas); }
+.savebanner { border:1px solid var(--blue); background:rgba(0,102,204,0.08);
+  border-radius:var(--r-item); padding:12px 14px; font-size:15px;
+  font-weight:600; line-height:1.45; margin-bottom:16px; }
+.history-card { margin-top:20px; }
+.hrow { display:flex; align-items:center; gap:12px; width:100%;
+  text-align:left; padding:10px 8px; border-radius:var(--r-item);
+  font-size:15px; color:var(--label); }
+.hrow:hover { background:var(--fill-4); }
+.hrow .hwhen { flex:none; color:var(--label-2); font-size:13px;
+  font-family:var(--mono); }
+.hrow .hcounts { flex:1; }
+.hrow .hdur { flex:none; color:var(--label-2); font-size:13px; }
 .errbox { border:1px solid rgba(211,0,5,0.4); border-left:4px solid var(--conflicting);
   background:rgba(211,0,5,0.05); border-radius:var(--r-item);
   padding:12px 14px; font-size:15px; line-height:1.45; margin-bottom:20px; }
@@ -750,6 +764,9 @@ TruTrace.api = (function () {
     getRun: function (runId) {
       return request("/api/runs/" + encodeURIComponent(runId), {});
     },
+    listVerifyRuns: function () {
+      return request("/api/runs?kind=verify", {});
+    },
   };
 })();
 </script>
@@ -768,6 +785,8 @@ TruTrace.store = (function () {
     reviews: {},           /* field -> review object recorded */
     reviewing: null,       /* field whose review is being saved */
     error: null,           /* plain-language message, once error */
+    history: [],           /* recent verify runs from the backend */
+    historical: false,     /* true while viewing a past run read only */
   };
   var listeners = [];
   return {
@@ -802,10 +821,14 @@ TRY_JS_VIEW = """
     uncertain: ["Uncertain", "var(--label-2)"],
     unsupported: ["Unsupported", "var(--label-2)"],
     contradictory: ["Contradictory", "var(--conflicting)"],
+    not_claimed: ["Not in the extraction", "var(--label-2)"],
   };
   var DECISION_LABEL = {
     approve: "Approved", reject: "Rejected", needs_review: "Needs review",
   };
+  /* The review save confirmation, kept view-local on purpose: it is
+     transient feedback about the last save, not workspace state. */
+  var savedBanner = null;
 
   function el(id) { return document.getElementById(id); }
   function esc(s) {
@@ -816,6 +839,23 @@ TRY_JS_VIEW = """
   function fmt(v) {
     if (v === null || v === undefined) { return "—"; }
     return String(v);
+  }
+  function fmtDuration(ms) {
+    if (ms === null || ms === undefined) { return null; }
+    if (ms >= 1000) { return (ms / 1000).toFixed(1) + " s"; }
+    return Math.round(ms) + " ms";
+  }
+  function countsText(s) {
+    var parts = [
+      s.supported + " supported",
+      s.uncertain + " uncertain",
+      s.unsupported + " unsupported",
+      s.contradictory + " contradictory",
+    ];
+    if (s.not_claimed) {
+      parts.push(s.not_claimed + " not in the extraction");
+    }
+    return parts.join(", ");
   }
 
   /* ---------------------------------------------------------- render */
@@ -855,16 +895,19 @@ TRY_JS_VIEW = """
     }).join("");
     list.querySelectorAll(".frow").forEach(function (row) {
       row.addEventListener("click", function () {
+        savedBanner = null;
         store.set({ selected: row.getAttribute("data-field") });
       });
     });
     var s = run.summary;
     meta.hidden = false;
-    meta.textContent = "Run " + run.run_id + " · " + s.supported +
-      " supported, " + s.uncertain + " uncertain, " + s.unsupported +
-      " unsupported, " + s.contradictory + " contradictory · " +
-      (run.model ? run.model : "offline rules") + ". " +
-      "Stored with the run; it survives backend redeploys.";
+    var dur = fmtDuration(run.latency_ms);
+    meta.textContent = "Run " + run.run_id + " · " + countsText(s) +
+      " · " + (run.model ? run.model : "offline rules") +
+      (dur ? " · took " + dur : "") + ". " +
+      (state.historical
+        ? "A past run, opened read only; its decisions are shown as recorded."
+        : "Stored with the run; it survives backend redeploys.");
   }
 
   function renderDetail(state) {
@@ -884,9 +927,23 @@ TRY_JS_VIEW = """
     var ds = el("d-status");
     ds.textContent = st[0];
     ds.style.color = st[1];
-    el("d-claim").innerHTML = "The extraction claims <b>" +
-      esc(fmt(f.claimed_value)) + "</b>. The call establishes <b>" +
-      esc(fmt(f.verified_value)) + "</b>.";
+    if (f.status === "not_claimed") {
+      el("d-claim").innerHTML = "The extraction does not provide " +
+        "this field, so there is no claim to judge. The call " +
+        "establishes <b>" + esc(fmt(f.verified_value)) + "</b>.";
+    } else {
+      el("d-claim").innerHTML = "The extraction claims <b>" +
+        esc(fmt(f.claimed_value)) + "</b>. The call establishes <b>" +
+        esc(fmt(f.verified_value)) + "</b>.";
+    }
+    var banner = el("review-banner");
+    if (savedBanner) {
+      banner.hidden = false;
+      banner.textContent = savedBanner;
+    } else {
+      banner.hidden = true;
+      banner.textContent = "";
+    }
     if (f.evidence) {
       el("d-evidence").hidden = false;
       el("d-evidence").textContent = f.evidence;
@@ -903,14 +960,37 @@ TRY_JS_VIEW = """
       : "";
     var review = state.reviews[name];
     el("review-state").textContent = review
-      ? "Your decision: " + DECISION_LABEL[review.decision] +
-        ", recorded with the run."
+      ? (state.historical ? "Recorded decision: " : "Your decision: ") +
+        DECISION_LABEL[review.decision] + ", recorded with the run." +
+        (state.historical ? " Past runs are read only." : "")
       : "No decision recorded for this field yet.";
     document.querySelectorAll(".review-btns button").forEach(function (b) {
       var d = b.getAttribute("data-decision");
       b.setAttribute("aria-pressed",
         review && review.decision === d ? "true" : "false");
-      b.disabled = state.reviewing === name;
+      b.disabled = state.reviewing === name || state.historical;
+    });
+    el("review-note").disabled = state.historical;
+  }
+
+  function renderHistory(state) {
+    var list = el("history-list");
+    el("history-empty").hidden = state.history.length > 0;
+    list.innerHTML = state.history.map(function (h) {
+      var when = String(h.created_at || "").replace("T", " ").slice(0, 16);
+      var dur = fmtDuration(h.latency_ms);
+      return '<button type="button" class="hrow" data-run="' +
+        esc(h.run_id) + '">' +
+        '<span class="hwhen">' + esc(when) + "</span>" +
+        '<span class="hcounts">' + esc(countsText(h.summary)) + "</span>" +
+        '<span class="hdur">' + esc(h.model || "offline rules") +
+        (dur ? " · " + dur : "") + "</span>" +
+        "</button>";
+    }).join("");
+    list.querySelectorAll(".hrow").forEach(function (row) {
+      row.addEventListener("click", function () {
+        loadRun(row.getAttribute("data-run"));
+      });
     });
   }
 
@@ -918,6 +998,7 @@ TRY_JS_VIEW = """
     renderBanner(state);
     renderFields(state);
     renderDetail(state);
+    renderHistory(state);
     el("run").disabled = state.phase === "running";
     el("run").textContent = state.phase === "running"
       ? "Verifying…" : "Run verification";
@@ -953,7 +1034,9 @@ TRY_JS_VIEW = """
       return;
     }
     var provider = el("provider").value;
-    store.set({ phase: "running", error: null, run: null, selected: null, reviews: {} });
+    savedBanner = null;
+    store.set({ phase: "running", error: null, run: null, selected: null,
+      reviews: {}, historical: false });
     api.verify({
       transcript: transcript,
       candidate: candidate,
@@ -964,8 +1047,43 @@ TRY_JS_VIEW = """
     }).then(function (run) {
       var first = Object.keys(run.fields)[0];
       store.set({ phase: "done", run: run, selected: first });
+      refreshHistory();
     }).catch(function (err) {
       fail(err.message || "The verification failed.");
+    });
+  }
+
+  function refreshHistory() {
+    api.listVerifyRuns().then(function (data) {
+      store.set({ history: data.runs || [] });
+    }).catch(function () {
+      /* History is a convenience; a backend that cannot list runs
+         leaves the strip empty rather than erroring the page. */
+    });
+  }
+
+  function loadRun(runId) {
+    savedBanner = null;
+    api.getRun(runId).then(function (data) {
+      var run = data.run;
+      if (!run || run.kind !== "verify") {
+        fail("That history entry is not a verification run.");
+        return;
+      }
+      var reviews = {};
+      (data.reviews || []).forEach(function (r) {
+        reviews[r.field] = r;
+      });
+      el("transcript").value = (run.input || {}).transcript || "";
+      el("candidate").value = JSON.stringify(
+        (run.input || {}).candidate || {}, null, 2);
+      el("product").value = (run.input || {}).product || "";
+      el("question").value = (run.input || {}).question || "";
+      var first = Object.keys(run.fields || {})[0];
+      store.set({ phase: "done", run: run, selected: first,
+        reviews: reviews, historical: true, error: null });
+    }).catch(function (err) {
+      fail(err.message || "That run could not be loaded.");
     });
   }
 
@@ -981,6 +1099,10 @@ TRY_JS_VIEW = """
     }).then(function (review) {
       var reviews = Object.assign({}, store.get().reviews);
       reviews[field] = review;
+      savedBanner = "Decision recorded: " +
+        DECISION_LABEL[review.decision] + " for " +
+        (FIELD_LABEL[field] || field) +
+        ". It is saved with the run and survives backend redeploys.";
       store.set({ reviews: reviews, reviewing: null });
       el("review-note").value = "";
     }).catch(function (err) {
@@ -1002,6 +1124,7 @@ TRY_JS_VIEW = """
     preload();
     store.subscribe(render);
     render(store.get());
+    refreshHistory();
     el("run").addEventListener("click", runVerification);
     document.querySelectorAll(".review-btns button").forEach(function (b) {
       b.addEventListener("click", function () {
@@ -1024,6 +1147,83 @@ TRY_JS_VIEW = """
   });
 })();
 </script>
+"""
+
+
+# The gold tile's script for index.html: reads the live gold state
+# from the backend (GET /api/gold/status and /api/gold/metrics) and
+# renders coverage, plus validated metrics once human gold exists.
+# It writes only inside #gold-live: the recorded benchmark tiles are
+# never touched. If the backend cannot be reached it states that
+# coverage is not loaded rather than showing an invented number.
+GOLD_JS = """
+(function () {
+  var params = new URLSearchParams(window.location.search);
+  var BASE = params.get("api") || "https://trutrace-production.up.railway.app";
+  var box = document.getElementById("gold-live");
+  if (!box) { return; }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function pct(x) {
+    return (x === null || x === undefined)
+      ? "not measurable"
+      : (Math.round(x * 1000) / 10) + "%";
+  }
+  function get(path) {
+    return fetch(BASE + path).then(function (r) {
+      if (!r.ok) { throw new Error("status " + r.status); }
+      return r.json();
+    });
+  }
+  Promise.all([get("/api/gold/status"), get("/api/gold/metrics")])
+    .then(function (both) {
+      var status = both[0], metrics = both[1];
+      var out = "";
+      if (!status.human_review) {
+        out += '<p class="big" style="margin-top:14px">' +
+          status.fields_reviewed + ' <span class="of">of ' +
+          status.fields_total + "</span></p>" +
+          '<p class="tile-copy" style="margin-top:8px">fields human ' +
+          "reviewed so far. Until a review is submitted, every score " +
+          "on this page measures agreement with the AI drafted " +
+          "labels, not validated correctness.</p>";
+      } else {
+        var hr = status.human_review;
+        out += '<p class="big" style="margin-top:14px">' +
+          hr.fields_reviewed + ' <span class="of">of ' +
+          hr.fields_total + "</span></p>" +
+          '<p class="tile-copy" style="margin-top:8px">fields human ' +
+          "reviewed and stored on the backend as " +
+          "gold-v2-human-reviewed" +
+          (hr.reviewer ? " (reviewer: " + esc(hr.reviewer) + ")" : "") +
+          ". The validated metrics below are scored against that " +
+          "human gold; the benchmark tiles above keep their recorded " +
+          "numbers against the AI drafted labels.</p>" +
+          '<p class="fine">' + esc(metrics.note) + "</p>";
+        Object.keys(metrics.configurations).forEach(function (label) {
+          var m = metrics.configurations[label];
+          out += '<div class="deg-row"><span>' + esc(label) +
+            '</span><span>precision ' + pct(m.precision) +
+            " · recall " + pct(m.recall) + "</span></div>" +
+            '<div class="deg-row"><span>false positives ' +
+            pct(m.false_positive_rate) + " · false negatives " +
+            pct(m.false_negative_rate) + '</span><span>evidence ' +
+            pct(m.evidence_accuracy) + " · " + m.fields +
+            " fields scored</span></div>";
+        });
+      }
+      box.innerHTML = out;
+    })
+    .catch(function () {
+      box.innerHTML = '<p class="tile-copy" style="margin-top:14px">' +
+        "Live review state could not be loaded from the backend, so " +
+        "no coverage figure is shown here rather than a guessed " +
+        "one. The review tool itself is one click below.</p>";
+    });
+})();
 """
 
 
@@ -1111,7 +1311,9 @@ def build_try_html(showcase, base_answer) -> str:
           </select>
         </div>
       </div>
-      <button type="button" class="runbtn" id="run">Run verification</button>
+      <div class="runbar">
+        <button type="button" class="runbtn" id="run">Run verification</button>
+      </div>
       <p class="fine">Preloaded sample: the campaign_01 florist call from
       the benchmark page. The candidate JSON is an example extraction of
       that call in the baseline style, which asserts the seller's hedges
@@ -1125,8 +1327,10 @@ def build_try_html(showcase, base_answer) -> str:
       <div class="tile-head">%%ICON_TABLE%%<p class="kicker">2 · Field verdicts</p></div>
       <div id="fields-empty" class="empty">No run yet. Verdicts appear
       here after a run, one row per field, each with its status:
-      supported, uncertain, unsupported or contradictory. Nothing is
-      precomputed; every run is executed live by the backend.</div>
+      supported, uncertain, unsupported, contradictory, or not in
+      the extraction (a field the submitted JSON never claimed, which
+      is not a failure). Nothing is precomputed; every run is
+      executed live by the backend.</div>
       <div id="fields-running" class="empty" hidden><span class="spin"></span>Verifying each field against the transcript. This takes a few seconds with the model, less with offline rules.</div>
       <div id="fields-list"></div>
       <p class="fine" id="run-meta" hidden></p>
@@ -1138,6 +1342,7 @@ def build_try_html(showcase, base_answer) -> str:
       see the exact line its verdict rests on, and to record your
       decision on it.</div>
       <div id="detail-body" hidden>
+        <div id="review-banner" class="savebanner" hidden></div>
         <div class="detail-head">
           <span class="dlabel" id="d-field"></span>
           <span class="dstatus" id="d-status"></span>
@@ -1162,6 +1367,17 @@ def build_try_html(showcase, base_answer) -> str:
     </section>
 
   </div>
+
+  <section class="panel-card history-card">
+    <div class="tile-head">%%ICON_TABLE%%<p class="kicker">Run history</p></div>
+    <p class="fine" id="history-note">Verification runs recorded on the
+    backend, newest first. Select one to reload its verdicts and the
+    decisions recorded on it; a past run opens read only.</p>
+    <div id="history-list"></div>
+    <p class="empty" id="history-empty">No verification runs recorded
+    yet. Runs you start appear here, and they survive backend
+    redeploys.</p>
+  </section>
 </main>
 <footer>
   <div class="footer-inner">
@@ -1347,6 +1563,31 @@ def main() -> int:
       benchmark story on this page stays frozen and reproducible.</p>
     </section>
 
+    <section class="tile s12">
+      <div class="tile-head">{icon("check")}<p class="kicker">Gold labels · the human review, live</p></div>
+      <h2>The labels behind the scores are being reviewed by a person.</h2>
+      <p class="tile-copy" style="margin-top:10px">Every benchmark number
+      on this page is scored against gold labels an AI drafted during
+      the build (gold-v1-ai-drafted). Drafted labels can bootstrap a
+      dataset; they cannot validate the system on their own.
+      <span class="cont">The human review walks all 224 fields against
+      their transcripts, field by field, and is stored on the backend
+      as a new version, gold-v2-human-reviewed. The AI drafted labels
+      are never overwritten.</span></p>
+      <div id="gold-live">
+        <p class="tile-copy">Loading the live review state from the
+        backend…</p>
+      </div>
+      <a class="trycta" href="review.html">Review the gold labels</a>
+      <a href="try.html" style="margin-left:18px;font-weight:600">Open the workspace</a>
+      <p class="fine">Coverage and, once a human review exists, the
+      validated metrics are read live from the backend when this page
+      loads. If the backend cannot be reached, this tile says so
+      instead of showing a number. Validated metrics never replace the
+      recorded benchmark figures above; they are reported separately,
+      against the human gold.</p>
+    </section>
+
     <section class="tile tile--glass s7 case">
       <div class="tile-head">{icon("waveform")}<p class="kicker">One call · campaign_01 · the failing case</p></div>
       <p class="tile-copy"><b>One florist, asked for a dozen red roses with
@@ -1498,6 +1739,7 @@ def main() -> int:
   </div>
 </footer>
 <script>{JS}</script>
+<script>{GOLD_JS}</script>
 </body>
 </html>
 """

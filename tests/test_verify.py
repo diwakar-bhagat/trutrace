@@ -6,7 +6,11 @@ with the candidate the offline baseline actually produces for it
 (the hedges asserted as facts), so the expected statuses are the
 engine's own judgements, recorded here: the hedged price, stock and
 timing come back uncertain, the plainly stated currency supported,
-and the fields the candidate never claims unsupported.
+and the fields the candidate never claims not_claimed (a distinct
+status, not a failed verdict). The mapping layer's dialect handling
+(availability synonyms, dropped hedges) is pinned separately in
+TestVerifyMapping with synthetic engine verdicts, because the
+offline provider already strips hedges out of its values.
 
 PostgreSQL behaviour itself is verified live against the deployed
 database, not faked here; what is tested here is the pure row
@@ -82,18 +86,19 @@ class TestVerifyOffline(unittest.TestCase):
         for name in ("price", "availability", "timing"):
             self.assertEqual(fields[name]["status"], "uncertain", name)
             self.assertTrue(fields[name]["evidence"], name)
-        # Never claimed by the candidate: unsupported, with the
-        # absence stated as the reason and no evidence invented.
+        # Never claimed by the candidate: not_claimed, a distinct
+        # status (not a failed verdict), with the absence stated as
+        # the reason and no evidence invented.
         for name in ("quantity_or_stock", "delivery_or_pickup",
                      "contact_next_step"):
-            self.assertEqual(fields[name]["status"], "unsupported", name)
+            self.assertEqual(fields[name]["status"], "not_claimed", name)
             self.assertIsNone(fields[name]["evidence"], name)
             self.assertIn(
                 "does not provide", fields[name]["reason"], name)
         self.assertEqual(
             record["summary"],
-            {"supported": 1, "uncertain": 3, "unsupported": 3,
-             "contradictory": 0, "total": 7},
+            {"supported": 1, "uncertain": 3, "unsupported": 0,
+             "contradictory": 0, "not_claimed": 3, "total": 7},
         )
 
     def test_every_field_carries_evidence_or_explicit_absence(self):
@@ -145,6 +150,94 @@ class TestVerifyOffline(unittest.TestCase):
         )
         self.assertIn("warranty_years", record["unverified"])
         self.assertNotIn("warranty_years", record["fields"])
+
+
+def _vf(status, value, reason="engine reason", evidence="a span"):
+    """A synthetic engine verdict (VerifiedField-shaped) for the
+    mapping unit tests."""
+    from types import SimpleNamespace
+
+    return SimpleNamespace(
+        status=SimpleNamespace(value=status),
+        value=value,
+        reason=reason,
+        evidence=evidence,
+        condition=None,
+        candidates=[],
+        speaker=None,
+        timestamp=None,
+    )
+
+
+class TestVerifyMapping(unittest.TestCase):
+    """The verify mapping layer's dialect rules, pinned on
+    synthetic verdicts: availability synonyms count as the same
+    value, a dropped hedge caps the verdict at uncertain, and an
+    absent field is not_claimed rather than unsupported."""
+
+    def test_availability_synonyms_match(self):
+        entry = verify._verdict(
+            "availability", True, "in_stock", _vf("confirmed", "available"))
+        self.assertEqual(entry["status"], "supported")
+        entry = verify._verdict(
+            "availability", True, "available", _vf("uncertain", "in_stock"))
+        self.assertEqual(entry["status"], "uncertain")
+        # The synonym rule is availability-only: the same words on
+        # another field do not silently become equal.
+        entry = verify._verdict(
+            "timing", True, "in_stock", _vf("confirmed", "available"))
+        self.assertEqual(entry["status"], "unsupported")
+
+    def test_dropped_hedge_caps_at_uncertain(self):
+        # Engine confirmed the value but carries the hedge inside
+        # it; the claim drops the hedge. Match, capped, and the
+        # reason states the cap and why.
+        entry = verify._verdict(
+            "timing", True, "tomorrow morning",
+            _vf("confirmed", "probably tomorrow morning"))
+        self.assertEqual(entry["status"], "uncertain")
+        self.assertIn("capped at uncertain", entry["reason"])
+        self.assertIn("probably", entry["reason"])
+        # Same through the uncertain path.
+        entry = verify._verdict(
+            "timing", True, "tomorrow morning",
+            _vf("uncertain", "probably tomorrow morning"))
+        self.assertEqual(entry["status"], "uncertain")
+        self.assertIn("capped at uncertain", entry["reason"])
+        # A genuinely different value under a hedge is not a match.
+        entry = verify._verdict(
+            "timing", True, "next week",
+            _vf("uncertain", "probably tomorrow morning"))
+        self.assertEqual(entry["status"], "unsupported")
+
+    def test_absent_field_is_not_claimed(self):
+        entry = verify._verdict(
+            "price", False, None, _vf("confirmed", 35))
+        self.assertEqual(entry["status"], "not_claimed")
+        self.assertIsNone(entry["claimed_value"])
+        self.assertIn("does not provide", entry["reason"])
+
+
+class TestOfflineLatency(unittest.TestCase):
+    """Regression: the offline provider's timing-match loop once
+    rebound the timer's `start` variable to a character offset, so
+    every offline run reported a latency of roughly the machine's
+    uptime. The verify page surfaces latency as the run duration,
+    so it has to be a real elapsed time."""
+
+    def test_offline_latency_is_elapsed_not_uptime(self):
+        record = verify.run_verify(
+            _campaign_01().transcript, {"price": 35},
+            provider_name="offline",
+            product=_campaign_01().product,
+            question=_campaign_01().question)
+        self.addCleanup(
+            shutil.rmtree,
+            os.path.join(runner.RUNS_DIR, record["run_id"]),
+            ignore_errors=True,
+        )
+        self.assertGreaterEqual(record["latency_ms"], 0)
+        self.assertLess(record["latency_ms"], 60_000)
 
 
 class TestVerifyGuards(unittest.TestCase):
@@ -276,11 +369,9 @@ class TestVerifyPgRows(unittest.TestCase):
             self.record["input"]["candidate"],
         )
         # Unsupported claims are the fields judged unsupported.
-        self.assertEqual(
-            sorted(result_row["unsupported_claims"]),
-            ["contact_next_step", "delivery_or_pickup",
-             "quantity_or_stock"],
-        )
+        # The three unclaimed fields are not_claimed now, not
+        # unsupported, so the list is empty for this candidate.
+        self.assertEqual(result_row["unsupported_claims"], [])
 
     def test_verify_dataset_payload_is_stable_and_labelless(self):
         a = pg_store.verify_dataset_payload()

@@ -32,6 +32,24 @@ stored on the run with the rest of the input.
                                     established, only a different
                                     value suggested, or nothing in
                                     the call supports the claim)
+  field absent from the candidate -> not_claimed (the extraction
+                                    does not claim the field at all:
+                                    not a verdict on the call, and
+                                    excluded from the unsupported
+                                    count)
+
+The mapping layer also normalises two value dialects before
+comparing, without touching the engine's own verdicts:
+
+- Availability synonyms: "in_stock", "available", "in stock" and
+  their kin name one fact in different words, so the comparison
+  canonicalises the known availability synonyms on both sides.
+- Dropped hedges: when the engine's established value carries a
+  hedge inside the value ("probably tomorrow morning") and the
+  claim drops it ("tomorrow morning"), the values count as
+  matching, but the verdict is capped at uncertain, never
+  supported: a hedged fact is not a confirmed one. The reason
+  states the cap and why.
 
 Value comparison reuses evals/metrics.values_equal (plus a numeric
 coercion for a price claimed as a string), the same normalisation
@@ -166,6 +184,74 @@ def _claimed_equal(claimed, verified) -> bool:
         return False
 
 
+# Availability is claimed in many dialects for one fact. The
+# comparison layer canonicalises the known synonyms, for the
+# availability field only, on both the claimed and the established
+# side.
+_AVAILABILITY_SYNONYMS = {
+    "in_stock": "available",
+    "in stock": "available",
+    "in-stock": "available",
+    "available": "available",
+    "yes": "available",
+    "true": "available",
+    "out_of_stock": "unavailable",
+    "out of stock": "unavailable",
+    "out-of-stock": "unavailable",
+    "unavailable": "unavailable",
+    "sold_out": "unavailable",
+    "sold out": "unavailable",
+    "no": "unavailable",
+}
+
+
+def _normalise_claim_value(field, value):
+    """Canonicalise one value for comparison. Only availability has
+    a synonym dialect; every other field compares as stated."""
+    if field == "availability" and isinstance(value, str):
+        key = " ".join(value.lower().split())
+        return _AVAILABILITY_SYNONYMS.get(key, value)
+    return value
+
+
+def _values_match(field, claimed, verified) -> bool:
+    """Field-aware value comparison: availability synonyms first,
+    then the benchmark's equality (with numeric coercion)."""
+    return _claimed_equal(
+        _normalise_claim_value(field, claimed),
+        _normalise_claim_value(field, verified),
+    )
+
+
+# Hedge words an extraction may carry inside a value ("probably
+# tomorrow morning") that a claim typically drops ("tomorrow
+# morning"). Dropping the hedge does not make the values different,
+# but it caps the verdict at uncertain (see _verdict).
+_HEDGE_WORDS = frozenset({
+    "probably", "maybe", "perhaps", "possibly", "likely", "usually",
+    "generally", "typically", "sometimes", "around", "about",
+    "roughly", "approximately", "approx", "nearly", "almost",
+})
+
+
+def _strip_hedges(value) -> tuple:
+    """Remove hedge words from a string value. Returns (stripped,
+    hedge_words_found); the stripped text only counts as a match
+    when at least one hedge word was actually removed."""
+    if not isinstance(value, str):
+        return value, []
+    kept, found = [], []
+    for token in value.split():
+        word = token.strip(".,;:!?\"'").lower()
+        if word in _HEDGE_WORDS:
+            found.append(word)
+        else:
+            kept.append(token)
+    if not found:
+        return value, []
+    return " ".join(kept), found
+
+
 def _verdict(name, claimed_present, claimed, vf) -> dict:
     """Map one engine verdict (a VerifiedField) onto the visitor's
     claimed value for the field, in the product vocabulary."""
@@ -183,7 +269,10 @@ def _verdict(name, claimed_present, claimed, vf) -> dict:
         "timestamp": vf.timestamp,
     }
     if not claimed_present:
-        entry["status"] = "unsupported"
+        # Not a verdict on the call: the extraction simply does not
+        # claim this field. Distinct from unsupported (a claim that
+        # was judged and failed), and excluded from that count.
+        entry["status"] = "not_claimed"
         entry["reason"] = (
             "the submitted extraction does not provide this field"
         )
@@ -196,13 +285,33 @@ def _verdict(name, claimed_present, claimed, vf) -> dict:
         )
         return entry
     engine_status = vf.status.value
+    equal = _values_match(name, claimed, vf.value)
+    stripped, hedges = _strip_hedges(vf.value)
+    hedge_match = (
+        not equal and bool(hedges)
+        and _values_match(name, claimed, stripped)
+    )
     if engine_status == "conflicting":
         entry["status"] = "contradictory"
         entry["reason"] = vf.reason
-    elif engine_status == "confirmed" and _claimed_equal(claimed, vf.value):
+    elif equal and engine_status == "confirmed":
         entry["status"] = "supported"
         entry["reason"] = vf.reason
-    elif engine_status == "uncertain" and _claimed_equal(claimed, vf.value):
+    elif hedge_match:
+        # The values match once the hedge the claim dropped is set
+        # aside, but a hedged fact is never a confirmed one: cap at
+        # uncertain, whatever the engine's status, and say so.
+        entry["status"] = "uncertain"
+        base = vf.reason or (
+            "the call establishes this value only in hedged form"
+        )
+        entry["reason"] = base + (
+            f" The established value carries a hedge "
+            f"({', '.join(hedges)}: {vf.value!r}) that the claim "
+            "drops; the values match with the hedge set aside, so "
+            "the verdict is capped at uncertain, never supported."
+        )
+    elif equal and engine_status == "uncertain":
         entry["status"] = "uncertain"
         entry["reason"] = vf.reason
     else:
@@ -294,6 +403,7 @@ def run_verify(
     summary = {
         "supported": 0, "uncertain": 0,
         "unsupported": 0, "contradictory": 0,
+        "not_claimed": 0,
         "total": len(fields),
     }
     for entry in verdicts.values():

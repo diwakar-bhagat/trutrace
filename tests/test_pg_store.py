@@ -88,7 +88,7 @@ class TestSchema(unittest.TestCase):
     def test_statements_split_cleanly(self):
         statements = pg_store._statements(self.sql)
         creates = [s for s in statements if s.startswith("CREATE TABLE")]
-        self.assertEqual(len(creates), 6)
+        self.assertEqual(len(creates), 7)
         for statement in statements:
             self.assertNotIn("--", statement)
 

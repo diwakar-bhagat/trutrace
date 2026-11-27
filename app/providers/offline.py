@@ -166,10 +166,13 @@ class OfflineProvider:
                     matches.append((m.start(), m.end(), m.group(0)))
             matches.sort(key=lambda t: (-(t[1] - t[0]), t[0]))
             kept_ranges = []
-            for start, end, text in matches:
-                if any(start >= ks and end <= ke for ks, ke in kept_ranges):
+            # NB: the span variables are named m_start/m_end on
+            # purpose: plain `start` here would rebind the timer
+            # start above and corrupt the reported latency.
+            for m_start, m_end, text in matches:
+                if any(m_start >= ks and m_end <= ke for ks, ke in kept_ranges):
                     continue
-                kept_ranges.append((start, end))
+                kept_ranges.append((m_start, m_end))
                 v = " ".join(text.lower().split())
                 if _THIS_PART_OF_DAY.match(v) and not any(
                     marker in s.lower() for marker in _FUTURE_MARKERS

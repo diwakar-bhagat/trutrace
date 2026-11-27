@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <!--
-  TruTrace gold-label review tool (local file, not the public site).
+  TruTrace gold-label review tool. Served on Cloudflare Pages at
+  /review; also opens as a local file.
 
-  Storage note: this page keeps in-progress review state in
-  localStorage. That is acceptable HERE because the tool is a local
-  file opened by the reviewer on their own machine; it is not the
-  deployed product, and the durable record is the exported
-  gold_labels_v2.json, which is what gets committed and scored
-  against. Nothing on this page writes to the dataset: the frozen
-  AI drafted labels (gold-v1-ai-drafted) are embedded read only, and
-  human decisions land as a new version on export. Protocol:
-  GOLD_REVIEW.md in the project root.
+  Storage note: this page keeps the in-progress review in
+  localStorage as a working draft, on the reviewer's own machine.
+  The durable record is the submission to the workbench backend
+  (POST /api/gold/review), which stores the review as
+  gold-v2-human-reviewed; exporting gold_labels_v2.json remains as
+  a fallback. Nothing on this page writes to the dataset: the
+  frozen AI drafted labels (gold-v1-ai-drafted) are embedded read
+  only, and human decisions land as a new version, never over the
+  originals. Protocol: GOLD_REVIEW.md in the project root.
 -->
 <html lang="en">
 <head>
@@ -45,6 +46,11 @@
   .progress .track{height:8px;border-radius:4px;background:rgba(0,0,0,.08);overflow:hidden;}
   .progress .fill{height:100%;background:var(--blue);width:0%;}
   .progress .nums{font-size:13px;color:var(--gray);margin-top:4px;}
+  #submitStatus{padding:10px 28px;font-size:15px;background:var(--panel);
+    border-bottom:1px solid var(--line);display:none;}
+  #submitStatus.show{display:block;}
+  #submitStatus.ok{border-left:4px solid var(--blue);font-weight:600;}
+  #submitStatus.err{border-left:4px solid #d30005;}
   main{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:20px 28px;max-width:1440px;margin:0 auto;}
   @media (max-width:900px){main{grid-template-columns:1fr}}
   .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;}
@@ -80,9 +86,10 @@
 <header>
   <h1>Gold label review</h1>
   <p>Reviewing the frozen AI drafted labels (<strong>gold-v1-ai-drafted</strong>) field by field.
-     Your decisions export as <strong>gold-v2-human-reviewed</strong>; the originals are never
-     overwritten. Uncertain is its own verdict: never collapse it into supported or unsupported.
-     Full protocol: GOLD_REVIEW.md.</p>
+     Submit your decisions to the backend and they are stored as
+     <strong>gold-v2-human-reviewed</strong>; the originals are never overwritten.
+     Exporting the file remains as a fallback. Uncertain is its own verdict: never collapse
+     it into supported or unsupported. Full protocol: GOLD_REVIEW.md.</p>
 </header>
 <div class="bar">
   <label>Reviewer <input type="text" id="reviewer" placeholder="Your name" size="18"></label>
@@ -100,9 +107,11 @@
   </div>
   <button id="importBtn">Import export</button>
   <input type="file" id="importFile" accept=".json" hidden>
-  <button id="exportBtn" class="primary">Export gold_labels_v2.json</button>
+  <button id="submitBtn" class="primary">Submit review to backend</button>
+  <button id="exportBtn">Export file (fallback)</button>
   <button id="resetBtn">Reset</button>
 </div>
+<div id="submitStatus" role="status"></div>
 <main>
   <section class="panel">
     <h2 id="caseTitle">Transcript</h2>
@@ -143,9 +152,11 @@
   </section>
 </main>
 <footer>
-  State is saved in this browser as you work (localStorage, local tool only). Export regularly:
-  the export is the durable record. Scores against these labels are computed by
-  evals/gold_metrics.py, which names the gold version on every report.
+  Your work is kept in this browser as you go (localStorage working draft). Submitting
+  sends it to the TruTrace backend, which stores it as gold-v2-human-reviewed and reports
+  the coverage it recorded; the export file is the fallback if the backend cannot be
+  reached. Scores against these labels are computed by evals/gold_metrics.py, which names
+  the gold version on every report.
 </footer>
 <script>
 "use strict";
@@ -382,6 +393,49 @@ document.getElementById("exportBtn").addEventListener("click", () => {
   a.download = "gold_labels_v2.json";
   a.click();
   URL.revokeObjectURL(a.href);
+});
+const API_BASE = new URLSearchParams(window.location.search).get("api") ||
+  "https://trutrace-production.up.railway.app";
+document.getElementById("submitBtn").addEventListener("click", async () => {
+  save();
+  const box = document.getElementById("submitStatus");
+  const show = (text, cls) => {
+    box.textContent = text;
+    box.className = "show " + cls;
+  };
+  const payload = exportData();
+  if(!payload.fields_reviewed){
+    show("Nothing to submit yet: no field has a verdict. Your work is " +
+      "saved in this browser as you go.", "err");
+    return;
+  }
+  const btn = document.getElementById("submitBtn");
+  btn.disabled = true;
+  show("Submitting " + payload.fields_reviewed + " reviewed field(s) to " +
+    "the backend…", "");
+  try{
+    const res = await fetch(API_BASE + "/api/gold/review", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json().catch(() => null);
+    if(!res.ok){
+      throw new Error((data && data.detail) || ("the backend answered HTTP " + res.status));
+    }
+    show("Submitted and recorded by the backend: " + data.fields_reviewed +
+      " of " + data.fields_total + " fields reviewed, stored as " +
+      data.gold_version + " (recorded " +
+      new Date(data.submitted_at).toLocaleString() + "). You can keep " +
+      "reviewing and submit again; the newest submission is the " +
+      "current human gold.", "ok");
+  }catch(err){
+    show("Submission failed: " + err.message + " Your decisions are " +
+      "still saved in this browser; export the file as a fallback and " +
+      "try submitting again later.", "err");
+  }finally{
+    btn.disabled = false;
+  }
 });
 document.getElementById("importBtn").addEventListener("click", () =>
   document.getElementById("importFile").click());

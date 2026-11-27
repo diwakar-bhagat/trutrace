@@ -1,4 +1,4 @@
--- TruTrace workbench — PostgreSQL schema (six tables).
+-- TruTrace workbench — PostgreSQL schema (seven tables).
 --
 -- This replaces the earlier three-table scaffold (prompt_versions,
 -- runs, case_traces), which was never executed anywhere: no
@@ -129,8 +129,25 @@ CREATE TABLE IF NOT EXISTS eval_reviews (
     PRIMARY KEY (run_id, case_id, field)
 );
 
+-- Human gold review submissions (the connected gold flow,
+-- POST /api/gold/review). Each row is one submitted review export,
+-- stored verbatim; the latest row is the current human gold
+-- (gold-v2-human-reviewed). Rows accumulate and are never updated
+-- in place, and nothing here touches gold-v1-ai-drafted, which
+-- lives in datasets/ and eval_datasets.
+CREATE TABLE IF NOT EXISTS eval_gold_submissions (
+    id              SERIAL PRIMARY KEY,
+    version         TEXT NOT NULL,            -- 'gold-v2-human-reviewed'
+    reviewer        TEXT,
+    submitted_at    TIMESTAMPTZ NOT NULL,
+    fields_reviewed INTEGER NOT NULL,
+    fields_total    INTEGER NOT NULL,
+    payload         JSONB NOT NULL            -- the review export, verbatim
+);
+
 CREATE INDEX IF NOT EXISTS idx_eval_results_run ON eval_results(run_id);
 CREATE INDEX IF NOT EXISTS idx_eval_cases_run ON eval_cases(run_id);
 CREATE INDEX IF NOT EXISTS idx_eval_runs_prompt ON eval_runs(prompt_key);
 CREATE INDEX IF NOT EXISTS idx_eval_runs_created ON eval_runs(created_at);
 CREATE INDEX IF NOT EXISTS idx_eval_reviews_run ON eval_reviews(run_id);
+CREATE INDEX IF NOT EXISTS idx_eval_gold_submissions_time ON eval_gold_submissions(submitted_at);

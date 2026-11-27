@@ -263,6 +263,31 @@ footer { padding:40px 24px 56px; }
       benchmark story on this page stays frozen and reproducible.</p>
     </section>
 
+    <section class="tile s12">
+      <div class="tile-head"><svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.6 4.4 4.4L19 7.4"/></svg><p class="kicker">Gold labels · the human review, live</p></div>
+      <h2>The labels behind the scores are being reviewed by a person.</h2>
+      <p class="tile-copy" style="margin-top:10px">Every benchmark number
+      on this page is scored against gold labels an AI drafted during
+      the build (gold-v1-ai-drafted). Drafted labels can bootstrap a
+      dataset; they cannot validate the system on their own.
+      <span class="cont">The human review walks all 224 fields against
+      their transcripts, field by field, and is stored on the backend
+      as a new version, gold-v2-human-reviewed. The AI drafted labels
+      are never overwritten.</span></p>
+      <div id="gold-live">
+        <p class="tile-copy">Loading the live review state from the
+        backend…</p>
+      </div>
+      <a class="trycta" href="review.html">Review the gold labels</a>
+      <a href="try.html" style="margin-left:18px;font-weight:600">Open the workspace</a>
+      <p class="fine">Coverage and, once a human review exists, the
+      validated metrics are read live from the backend when this page
+      loads. If the backend cannot be reached, this tile says so
+      instead of showing a number. Validated metrics never replace the
+      recorded benchmark figures above; they are reported separately,
+      against the human gold.</p>
+    </section>
+
     <section class="tile tile--glass s7 case">
       <div class="tile-head"><svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 9.5v5M8.8 6.2v11.6M13 3.8v16.4M17.2 7v10M20.8 10v4" stroke-width="2"/></svg><p class="kicker">One call · campaign_01 · the failing case</p></div>
       <p class="tile-copy"><b>One florist, asked for a dozen red roses with
@@ -510,6 +535,75 @@ footer { padding:40px 24px 56px; }
     };
     select(rows[0]);
   });
+})();
+</script>
+<script>
+(function () {
+  var params = new URLSearchParams(window.location.search);
+  var BASE = params.get("api") || "https://trutrace-production.up.railway.app";
+  var box = document.getElementById("gold-live");
+  if (!box) { return; }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function pct(x) {
+    return (x === null || x === undefined)
+      ? "not measurable"
+      : (Math.round(x * 1000) / 10) + "%";
+  }
+  function get(path) {
+    return fetch(BASE + path).then(function (r) {
+      if (!r.ok) { throw new Error("status " + r.status); }
+      return r.json();
+    });
+  }
+  Promise.all([get("/api/gold/status"), get("/api/gold/metrics")])
+    .then(function (both) {
+      var status = both[0], metrics = both[1];
+      var out = "";
+      if (!status.human_review) {
+        out += '<p class="big" style="margin-top:14px">' +
+          status.fields_reviewed + ' <span class="of">of ' +
+          status.fields_total + "</span></p>" +
+          '<p class="tile-copy" style="margin-top:8px">fields human ' +
+          "reviewed so far. Until a review is submitted, every score " +
+          "on this page measures agreement with the AI drafted " +
+          "labels, not validated correctness.</p>";
+      } else {
+        var hr = status.human_review;
+        out += '<p class="big" style="margin-top:14px">' +
+          hr.fields_reviewed + ' <span class="of">of ' +
+          hr.fields_total + "</span></p>" +
+          '<p class="tile-copy" style="margin-top:8px">fields human ' +
+          "reviewed and stored on the backend as " +
+          "gold-v2-human-reviewed" +
+          (hr.reviewer ? " (reviewer: " + esc(hr.reviewer) + ")" : "") +
+          ". The validated metrics below are scored against that " +
+          "human gold; the benchmark tiles above keep their recorded " +
+          "numbers against the AI drafted labels.</p>" +
+          '<p class="fine">' + esc(metrics.note) + "</p>";
+        Object.keys(metrics.configurations).forEach(function (label) {
+          var m = metrics.configurations[label];
+          out += '<div class="deg-row"><span>' + esc(label) +
+            '</span><span>precision ' + pct(m.precision) +
+            " · recall " + pct(m.recall) + "</span></div>" +
+            '<div class="deg-row"><span>false positives ' +
+            pct(m.false_positive_rate) + " · false negatives " +
+            pct(m.false_negative_rate) + '</span><span>evidence ' +
+            pct(m.evidence_accuracy) + " · " + m.fields +
+            " fields scored</span></div>";
+        });
+      }
+      box.innerHTML = out;
+    })
+    .catch(function () {
+      box.innerHTML = '<p class="tile-copy" style="margin-top:14px">' +
+        "Live review state could not be loaded from the backend, so " +
+        "no coverage figure is shown here rather than a guessed " +
+        "one. The review tool itself is one click below.</p>";
+    });
 })();
 </script>
 </body>

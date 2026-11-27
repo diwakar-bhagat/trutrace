@@ -124,6 +124,14 @@ class GoldBook:
     def overlay_export(self, path):
         with open(path, encoding="utf-8") as fh:
             export = json.load(fh)
+        return self.overlay_export_data(export)
+
+    def overlay_export_data(self, export):
+        """Overlay a human-reviewed export already parsed into a
+        dict (the shape tools/gold_review.html exports and
+        POST /api/gold/review stores). Same semantics as
+        overlay_export: only fields the reviewer actually decided
+        are replaced."""
         self.version = export.get("dataset_version", "gold-v2-human-reviewed")
         self.provenance = "human-reviewed"
         self.reviewer = export.get("reviewer")
@@ -149,6 +157,14 @@ class GoldBook:
 
     def get(self, case_id, field):
         return self._fields.get((case_id, field))
+
+    def reviewed_keys(self):
+        """The (case_id, field) pairs a human reviewer actually
+        decided in the overlay. Empty for the AI drafted book."""
+        return {
+            key for key, entry in self._fields.items()
+            if entry.get("reviewed")
+        }
 
 
 def load_gold(path=None):

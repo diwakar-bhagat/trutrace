@@ -3,7 +3,7 @@
 Used only when DATABASE_URL is set (see workbench/store.py for the
 selection rule). Implements the same operations the file store
 exposes — prompt list/get/save, run save/list/get, case traces, run
-comparison inputs — against the five tables in workbench/schema.sql:
+comparison inputs — against the tables in workbench/schema.sql:
 
   eval_prompts    immutable prompt versions (insert only; a duplicate
                   (name, version) is refused, exactly like the file
@@ -770,3 +770,91 @@ def list_reviews(run_id: str) -> list:
                 (run_id,),
             )
             return [_review_record(row) for row in cur.fetchall()]
+
+
+def list_verify_runs(limit: int = 20) -> list:
+    """Verify run records, newest first, for the product's run
+    history. Benchmark runs are a separate list (list_runs) and the
+    two never mix."""
+    _ensure_schema()
+    with _connect() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT record FROM eval_runs WHERE kind = 'verify' "
+                "ORDER BY created_at DESC, run_id DESC LIMIT %s",
+                (limit,),
+            )
+            return [row["record"] for row in cur.fetchall()]
+
+
+# ------------------------------------------------------- gold submissions --
+# The connected gold flow (workbench/gold.py): a submitted human
+# review export is stored verbatim as a new row; the latest row is
+# the current human gold. gold-v1-ai-drafted is never touched: it
+# lives in datasets/ and the eval_datasets rows.
+
+def gold_submission_row(payload: dict, submitted_at: str) -> dict:
+    """A review export payload as eval_gold_submissions columns.
+    Pure: the same decomposition the live insert uses."""
+    from .gold import HUMAN_VERSION, coverage_of
+
+    coverage = coverage_of(payload)
+    return {
+        "version": payload.get("dataset_version", HUMAN_VERSION),
+        "reviewer": payload.get("reviewer"),
+        "submitted_at": submitted_at,
+        "fields_reviewed": coverage["fields_reviewed"],
+        "fields_total": coverage["fields_total"],
+        "payload": payload,
+    }
+
+
+def _gold_record(row: dict) -> dict:
+    submitted = row["submitted_at"]
+    if not isinstance(submitted, str):
+        submitted = submitted.isoformat(timespec="seconds")
+    return {
+        "version": row["version"],
+        "reviewer": row["reviewer"],
+        "submitted_at": submitted,
+        "fields_reviewed": row["fields_reviewed"],
+        "fields_total": row["fields_total"],
+        "payload": row["payload"],
+    }
+
+
+def save_gold_submission(payload: dict, submitted_at: str) -> dict:
+    """Store one submitted review export as a new row and return it
+    as a submission record. Earlier submissions stay on record; the
+    newest is the current human gold."""
+    _ensure_schema()
+    row = gold_submission_row(payload, submitted_at)
+    with _connect() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO eval_gold_submissions (version, reviewer,
+                    submitted_at, fields_reviewed, fields_total,
+                    payload)
+                VALUES (%(version)s, %(reviewer)s, %(submitted_at)s,
+                    %(fields_reviewed)s, %(fields_total)s, %(payload)s)
+                RETURNING *
+                """,
+                _wrap(row, "payload"),
+            )
+            stored = cur.fetchone()
+    return _gold_record(stored)
+
+
+def latest_gold_submission() -> dict:
+    """The newest stored review submission, or None when no human
+    review has ever been submitted."""
+    _ensure_schema()
+    with _connect() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT * FROM eval_gold_submissions "
+                "ORDER BY submitted_at DESC, id DESC LIMIT 1"
+            )
+            row = cur.fetchone()
+    return _gold_record(row) if row is not None else None
