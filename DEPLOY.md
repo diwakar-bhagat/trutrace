@@ -78,7 +78,9 @@ No other environment variables are used by the backend today.
   contract is in STACK.md.
 - The connected gold endpoints: `POST /api/gold/review` (a
   submitted human review export, stored verbatim as the current
-  gold-v2-human-reviewed), `GET /api/gold/status` (current gold
+  gold-v2-human-reviewed), `GET /api/gold/review` (the current
+  stored submission, payload included, which the review page
+  seeds from on load), `GET /api/gold/status` (current gold
   version and review coverage) and `GET /api/gold/metrics` (the
   recorded runs scored against the current gold by
   `evals/gold_metrics.py`; agreement-labelled while the gold is AI

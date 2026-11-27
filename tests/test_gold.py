@@ -154,6 +154,45 @@ class TestGoldFlow(GoldFileStoreCase):
         self.assertLess(scored, 100)
 
 
+class TestGoldSubmissionView(GoldFileStoreCase):
+    """GET /api/gold/review's backing view: the review page seeds
+    from this, so it must be empty before any submission and carry
+    the full stored payload, unchanged, after one."""
+
+    def test_view_is_none_before_any_submission(self):
+        self.assertIsNone(gold.current_submission_view())
+
+    def test_view_after_submission_carries_payload_and_coverage(self):
+        payload = _partial_payload()
+        gold.submit_review(payload)
+        view = gold.current_submission_view()
+        self.assertEqual(view["gold_version"], "gold-v2-human-reviewed")
+        self.assertEqual(view["reviewer"], "Test Reviewer")
+        self.assertEqual(view["fields_reviewed"], 2)
+        self.assertEqual(view["fields_total"], 224)
+        self.assertFalse(view["complete"])
+        self.assertEqual(view["payload"], payload)
+
+    def test_route_reports_null_submission_before_any_review(self):
+        from workbench import server
+
+        body = server.gold_review_current()
+        self.assertEqual(body["gold_version"], "gold-v1-ai-drafted")
+        self.assertIsNone(body["submission"])
+
+    def test_route_returns_the_stored_submission(self):
+        from workbench import server
+
+        gold.submit_review(_partial_payload())
+        body = server.gold_review_current()
+        self.assertEqual(body["gold_version"], "gold-v2-human-reviewed")
+        submission = body["submission"]
+        self.assertEqual(submission["fields_reviewed"], 2)
+        case = next(iter(submission["payload"]["cases"].values()))
+        self.assertEqual(
+            case["fields"]["price"]["human_status"], "supported")
+
+
 class TestGoldPgRows(unittest.TestCase):
     def test_submission_row_decomposition(self):
         row = pg_store.gold_submission_row(

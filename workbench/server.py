@@ -52,6 +52,10 @@ And the connected gold review flow (workbench/gold.py):
                                  export as gold-v2-human-reviewed
                                  (201); gold-v1-ai-drafted is never
                                  overwritten
+  GET  /api/gold/review          the current stored submission
+                                 (status plus payload), so the
+                                 review page seeds from the
+                                 persisted state on load
   GET  /api/gold/status          the current gold version and the
                                  human review coverage, if any
   GET  /api/gold/metrics         the recorded benchmark runs scored
@@ -462,6 +466,21 @@ def gold_review_create(payload: dict = Body(...)):
         return gold_mod.submit_review(payload)
     except ValueError as exc:
         raise HTTPException(400, str(exc))
+
+
+@app.get("/api/gold/review")
+def gold_review_current():
+    """The current stored human gold submission (status plus the
+    full payload), so the review page can open from the persisted
+    state instead of only its local draft. submission is null when
+    no human review has been submitted yet."""
+    view = gold_mod.current_submission_view()
+    if view is None:
+        return {
+            "gold_version": gold_mod.AI_VERSION,
+            "submission": None,
+        }
+    return {"gold_version": gold_mod.HUMAN_VERSION, "submission": view}
 
 
 @app.get("/api/gold/status")

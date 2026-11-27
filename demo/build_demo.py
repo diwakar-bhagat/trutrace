@@ -431,6 +431,9 @@ main { max-width:1180px; margin:0 auto; padding:24px 24px 8px; }
   font-weight:600; font-size:17px; padding:11px 28px; border-radius:9999px;
   text-decoration:none; margin-top:2px; }
 .trycta:active { opacity:0.85; }
+.gold-actions { display:flex; flex-wrap:wrap; gap:12px 18px;
+  align-items:center; }
+.gold-actions .wslink { font-weight:600; white-space:nowrap; }
 .tile--dark .fine, .tile--dark3 .fine { color:var(--d-label-2); }
 .legend { display:flex; gap:20px; font-size:14px; color:var(--label-2); margin-top:10px; }
 .tile--dark .legend { color:var(--d-label-2); }
@@ -517,6 +520,13 @@ th { background:var(--pearl); font-size:13.5px; font-weight:600; text-align:left
 td { padding:10px 14px; border-bottom:1px solid var(--separator); }
 td:not(:first-child), th:not(:first-child) { text-align:right; }
 .table-scroll { overflow-x:auto; }
+/* Inside the scroll container the table keeps a readable minimum
+   width and its cells never wrap mid token: on a phone the table
+   scrolls within its tile instead of squeezing its last columns
+   to a few pixels. On desktop the tile is wider than the minimum,
+   so nothing changes there. */
+.table-scroll table { min-width:640px; }
+.table-scroll th, .table-scroll td { white-space:nowrap; }
 .tgroup { font-size:12px; font-weight:600; color:var(--label-2);
   text-transform:uppercase; letter-spacing:0.06em; margin:22px 0 8px; }
 .tgroup:first-of-type { margin-top:4px; }
@@ -541,6 +551,7 @@ footer { padding:40px 24px 56px; }
   .tile { padding:22px; }
   .big { font-size:32px; }
   .fname { width:84px; }
+  .seg button { min-height:36px; padding:6px 16px; }
 }
 """
 
@@ -690,6 +701,15 @@ textarea:focus, input[type="text"]:focus, select:focus {
 .backlink { display:inline-block; margin-top:22px; color:var(--blue-dark);
   font-size:15px; text-decoration:none; }
 @media (max-width:1023px) { .ws { grid-template-columns:1fr; } }
+@media (max-width:640px) {
+  /* One column of context fields: side by side at phone width the
+     two selects truncated their labels and the longer label wrapped
+     out of alignment. 16px inputs also stop iOS focus zoom. */
+  .ctx-grid { grid-template-columns:1fr; }
+  textarea, input[type="text"], select { font-size:16px; }
+  .filebtn { padding:8px 4px; }
+  .panel-card { padding:20px; }
+}
 """
 
 # The workspace script, in three named modules inlined as separate
@@ -1578,8 +1598,10 @@ def main() -> int:
         <p class="tile-copy">Loading the live review state from the
         backend…</p>
       </div>
-      <a class="trycta" href="review.html">Review the gold labels</a>
-      <a href="try.html" style="margin-left:18px;font-weight:600">Open the workspace</a>
+      <div class="gold-actions">
+        <a class="trycta" href="review.html">Review the gold labels</a>
+        <a class="wslink" href="try.html">Open the workspace</a>
+      </div>
       <p class="fine">Coverage and, once a human review exists, the
       validated metrics are read live from the backend when this page
       loads. If the backend cannot be reached, this tile says so

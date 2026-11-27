@@ -57,6 +57,12 @@ One predictable shape across the verify and review endpoints:
   `submitted_at`, `fields_reviewed`, `fields_total`, `per_split`,
   `complete`. The body is the review tool's export payload,
   validated (version, cases, protocol statuses) before storage.
+- `GET /api/gold/review` → `{gold_version, submission}` where
+  `submission` is the current stored human review (the recorded
+  status plus the full export payload), or null before the first
+  submission. The review page fetches this on load and seeds
+  itself from it; local edits that diverge from that state are
+  kept and marked as unsubmitted changes.
 - `GET /api/gold/status` → the current gold version and, once a
   human review has been submitted, its coverage.
 - `GET /api/gold/metrics` → `{gold_version, provenance, scope,

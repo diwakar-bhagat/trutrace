@@ -12,6 +12,11 @@ This module is the receiving end that removes that step:
                           file store it lands in gold/ beside the
                           runs. gold-v1-ai-drafted is never
                           overwritten either way.
+  GET  /api/gold/review   the current stored submission, payload
+                          included, so the review page opens from
+                          the persisted state: the fields already
+                          reviewed on the backend prefill the tool
+                          instead of a fresh page starting at zero.
   GET  /api/gold/status   the current gold version and, once a
                           human review has been submitted, its
                           coverage (fields reviewed of the 224 in
@@ -184,6 +189,19 @@ def current_submission() -> dict:
         return None
     with open(path, encoding="utf-8") as fh:
         return json.load(fh)
+
+
+def current_submission_view() -> dict | None:
+    """The current human gold submission as the review page seeds
+    from it: the recorded status (version, reviewer, coverage) plus
+    the stored payload itself, in the export shape the page
+    produces. None when no human review has been submitted yet.
+    Reading it changes nothing; the stored gold is only ever
+    replaced by a new POST /api/gold/review submission."""
+    record = current_submission()
+    if record is None:
+        return None
+    return _status_of(record) | {"payload": record["payload"]}
 
 
 def gold_status() -> dict:

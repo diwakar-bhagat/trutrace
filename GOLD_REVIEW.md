@@ -84,7 +84,15 @@ span by selecting transcript text, and add an adjudication note.
 Progress is visible across the whole set and per split.
 
 In-progress state persists in the page's localStorage as a working
-draft. **The primary path is submission**: the page's "Submit review
+draft. **On load, the page seeds from the persisted state**: it
+fetches the current stored submission (`GET /api/gold/review`) and
+opens with those fields already filled in, the progress counter
+reflecting the server's coverage. Local edits that diverge from
+the last synced state are kept, never silently discarded, and are
+marked (•) as unsubmitted changes until the next accepted submit;
+if the backend cannot be reached, the page opens from the local
+draft and says plainly that server state could not be loaded.
+**The primary path is submission**: the page's "Submit review
 to backend" action posts the review to `POST /api/gold/review`, and
 the backend stores it (PostgreSQL `eval_gold_submissions`, one row
 per submission, or `gold/gold_labels_v2.json` in the file store) as
