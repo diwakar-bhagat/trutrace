@@ -4,188 +4,401 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>TruTrace — verified answers from seller calls</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --ink:#111111; --canvas:#ffffff; --soft:#f5f5f5; --charcoal:#39393b;
-  --ash:#4b4b4d; --mute:#707072; --stone:#9e9ea0; --hairline:#cacacb;
-  --hairline-soft:#e5e5e5; --verified:#007d48; --conflicting:#d30005;
-  --unconfirmed:#707072;
+  --blue:#0066cc; --blue-dark:#2997ff; --focus:#0071e3;
+  --ink:#1d1d1f;
+  --label:rgba(0,0,0,0.85); --label-2:rgba(0,0,0,0.5); --label-3:rgba(0,0,0,0.26);
+  --d-label:rgba(255,255,255,0.85); --d-label-2:rgba(255,255,255,0.55);
+  --d-label-3:rgba(255,255,255,0.25);
+  --fill:rgba(0,0,0,0.1); --fill-2:rgba(0,0,0,0.08); --fill-3:rgba(0,0,0,0.05);
+  --fill-4:rgba(0,0,0,0.03);
+  --d-fill:rgba(255,255,255,0.1); --d-fill-2:rgba(255,255,255,0.08);
+  --d-fill-3:rgba(255,255,255,0.05);
+  --canvas:#ffffff; --parchment:#f5f5f7; --pearl:#fafafc;
+  --tile-1:#272729; --tile-2:#2a2a2c; --tile-3:#252527; --black:#000000;
+  --separator:rgba(0,0,0,0.05); --border:rgba(0,0,0,0.1);
+  --d-separator:rgba(255,255,255,0.05); --d-border:rgba(255,255,255,0.1);
+  --glass:rgba(255,255,255,0.82);
+  --material:rgba(246,246,246,0.8);
+  --glass-shadow:0 0 0 0.5px rgba(0,0,0,0.08), 0 8px 15px rgba(0,0,0,0.04);
+  --popover-shadow:0 0 0 0.5px rgba(0,0,0,0.1), 0 8px 48px rgba(0,0,0,0.2);
+  --window-shadow:0 0 1px rgba(0,0,0,0.8), 0 18px 54px rgba(0,0,0,0.3);
+  --verified:#007d48; --conflicting:#d30005;
+  --r-group:12px; --r-window:16px; --r-popover:20px; --r-item:8px;
+  --font:-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro",
+    "Helvetica Neue", "Segoe UI", Inter, system-ui, sans-serif;
+  --mono:ui-monospace, "SF Mono", SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 * { box-sizing:border-box; margin:0; padding:0; }
-body { font-family:Inter,system-ui,-apple-system,sans-serif; color:var(--ink);
-  background:var(--canvas); font-size:16px; line-height:1.5;
+body { font-family:var(--font); color:var(--label); background:var(--parchment);
+  font-size:17px; line-height:1.47; letter-spacing:-0.374px;
   -webkit-font-smoothing:antialiased; }
-.hero { background:var(--ink); color:#fff; padding:80px 24px 64px; }
-.hero-inner { max-width:1080px; margin:0 auto; }
-.hero h1 { font-family:Anton,"Bebas Neue",Inter,sans-serif; font-size:96px;
-  line-height:.9; font-weight:400; text-transform:uppercase; letter-spacing:0; }
-.hero .sub { font-size:20px; line-height:1.4; color:var(--stone);
-  max-width:640px; margin-top:24px; }
-.hero .sub b { color:#fff; font-weight:500; }
-main { max-width:1080px; margin:0 auto; padding:80px 24px; }
-.grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
-.tile { background:var(--canvas); border:1px solid var(--hairline); padding:24px; }
-.tile--soft { background:var(--soft); border-color:transparent; }
-.tile--wide { grid-column:1 / -1; }
-.tile-copy { font-size:17px; line-height:1.45; margin-bottom:20px; }
-.tile-copy b { font-weight:500; }
-.tile-copy .cont { color:var(--mute); }
-.kicker { font-size:12px; font-weight:500; color:var(--mute);
-  text-transform:uppercase; letter-spacing:.08em; margin-bottom:12px; }
-.transcript { font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
-  font-size:13px; line-height:1.6; color:var(--charcoal);
-  background:var(--soft); padding:16px; margin-bottom:24px; }
-.tline { padding:2px 0; }
-.contrast { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
-.contrast h3 { font-size:16px; font-weight:500; margin-bottom:4px; }
-.contrast .note { font-size:14px; color:var(--mute); margin-bottom:12px; }
-.field-row { display:flex; align-items:center; gap:12px; padding:12px 0;
-  border-bottom:1px solid var(--hairline); }
-.field-name { font-weight:500; width:104px; flex:none; }
-.field-value { flex:1; }
-.chip { flex:none; background:var(--soft); border-radius:9999px;
-  padding:4px 12px; font-size:12px; font-weight:500; }
-.reason { font-size:14px; color:var(--mute); padding:8px 0 0; }
-.evidence { font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
-  font-size:13px; line-height:1.6; color:var(--charcoal);
-  background:var(--soft); padding:8px 12px; margin-top:8px; }
-.stat-num { font-size:56px; font-weight:500; line-height:1.05; letter-spacing:-.01em; }
-.stat-num .of { color:var(--mute); }
-.stat-label { color:var(--mute); margin-top:12px; font-size:16px; }
-.stat-now { margin-top:16px; font-size:16px; }
-table { width:100%; border-collapse:collapse; font-size:15px;
+button { font:inherit; color:inherit; background:none; border:0; cursor:pointer; }
+button:focus-visible, a:focus-visible { outline:2px solid var(--focus); outline-offset:2px; }
+.icon { flex:none; display:block; }
+
+header.site { background:var(--black); color:#fff; padding:56px 24px 48px; }
+.site-inner { max-width:1180px; margin:0 auto; }
+.wordmark { font-size:17px; font-weight:600; letter-spacing:-0.374px; }
+.wordmark span { color:var(--d-label-2); font-weight:400; }
+header.site h1 { font-size:56px; font-weight:600; line-height:1.07;
+  letter-spacing:-0.28px; margin-top:40px; max-width:820px; }
+header.site .sub { font-size:21px; line-height:1.35; color:var(--d-label-2);
+  max-width:680px; margin-top:16px; }
+header.site .sub b { color:#fff; font-weight:600; }
+
+main { max-width:1180px; margin:0 auto; padding:24px 24px 8px; }
+.grid { display:grid; grid-template-columns:repeat(12, 1fr); gap:20px; }
+.tile { border-radius:var(--r-window); padding:28px; background:var(--canvas);
+  border:1px solid var(--border); min-width:0; }
+.tile--glass { background:var(--material); backdrop-filter:blur(30px) saturate(1.6);
+  -webkit-backdrop-filter:blur(30px) saturate(1.6);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.5); }
+.tile--dark { background:var(--tile-1); color:var(--d-label); border-color:transparent; }
+.tile--dark3 { background:var(--tile-3); color:var(--d-label); border-color:transparent; }
+.s4 { grid-column:span 4; } .s5 { grid-column:span 5; } .s6 { grid-column:span 6; }
+.s7 { grid-column:span 7; } .s8 { grid-column:span 8; } .s12 { grid-column:span 12; }
+
+.tile-head { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+.tile-head .icon { color:var(--label-2); }
+.tile--dark .tile-head .icon, .tile--dark3 .tile-head .icon { color:var(--d-label-2); }
+.kicker { font-size:12px; font-weight:600; color:var(--label-2);
+  text-transform:uppercase; letter-spacing:0.06em; }
+.tile--dark .kicker, .tile--dark3 .kicker { color:var(--d-label-2); }
+.tile h2 { font-size:28px; font-weight:600; line-height:1.14; letter-spacing:0.196px; }
+.tile-copy { font-size:17px; margin-bottom:16px; }
+.tile-copy .cont { color:var(--label-2); }
+.tile--dark .tile-copy .cont, .tile--dark3 .tile-copy .cont { color:var(--d-label-2); }
+.big { font-size:40px; font-weight:600; line-height:1.1; letter-spacing:-0.01em; }
+.big .of { color:var(--label-3); }
+.tile--dark .big .of { color:var(--d-label-3); }
+.fine { font-size:12px; line-height:1.45; color:var(--label-2); margin-top:16px; }
+.tile--dark .fine, .tile--dark3 .fine { color:var(--d-label-2); }
+.legend { display:flex; gap:20px; font-size:14px; color:var(--label-2); margin-top:10px; }
+.tile--dark .legend { color:var(--d-label-2); }
+.sw { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:7px; }
+.chart { width:100%; height:auto; display:block; margin-top:14px; }
+.chart text { font-family:var(--font); }
+.chart .cv { font-size:12.5px; font-weight:600; text-anchor:middle; }
+.chart .cvv { font-size:13.5px; font-weight:600; text-anchor:end; }
+.chart .cl { font-size:12px; text-anchor:middle; }
+.chart .cll { font-size:12.5px; }
+
+/* segmented control, macOS pattern */
+.seg { display:inline-flex; background:var(--fill-3); border-radius:9px;
+  padding:2px; gap:2px; margin:4px 0 18px; }
+.tile--dark .seg { background:var(--d-fill-2); }
+.seg button { min-height:24px; padding:3px 14px; border-radius:7px;
+  font-size:14px; color:var(--label-2); }
+.tile--dark .seg button { color:var(--d-label-2); }
+.seg button[aria-pressed="true"] { background:#fff; color:var(--label);
+  box-shadow:var(--glass-shadow); font-weight:600; }
+.tile--dark .seg button[aria-pressed="true"] { background:#323435; color:#fff; }
+.panel[hidden] { display:none; }
+
+/* transcript case tiles */
+.transcript { font-family:var(--mono); font-size:13px; line-height:1.65;
+  background:var(--canvas); border:1px solid var(--border);
+  border-radius:var(--r-group); padding:14px 16px; margin-bottom:16px; }
+.transcript--hero { box-shadow:var(--window-shadow); border-color:transparent; }
+.tline { padding:3px 8px; border-radius:6px; color:var(--label); }
+.tline.hl { background:rgba(0,102,204,0.12); }
+.frow { display:flex; align-items:center; gap:12px; width:100%; text-align:left;
+  padding:10px 12px; border-radius:var(--r-item); border:1px solid transparent; }
+.frow:hover { background:var(--fill-4); }
+.frow[aria-pressed="true"] { background:rgba(0,102,204,0.08);
+  border-color:rgba(0,102,204,0.35); }
+.fname { font-weight:600; width:96px; flex:none; font-size:15px; }
+.fvalue { flex:1; font-size:15px; }
+.chip { flex:none; background:var(--fill-3); border-radius:9999px;
+  padding:3px 11px; font-size:12px; font-weight:600; }
+.detail { margin-top:14px; background:var(--glass); border-radius:var(--r-group);
+  box-shadow:var(--glass-shadow); padding:14px 16px; }
+.detail-head { display:flex; justify-content:space-between; align-items:baseline; }
+.dlabel { font-size:12px; font-weight:600; text-transform:uppercase;
+  letter-spacing:0.06em; color:var(--label-2); }
+.dstatus { font-size:13px; font-weight:600; }
+.devidence { font-family:var(--mono); font-size:13px; line-height:1.6;
+  margin-top:8px; color:var(--label); }
+.dreason { font-size:14px; color:var(--label-2); margin-top:6px; }
+.notest { font-size:14px; color:var(--label-2); margin-top:12px; }
+
+/* provider rows */
+.prow { display:flex; gap:12px; padding:13px 0; border-bottom:1px solid var(--separator); }
+.prow:last-child { border-bottom:0; }
+.prow .pbody { flex:1; }
+.prow .pname { font-weight:600; font-size:16px; }
+.prow .pnote { font-size:14px; color:var(--label-2); line-height:1.43; }
+.pstatus { flex:none; font-size:12px; font-weight:600; padding:3px 11px;
+  border-radius:9999px; background:var(--fill-3); height:fit-content; }
+.pstatus.ok { color:var(--verified); }
+.pstatus.down { color:var(--conflicting); }
+
+/* degradation */
+.deg-row { display:flex; justify-content:space-between; align-items:baseline;
+  padding:10px 0 4px; font-size:16px; }
+.deg-row span:last-child { font-weight:600; }
+.units { display:flex; gap:6px; padding:6px 0 12px; }
+.unit { width:26px; height:26px; border-radius:7px; background:var(--fill-3); }
+.unit.u-primary { background:var(--ink); }
+.unit.u-fallback { background:var(--blue); }
+.unit.u-down { background:transparent; border:1.5px solid var(--border); }
+
+/* limits */
+.limits { list-style:none; }
+.limits li { padding:11px 0; border-bottom:1px solid var(--d-separator);
+  font-size:16px; line-height:1.45; }
+.limits li:last-child { border-bottom:0; }
+.limits b { font-weight:600; }
+
+/* tables */
+table { width:100%; border-collapse:collapse; font-size:14.5px;
   font-variant-numeric:tabular-nums; }
-th { background:var(--soft); font-size:14px; font-weight:500; text-align:left;
-  padding:12px 16px; }
-td { padding:12px 16px; border-bottom:1px solid var(--hairline); }
+th { background:var(--pearl); font-size:13.5px; font-weight:600; text-align:left;
+  padding:10px 14px; }
+td { padding:10px 14px; border-bottom:1px solid var(--separator); }
 td:not(:first-child), th:not(:first-child) { text-align:right; }
 .table-scroll { overflow-x:auto; }
-.deg-row { display:flex; justify-content:space-between; padding:10px 0;
-  border-bottom:1px solid var(--hairline); font-size:16px; }
-.deg-row span:last-child { font-weight:500; }
-.statement { font-size:24px; font-weight:500; line-height:1.25; }
-.fine { font-size:12px; color:var(--mute); margin-top:16px; line-height:1.5; }
-footer { border-top:1px solid var(--hairline); padding:48px 24px; }
-.footer-inner { max-width:1080px; margin:0 auto; color:var(--mute);
-  font-size:14px; }
-.footer-inner .fine { margin-top:12px; }
+.tgroup { font-size:12px; font-weight:600; color:var(--label-2);
+  text-transform:uppercase; letter-spacing:0.06em; margin:22px 0 8px; }
+.tgroup:first-of-type { margin-top:4px; }
+
+footer { padding:40px 24px 56px; }
+.footer-inner { max-width:1180px; margin:0 auto; color:var(--label-2);
+  font-size:13px; line-height:1.55; }
+.footer-inner p { max-width:860px; }
+.footer-inner .fine { margin-top:10px; }
+
 @media (max-width:1023px) {
-  .grid { grid-template-columns:1fr 1fr; }
-  .hero h1 { font-size:64px; }
-  main { padding:48px 24px; }
+  .s4, .s5, .s6 { grid-column:span 6; }
+  .s7, .s8 { grid-column:span 12; }
+  header.site h1 { font-size:44px; }
 }
 @media (max-width:640px) {
-  .grid, .contrast { grid-template-columns:1fr; }
-  .hero { padding:48px 24px; }
-  .hero h1 { font-size:48px; }
-  main { padding:32px 16px; }
-  .stat-num { font-size:44px; }
+  .grid { grid-template-columns:1fr; }
+  .s4, .s5, .s6, .s7, .s8, .s12 { grid-column:span 1; }
+  header.site { padding:40px 20px 32px; }
+  header.site h1 { font-size:36px; }
+  main { padding:16px 16px 4px; }
+  .tile { padding:22px; }
+  .big { font-size:32px; }
+  .fname { width:84px; }
 }
 </style>
 </head>
 <body>
-<!-- Composition follows the Stageshow bento example (MIT, (c) 2026 Benji
-     Taylor); visual tokens from this project's DESIGN.md. All data on
-     this page is generated from real pipeline runs by demo/build_demo.py. -->
-<header class="hero">
-  <div class="hero-inner">
-    <h1>TruTrace</h1>
-    <p class="sub">Verified answers from seller calls. <b>Every field carries
-    its evidence, or it is not asserted.</b></p>
+<!-- Bento composition after the Stageshow example (MIT, (c) 2026 Benji
+     Taylor). Tokens: DESIGN.apple.md. Surface values: measured macOS
+     values adapted from the CupertinoUI theme CSS (cupertino-ui.com);
+     its accent system and chart palette are not imported. Icons are
+     original inline SVG drawings in the SF Symbols style, not Apple's
+     asset files. All data generated from recorded runs by
+     demo/build_demo.py. -->
+<header class="site">
+  <div class="site-inner">
+    <p class="wordmark">TruTrace <span>· verified answers from seller calls</span></p>
+    <h1>Every field carries its evidence, or it is not asserted.</h1>
+    <p class="sub">TruTrace checks what a seller actually said before an
+    answer may state it. <b>The baseline asserts the hedges. TruTrace
+    demotes them and keeps the proof attached.</b></p>
   </div>
 </header>
 <main>
   <div class="grid">
 
-    <section class="tile tile--wide">
-      <p class="tile-copy"><b>The failing case.</b> <span class="cont">One
-      florist, asked for a dozen red roses with delivery today. The seller
-      hedges three times. The baseline asserts all three hedges as facts;
-      TruTrace demotes them and keeps the proof attached.</span></p>
-      <div class="transcript"><div class="tline">[00:07] Seller: Uh, red roses, a dozen is around $35, I think.</div>
-<div class="tline">[00:13] Seller: They are usually in stock, we get them most mornings.</div>
-<div class="tline">[00:19] Seller: Delivery today, uh, probably tomorrow morning is safer, to be honest.</div>
-<div class="tline">[00:26] Seller: You can order on our website.</div></div>
-      <div class="contrast">
-        <div>
-          <h3>Naive baseline</h3>
-          <p class="note">Prompt asks for values. No verification.</p>
-          <div class="field-row"><span class="field-name">Price</span><span class="field-value">$35</span><span class="chip" style="color:var(--verified)">Verified</span></div>
-<div class="field-row"><span class="field-name">Availability</span><span class="field-value">in_stock</span><span class="chip" style="color:var(--verified)">Verified</span></div>
-<div class="field-row"><span class="field-name">Timing</span><span class="field-value">tomorrow morning</span><span class="chip" style="color:var(--verified)">Verified</span></div>
-        </div>
-        <div>
-          <h3>TruTrace</h3>
-          <p class="note">Same extractor. Verification decides what may be asserted.</p>
-          <div class="field-row"><span class="field-name">Price</span><span class="field-value">$35</span><span class="chip" style="color:var(--unconfirmed)">Uncertain</span></div><div class="reason">quoted as an approximate price; not an exact figure</div>
-<div class="field-row"><span class="field-name">Availability</span><span class="field-value">in_stock</span><span class="chip" style="color:var(--unconfirmed)">Uncertain</span></div><div class="reason">hedged in the call ('usually'); not a confirmed fact</div>
-<div class="field-row"><span class="field-name">Timing</span><span class="field-value">tomorrow morning</span><span class="chip" style="color:var(--unconfirmed)">Uncertain</span></div><div class="reason">hedged in the call ('probably'); not a confirmed fact</div>
-        </div>
+    <section class="tile tile--dark s8">
+      <div class="tile-head"><svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4v15.2A0.8 0.8 0 0 0 4.8 20H20"/><path d="M8.6 20v-5.4M13 20v-9.2M17.4 20v-7" stroke-width="2.4"/></svg><p class="kicker">The headline result · gpt-4o-mini · three runs each</p></div>
+      <div class="seg" data-seg-group="headline-set" role="group" aria-label="Choose the dataset">
+        <button type="button" data-seg="heldout" aria-pressed="true">Held out</button>
+        <button type="button" data-seg="campaign" aria-pressed="false">Campaign</button>
+      </div>
+      <div class="panel" data-panel-group="headline-set" data-panel="heldout"><p class="kicker">Baseline · accuracy, held out</p><p class="big">61 <span class="of">of 84</span></p><p class="fine" style="margin-top:4px">The same count in all three runs: 61 of 84 · 61 of 84 · 61 of 84.</p><p class="kicker" style="margin-top:18px">TruTrace · accuracy, held out</p><p class="big" style="color:var(--blue-dark)">68 · 69 · 65 <span class="of">of 84</span></p><p class="fine" style="margin-top:4px">Runs 1 to 3: 68 of 84 · 69 of 84 · 65 of 84.</p><svg class="chart" viewBox="0 0 214 132" role="img" aria-label="Bar chart of recorded runs"><rect x="6" y="44.1" width="26" height="63.9" rx="3" fill="rgba(255,255,255,0.28)"/><text x="19" y="39.1" class="cv" fill="rgba(255,255,255,0.85)">61</text><rect x="37" y="44.1" width="26" height="63.9" rx="3" fill="rgba(255,255,255,0.28)"/><text x="50" y="39.1" class="cv" fill="rgba(255,255,255,0.85)">61</text><rect x="68" y="44.1" width="26" height="63.9" rx="3" fill="rgba(255,255,255,0.28)"/><text x="81" y="39.1" class="cv" fill="rgba(255,255,255,0.85)">61</text><text x="50" y="126" class="cl" fill="rgba(255,255,255,0.55)">Baseline</text><rect x="120" y="36.8" width="26" height="71.2" rx="3" fill="#2997ff"/><text x="133" y="31.8" class="cv" fill="rgba(255,255,255,0.85)">68</text><rect x="151" y="35.7" width="26" height="72.3" rx="3" fill="#2997ff"/><text x="164" y="30.7" class="cv" fill="rgba(255,255,255,0.85)">69</text><rect x="182" y="39.9" width="26" height="68.1" rx="3" fill="#2997ff"/><text x="195" y="34.9" class="cv" fill="rgba(255,255,255,0.85)">65</text><text x="164" y="126" class="cl" fill="rgba(255,255,255,0.55)">TruTrace</text></svg><div class="legend"><span><span class="sw" style="background:rgba(255,255,255,0.28)"></span>Baseline</span><span><span class="sw" style="background:#2997ff"></span>TruTrace</span></div><p style="margin-top:16px">Unsupported claims: <b>23 of 58 · 23 of 59 · 23 of 58</b> → <b>11 of 43 · 12 of 44 · 11 of 39</b></p><p>Contradictions caught: <b>0 of 2 · 0 of 2 · 0 of 2</b> → <b>1 of 2 · 1 of 2 · 1 of 2</b></p></div>
+      <div class="panel" data-panel-group="headline-set" data-panel="campaign" hidden><p class="kicker">Baseline · accuracy, campaign</p><p class="big">40 · 38 · 40 <span class="of">of 70</span></p><p class="fine" style="margin-top:4px">Runs 1 to 3: 40 of 70 · 38 of 70 · 40 of 70.</p><p class="kicker" style="margin-top:18px">TruTrace · accuracy, campaign</p><p class="big" style="color:var(--blue-dark)">55 · 55 · 56 <span class="of">of 70</span></p><p class="fine" style="margin-top:4px">Runs 1 to 3: 55 of 70 · 55 of 70 · 56 of 70.</p><svg class="chart" viewBox="0 0 214 132" role="img" aria-label="Bar chart of recorded runs"><rect x="6" y="57.7" width="26" height="50.3" rx="3" fill="rgba(255,255,255,0.28)"/><text x="19" y="52.7" class="cv" fill="rgba(255,255,255,0.85)">40</text><rect x="37" y="60.2" width="26" height="47.8" rx="3" fill="rgba(255,255,255,0.28)"/><text x="50" y="55.2" class="cv" fill="rgba(255,255,255,0.85)">38</text><rect x="68" y="57.7" width="26" height="50.3" rx="3" fill="rgba(255,255,255,0.28)"/><text x="81" y="52.7" class="cv" fill="rgba(255,255,255,0.85)">40</text><text x="50" y="126" class="cl" fill="rgba(255,255,255,0.55)">Baseline</text><rect x="120" y="38.9" width="26" height="69.1" rx="3" fill="#2997ff"/><text x="133" y="33.9" class="cv" fill="rgba(255,255,255,0.85)">55</text><rect x="151" y="38.9" width="26" height="69.1" rx="3" fill="#2997ff"/><text x="164" y="33.9" class="cv" fill="rgba(255,255,255,0.85)">55</text><rect x="182" y="37.6" width="26" height="70.4" rx="3" fill="#2997ff"/><text x="195" y="32.6" class="cv" fill="rgba(255,255,255,0.85)">56</text><text x="164" y="126" class="cl" fill="rgba(255,255,255,0.55)">TruTrace</text></svg><div class="legend"><span><span class="sw" style="background:rgba(255,255,255,0.28)"></span>Baseline</span><span><span class="sw" style="background:#2997ff"></span>TruTrace</span></div><p style="margin-top:16px">Unsupported claims: <b>30 of 63 · 32 of 65 · 30 of 63</b> → <b>12 of 41 · 12 of 41 · 11 of 40</b></p><p>Contradictions caught: <b>0 of 1 · 0 of 1 · 0 of 1</b> → <b>1 of 1 · 1 of 1 · 1 of 1</b></p></div>
+      <p class="fine">Accuracy counts a field right only when value, status
+      and condition all match gold. Scores are measured against gold labels
+      drafted by an AI coding agent during the build, pending Diwakar
+      Bhagat's human review: they are not validated ground truth. The
+      held-out split is not a clean-room measurement; the split was frozen
+      after a build round whose fixes were driven by failures seen across
+      all 32 cases.</p>
+    </section>
+
+    <section class="tile s4">
+      <div class="tile-head"><svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="6.8" rx="2"/><rect x="4" y="13.2" width="16" height="6.8" rx="2"/><path d="M7.4 7.4h.01M7.4 16.6h.01" stroke-width="2.6"/></svg><p class="kicker">Providers</p></div>
+      <div class="prow"><div class="pbody">
+        <p class="pname">gpt-4o-mini · OpenRouter</p>
+        <p class="pnote">Ran the recorded benchmarks: 32 cases and 10
+        campaign calls, three runs each, at temperature 0.</p></div>
+        <span class="pstatus ok">Ran</span></div>
+      <div class="prow"><div class="pbody">
+        <p class="pname">Offline rules</p>
+        <p class="pnote">Deterministic provider. No network, no key. Also
+        the fallback when a provider dies mid run.</p></div>
+        <span class="pstatus ok">Ran</span></div>
+      <div class="prow"><div class="pbody">
+        <p class="pname">google/gemini-2.0-flash-001</p>
+        <p class="pnote">Never ran. OpenRouter returned HTTP 404 for
+        this model id; 0 of 32
+        cases ran. The runs were stopped rather than re-pointed.</p></div>
+        <span class="pstatus down">Did not run</span></div>
+    </section>
+
+    <section class="tile tile--glass s7 case">
+      <div class="tile-head"><svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 9.5v5M8.8 6.2v11.6M13 3.8v16.4M17.2 7v10M20.8 10v4" stroke-width="2"/></svg><p class="kicker">One call · campaign_01 · the failing case</p></div>
+      <p class="tile-copy"><b>One florist, asked for a dozen red roses with
+      delivery today.</b> <span class="cont">The seller hedges three times.
+      Select a field to see the exact line it rests on.</span></p>
+      <div class="transcript transcript--hero"><div class="tline" data-ts="00:00">[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?</div>
+<div class="tline" data-ts="00:07">[00:07] Seller: Uh, red roses, a dozen is around $35, I think.</div>
+<div class="tline" data-ts="00:13">[00:13] Seller: They are usually in stock, we get them most mornings.</div>
+<div class="tline" data-ts="00:19">[00:19] Seller: Delivery today, uh, probably tomorrow morning is safer, to be honest.</div>
+<div class="tline" data-ts="00:26">[00:26] Seller: You can order on our website.</div></div>
+      <div class="seg" data-seg-group="showcase-config" role="group" aria-label="Choose the configuration">
+        <button type="button" data-seg="trutrace" aria-pressed="true">TruTrace</button>
+        <button type="button" data-seg="baseline" aria-pressed="false">Baseline</button>
+      </div>
+      <div class="panel" data-panel-group="showcase-config" data-panel="trutrace">
+        <button type="button" class="frow" data-ts="00:07" data-status="uncertain" data-evidence="[00:07] Seller: Uh, red roses, a dozen is around $35, I think." data-reason="quoted as an approximate price; not an exact figure"><span class="fname">Price</span><span class="fvalue">$35</span><span class="chip" style="color:var(--label-2)">Uncertain</span></button>
+<button type="button" class="frow" data-ts="00:07" data-status="confirmed" data-evidence="[00:07] Seller: Uh, red roses, a dozen is around $35, I think." data-reason=""><span class="fname">Currency</span><span class="fvalue">USD</span><span class="chip" style="color:var(--verified)">Verified</span></button>
+<button type="button" class="frow" data-ts="00:13" data-status="uncertain" data-evidence="[00:13] Seller: They are usually in stock, we get them most mornings." data-reason="hedged in the call (&#x27;usually&#x27;); not a confirmed fact"><span class="fname">Availability</span><span class="fvalue">in_stock</span><span class="chip" style="color:var(--label-2)">Uncertain</span></button>
+<button type="button" class="frow" data-ts="00:19" data-status="uncertain" data-evidence="[00:19] Seller: Delivery today, uh, probably tomorrow morning is safer, to be honest." data-reason="hedged in the call (&#x27;probably&#x27;); not a confirmed fact"><span class="fname">Timing</span><span class="fvalue">tomorrow morning</span><span class="chip" style="color:var(--label-2)">Uncertain</span></button>
+        <p class="notest">Not established in the call, so reported
+        unconfirmed rather than filled in: Quantity · Delivery · Next step.</p>
+      </div>
+      <div class="panel" data-panel-group="showcase-config" data-panel="baseline" hidden>
+        <button type="button" class="frow" data-ts="00:07" data-status="confirmed" data-evidence="[00:07] Seller: Uh, red roses, a dozen is around $35, I think." data-reason="asserted as extracted (baseline: no verification)"><span class="fname">Price</span><span class="fvalue">$35</span><span class="chip" style="color:var(--verified)">Verified</span></button>
+<button type="button" class="frow" data-ts="00:07" data-status="confirmed" data-evidence="[00:07] Seller: Uh, red roses, a dozen is around $35, I think." data-reason="asserted as extracted (baseline: no verification)"><span class="fname">Currency</span><span class="fvalue">USD</span><span class="chip" style="color:var(--verified)">Verified</span></button>
+<button type="button" class="frow" data-ts="00:13" data-status="confirmed" data-evidence="[00:13] Seller: They are usually in stock, we get them most mornings." data-reason="asserted as extracted (baseline: no verification)"><span class="fname">Availability</span><span class="fvalue">in_stock</span><span class="chip" style="color:var(--verified)">Verified</span></button>
+<button type="button" class="frow" data-ts="00:19" data-status="confirmed" data-evidence="[00:19] Seller: Delivery today, uh, probably tomorrow morning is safer, to be honest." data-reason="asserted as extracted (baseline: no verification)"><span class="fname">Timing</span><span class="fvalue">tomorrow morning</span><span class="chip" style="color:var(--verified)">Verified</span></button>
+        <p class="notest">The baseline asserts every hedge as a fact. Its
+        prompt never asks for evidence, and nothing checks the spans it
+        returns.</p>
+      </div>
+      <div class="detail" aria-live="polite"><div class="detail-head"><span class="dlabel">Evidence</span><span class="dstatus"></span></div><p class="devidence"></p><p class="dreason"></p></div>
+    </section>
+
+    <section class="tile s5">
+      <div class="tile-head"><svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.2 18.8 5.6v5.3c0 4.4-2.9 7.5-6.8 9.3-3.9-1.8-6.8-4.9-6.8-9.3V5.6Z"/><path d="m9.9 9.9 4.2 4.2M14.1 9.9l-4.2 4.2"/></svg><p class="kicker">Unsupported claims · campaign · gpt-4o-mini</p></div>
+      <p class="big">30 <span class="of">of 63</span></p>
+      <p class="tile-copy" style="margin-top:8px">of the baseline's
+      confirmations in run 1 were claims the call does not support.
+      <span class="cont">With verification: <b>12 of 41</b>.</span></p>
+      <svg class="chart" viewBox="0 0 214 132" role="img" aria-label="Bar chart of recorded runs"><rect x="6" y="66.1" width="26" height="41.9" rx="3" fill="#b9b9bd"/><text x="19" y="61.1" class="cv" fill="rgba(0,0,0,0.85)">30</text><rect x="37" y="63.3" width="26" height="44.7" rx="3" fill="#b9b9bd"/><text x="50" y="58.3" class="cv" fill="rgba(0,0,0,0.85)">32</text><rect x="68" y="66.1" width="26" height="41.9" rx="3" fill="#b9b9bd"/><text x="81" y="61.1" class="cv" fill="rgba(0,0,0,0.85)">30</text><text x="50" y="126" class="cl" fill="rgba(0,0,0,0.5)">Baseline</text><rect x="120" y="91.2" width="26" height="16.8" rx="3" fill="#0066cc"/><text x="133" y="86.2" class="cv" fill="rgba(0,0,0,0.85)">12</text><rect x="151" y="91.2" width="26" height="16.8" rx="3" fill="#0066cc"/><text x="164" y="86.2" class="cv" fill="rgba(0,0,0,0.85)">12</text><rect x="182" y="92.6" width="26" height="15.4" rx="3" fill="#0066cc"/><text x="195" y="87.6" class="cv" fill="rgba(0,0,0,0.85)">11</text><text x="164" y="126" class="cl" fill="rgba(0,0,0,0.5)">TruTrace</text></svg>
+      <div class="legend"><span><span class="sw" style="background:#b9b9bd"></span>Baseline</span><span><span class="sw" style="background:#0066cc"></span>TruTrace</span></div>
+      <p class="fine">Bars are counts per run. The denominators differ
+      because each configuration chooses which fields to confirm: the
+      baseline confirmed 63 to 65 fields a run, TruTrace 40 to 41.</p>
+    </section>
+
+    <section class="tile s7">
+      <div class="tile-head"><svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.3"/><path d="m8.6 12.3 2.4 2.4 4.4-5"/></svg><p class="kicker">The campaign slice · proof that matches</p></div>
+      <p class="tile-copy"><b>One query to ten synthetic florist sellers:
+      “Red roses, a dozen, delivery today.”</b> <span class="cont">A
+      confirmed field is only as good as its proof: the span, the speaker
+      and the timestamp all have to match gold.</span></p>
+      <svg class="chart" viewBox="0 0 300 118" role="img" aria-label="Proof matching chart"><text x="0" y="21" class="cll" fill="rgba(0,0,0,0.5)">Baseline</text><rect x="64" y="8" width="182" height="16" rx="4" fill="rgba(0,0,0,0.05)"/><rect x="64" y="8" width="0" height="16" rx="4" fill="#b9b9bd"/><text x="300" y="21" class="cvv" fill="rgba(0,0,0,0.85)">0 of 41</text><text x="0" y="55" class="cll" fill="rgba(0,0,0,0.5)">TruTrace</text><rect x="64" y="42" width="182" height="16" rx="4" fill="rgba(0,0,0,0.05)"/><rect x="64" y="42" width="164" height="16" rx="4" fill="#0066cc"/><text x="300" y="55" class="cvv" fill="rgba(0,0,0,0.85)">37 of 41</text></svg>
+      <p class="fine">Proof matching gold, gpt-4o-mini, campaign. The
+      baseline returns no evidence at all, because its prompt never asks
+      for it. The offline provider matches 30
+      of 41 in both configurations; its
+      misses are fields it did not confirm, not wrong proof.</p>
+      <div class="case" style="margin-top:22px">
+        <p class="kicker" style="margin-bottom:10px">One clean call · campaign_02 · TruTrace</p>
+        <div class="transcript"><div class="tline" data-ts="00:00">[00:00] Agent: Hi, I am calling about red roses. Do you have a dozen available for delivery today?</div>
+<div class="tline" data-ts="00:05">[00:05] Seller: Yes, a dozen red roses is $38.</div>
+<div class="tline" data-ts="00:11">[00:11] Seller: We have plenty in stock, fresh this morning.</div>
+<div class="tline" data-ts="00:17">[00:17] Seller: We can deliver today by 6 pm.</div>
+<div class="tline" data-ts="00:24">[00:24] Seller: I can book you in right now.</div></div>
+        <button type="button" class="frow" data-ts="00:05" data-status="confirmed" data-evidence="[00:05] Seller: Yes, a dozen red roses is $38." data-reason=""><span class="fname">Price</span><span class="fvalue">$38</span><span class="chip" style="color:var(--verified)">Verified</span></button>
+<button type="button" class="frow" data-ts="00:05" data-status="confirmed" data-evidence="[00:05] Seller: Yes, a dozen red roses is $38." data-reason=""><span class="fname">Currency</span><span class="fvalue">USD</span><span class="chip" style="color:var(--verified)">Verified</span></button>
+<button type="button" class="frow" data-ts="00:11" data-status="confirmed" data-evidence="[00:11] Seller: We have plenty in stock, fresh this morning." data-reason=""><span class="fname">Availability</span><span class="fvalue">in_stock</span><span class="chip" style="color:var(--verified)">Verified</span></button>
+<button type="button" class="frow" data-ts="00:17" data-status="confirmed" data-evidence="[00:17] Seller: We can deliver today by 6 pm." data-reason=""><span class="fname">Delivery</span><span class="fvalue">delivery</span><span class="chip" style="color:var(--verified)">Verified</span></button>
+<button type="button" class="frow" data-ts="00:17" data-status="confirmed" data-evidence="[00:17] Seller: We can deliver today by 6 pm." data-reason=""><span class="fname">Timing</span><span class="fvalue">by 6 pm</span><span class="chip" style="color:var(--verified)">Verified</span></button>
+<button type="button" class="frow" data-ts="00:24" data-status="confirmed" data-evidence="[00:24] Seller: I can book you in right now." data-reason=""><span class="fname">Next step</span><span class="fvalue">book in</span><span class="chip" style="color:var(--verified)">Verified</span></button>
+        <div class="detail" aria-live="polite"><div class="detail-head"><span class="dlabel">Evidence</span><span class="dstatus"></span></div><p class="devidence"></p><p class="dreason"></p></div>
       </div>
     </section>
 
-    <section class="tile tile--soft">
-      <p class="kicker">Unsupported claims · campaign · gpt-4o-mini</p>
-      <div class="stat-num">30 <span class="of">of 63</span></div>
-      <p class="stat-label">of the baseline's confirmations were claims the
-      call does not support.</p>
-      <p class="stat-now">With verification: <b>12 of 41</b>.</p>
-      <p class="fine">Run 1 of 3. All three runs are in the report.</p>
+    <section class="tile tile--glass s5">
+      <div class="tile-head"><svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13.2" r="7.4"/><path d="M12 13.2V9.4M9.6 3h4.8M12 5.8v-2"/></svg><p class="kicker">Cost and latency · gpt-4o-mini</p></div>
+      <p class="tile-copy"><b>Verification is a second pass, and it
+      costs.</b> <span class="cont">What the recorded runs say it
+      costs:</span></p>
+      <svg class="chart" viewBox="0 0 178 150" role="img" aria-label="Latency chart"><rect x="6" y="81.3" width="30" height="44.7" rx="3" fill="#b9b9bd"/><text x="21" y="76.3" class="cv" fill="rgba(0,0,0,0.85)">1,876</text><rect x="42" y="46.6" width="30" height="79.4" rx="3" fill="#0066cc"/><text x="57" y="41.6" class="cv" fill="rgba(0,0,0,0.85)">3,330</text><text x="39" y="144" class="cl" fill="rgba(0,0,0,0.5)">Held out</text><rect x="106" y="75.6" width="30" height="50.4" rx="3" fill="#b9b9bd"/><text x="121" y="70.6" class="cv" fill="rgba(0,0,0,0.85)">2,116</text><rect x="142" y="37.9" width="30" height="88.1" rx="3" fill="#0066cc"/><text x="157" y="32.9" class="cv" fill="rgba(0,0,0,0.85)">3,699</text><text x="139" y="144" class="cl" fill="rgba(0,0,0,0.5)">Campaign</text></svg>
+      <div class="legend"><span><span class="sw" style="background:#b9b9bd"></span>Baseline</span><span><span class="sw" style="background:#0066cc"></span>TruTrace</span></div>
+      <p class="fine" style="margin-top:8px">Mean p50 latency per call
+      across the three runs, milliseconds.</p>
+      <div class="deg-row"><span>Cost per call · held out</span><span>$0.000071 → $0.000164</span></div>
+      <div class="deg-row"><span>Cost per call · campaign</span><span>$0.000079 → $0.000184</span></div>
+      <div class="deg-row"><span>Load · 10 calls, real</span><span>$0.000186 a call, 0 errors</span></div>
+      <div class="deg-row"><span>Load · 100 calls, real</span><span>$0.000184 a call, 0 errors</span></div>
+      <p class="fine">Load at 1,000 calls was simulated against the
+      offline provider in process: no network calls, no model cost, and
+      its latencies are rule-engine time, not a live model's.</p>
     </section>
 
-    <section class="tile">
-      <p class="tile-copy"><b>Extraction with proof.</b> <span class="cont">A
-      confirmed field cites its span, its speaker and its timestamp.</span></p>
-      <div class="field-row"><span class="field-name">Price</span><span class="field-value">$38</span><span class="chip" style="color:var(--verified)">Verified</span></div><div class="evidence">[00:05] Seller: Yes, a dozen red roses is $38.</div>
-<div class="field-row"><span class="field-name">Availability</span><span class="field-value">in_stock</span><span class="chip" style="color:var(--verified)">Verified</span></div><div class="evidence">[00:11] Seller: We have plenty in stock, fresh this morning.</div>
-<div class="field-row"><span class="field-name">Timing</span><span class="field-value">by 6 pm</span><span class="chip" style="color:var(--verified)">Verified</span></div><div class="evidence">[00:17] Seller: We can deliver today by 6 pm.</div>
-    </section>
-
-    <section class="tile">
+    <section class="tile s6">
+      <div class="tile-head"><svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.8 8.6A7.4 7.4 0 0 1 17.9 6.2L19.4 8"/><path d="M19.6 3.4v4.8h-4.8"/><path d="M18.2 15.4a7.4 7.4 0 0 1-12.1 2.4L4.6 16"/><path d="M4.4 20.6v-4.8h4.8"/></svg><p class="kicker">When the provider dies</p></div>
       <p class="tile-copy"><b>The provider dies at call four.</b>
-      <span class="cont">Six campaign calls, the primary provider killed
-      mid run, the offline provider as fallback.</span></p>
+      <span class="cont">Six campaign calls, the primary killed mid run,
+      the offline provider as fallback.</span></p>
       <div class="deg-row"><span>Served by the primary</span><span>3 of 6</span></div>
+      <div class="units"><span class="unit u-primary" title="primary"></span><span class="unit u-primary" title="primary"></span><span class="unit u-primary" title="primary"></span><span class="unit u-fallback" title="fallback"></span><span class="unit u-fallback" title="fallback"></span><span class="unit u-fallback" title="fallback"></span></div>
       <div class="deg-row"><span>Fell back</span><span>3 of 6</span></div>
       <div class="deg-row"><span>Lost</span><span>0 of 6</span></div>
       <div class="deg-row"><span>Both providers down</span><span>6 of 6 unconfirmed, 0 invented</span></div>
-      <p class="fine">Simulated death, real fallback code. Covered by
-      automated tests in tests/test_degradation.py.</p>
+      <div class="units"><span class="unit u-down" title="unconfirmed"></span><span class="unit u-down" title="unconfirmed"></span><span class="unit u-down" title="unconfirmed"></span><span class="unit u-down" title="unconfirmed"></span><span class="unit u-down" title="unconfirmed"></span><span class="unit u-down" title="unconfirmed"></span></div>
+      <div class="legend"><span><span class="sw" style="background:#1d1d1f"></span>Primary</span><span><span class="sw" style="background:#0066cc"></span>Fallback</span><span><span class="sw" style="background:transparent;border:1.5px solid rgba(0,0,0,0.1)"></span>Unconfirmed</span></div>
+      <p class="fine">Provider deaths are simulated by killswitch
+      wrappers; the fallback and unconfirmed behaviour is the pipeline's
+      own code path. Covered by automated tests in
+      tests/test_degradation.py.</p>
     </section>
 
-    <section class="tile tile--soft">
-      <p class="statement">Synthetic transcripts. No live audio. No real telephony.</p>
-      <p class="fine">The campaign is ten written calls, not ten placed
-      calls. The gold labels were drafted by an AI coding agent during
-      the build and are pending Diwakar Bhagat's human review.</p>
+    <section class="tile tile--dark3 s6">
+      <div class="tile-head"><svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.3"/><path d="M12 11.2V16M12 7.9h.01" stroke-width="2"/></svg><p class="kicker">Limits, stated</p></div>
+      <ul class="limits">
+        <li><b>Synthetic transcripts.</b> No live audio. No real
+        telephony. The campaign is ten written calls, not ten placed
+        calls.</li>
+        <li><b>The labels are AI drafted.</b> The gold labels were
+        drafted by an AI coding agent during the build and are pending
+        Diwakar Bhagat's human review. Every score on this page is
+        measured against those labels, not validated ground truth.</li>
+        <li><b>Held out is not clean room.</b> The split was frozen after
+        a build round whose fixes were driven by failures seen across
+        all 32 cases.</li>
+        <li><b>The offline row is self-consistency.</b> Offline rules
+        score 84 of 84 on held out with 0 of 45 unsupported, but the
+        rules and the dataset grew up together. The model rows are the
+        independent check.</li>
+        <li><b>Small numbers.</b> 32 cases plus 10 campaign transcripts.
+        Nothing here estimates accuracy on real seller calls.</li>
+      </ul>
     </section>
 
-    <section class="tile tile--wide">
-      <p class="tile-copy"><b>Baseline vs current, measured.</b>
-      <span class="cont">Counts are per run, three runs each, at
-      temperature 0. Accuracy counts a field right only when value,
-      status and condition all match gold.</span></p>
-      <div class="kicker">Campaign · 10 calls · 70 fields</div>
+    <section class="tile s12">
+      <div class="tile-head"><svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="14.4" rx="2"/><path d="M4 9.8h16M4 14.6h16M9.3 9.8v9.6M14.7 9.8v9.6"/></svg><p class="kicker">Baseline vs current, measured in full</p></div>
+      <p class="tile-copy"><b>Every recorded run.</b> <span class="cont">Counts
+      are per run, three runs each, at temperature 0.</span></p>
+      <p class="tgroup">Campaign · 10 calls · 70 fields</p>
       <div class="table-scroll"><table>
         <tr><th>Run</th><th>Accuracy</th><th>Unsupported</th><th>p50</th><th>p95</th><th>Cost / call</th></tr>
-        <tr><td>gpt-4o-mini · baseline</td><td>40 of 70 · 38 of 70 · 40 of 70</td><td>30 of 63 · 32 of 65 · 30 of 63</td><td>2116 ms</td><td>2422 ms</td><td>$0.000079</td></tr>
-<tr><td>gpt-4o-mini · current</td><td>55 of 70 · 55 of 70 · 56 of 70</td><td>12 of 41 · 12 of 41 · 11 of 40</td><td>3699 ms</td><td>4592 ms</td><td>$0.000184</td></tr>
+        <tr><td>gpt-4o-mini · baseline</td><td>40 of 70 · 38 of 70 · 40 of 70</td><td>30 of 63 · 32 of 65 · 30 of 63</td><td>2,116 ms</td><td>2,422 ms</td><td>$0.000079</td></tr>
+<tr><td>gpt-4o-mini · current</td><td>55 of 70 · 55 of 70 · 56 of 70</td><td>12 of 41 · 12 of 41 · 11 of 40</td><td>3,699 ms</td><td>4,592 ms</td><td>$0.000184</td></tr>
 <tr><td>offline rules · baseline</td><td>52 of 70 · 52 of 70 · 52 of 70</td><td>9 of 39 · 9 of 39 · 9 of 39</td><td>0.36 ms</td><td>1.81 ms</td><td>—</td></tr>
 <tr><td>offline rules · current</td><td>56 of 70 · 56 of 70 · 56 of 70</td><td>4 of 34 · 4 of 34 · 4 of 34</td><td>0.46 ms</td><td>0.87 ms</td><td>—</td></tr>
       </table></div>
-      <div class="kicker" style="margin-top:32px">Held out · 12 cases · 84 fields</div>
+      <p class="tgroup">Held out · 12 cases · 84 fields</p>
       <div class="table-scroll"><table>
         <tr><th>Run</th><th>Accuracy</th><th>Unsupported</th><th>p50</th><th>p95</th><th>Cost / call</th></tr>
-        <tr><td>gpt-4o-mini · baseline</td><td>61 of 84 · 61 of 84 · 61 of 84</td><td>23 of 58 · 23 of 59 · 23 of 58</td><td>1876 ms</td><td>2691 ms</td><td>$0.000071</td></tr>
-<tr><td>gpt-4o-mini · current</td><td>68 of 84 · 69 of 84 · 65 of 84</td><td>11 of 43 · 12 of 44 · 11 of 39</td><td>3330 ms</td><td>4437 ms</td><td>$0.000164</td></tr>
+        <tr><td>gpt-4o-mini · baseline</td><td>61 of 84 · 61 of 84 · 61 of 84</td><td>23 of 58 · 23 of 59 · 23 of 58</td><td>1,876 ms</td><td>2,691 ms</td><td>$0.000071</td></tr>
+<tr><td>gpt-4o-mini · current</td><td>68 of 84 · 69 of 84 · 65 of 84</td><td>11 of 43 · 12 of 44 · 11 of 39</td><td>3,330 ms</td><td>4,437 ms</td><td>$0.000164</td></tr>
 <tr><td>offline rules · baseline</td><td>74 of 84 · 74 of 84 · 74 of 84</td><td>10 of 50 · 10 of 50 · 10 of 50</td><td>0.27 ms</td><td>1.16 ms</td><td>—</td></tr>
 <tr><td>offline rules · current</td><td>84 of 84 · 84 of 84 · 84 of 84</td><td>0 of 45 · 0 of 45 · 0 of 45</td><td>0.40 ms</td><td>0.62 ms</td><td>—</td></tr>
       </table></div>
-      <p class="fine">gemini-2.0-flash-001 did not run: OpenRouter returned
-      HTTP 404 for that model id, and the runs were stopped rather than
-      re-pointed. Full tables, spreads and methodology are in
+      <p class="fine">Full tables, spreads and methodology are in
       reports/benchmark_results.md in the repository.</p>
     </section>
 
@@ -197,9 +410,88 @@ footer { border-top:1px solid var(--hairline); padding:48px 24px; }
     answers, demonstrated on one campaign slice.</p>
     <p class="fine">Composition adapted from the Stageshow bento example
     (MIT, © 2026 Benji Taylor). Design tokens from this project's
-    DESIGN.md. Every number on this page was generated from recorded
+    DESIGN.apple.md; surface values (label and fill hierarchies,
+    materials, radii, shadow stacks) are measured macOS values adapted
+    from the CupertinoUI theme CSS, with its multi-accent system and
+    chart palette deliberately not imported. Icons are original inline
+    SVG drawings in the SF Symbols style, not Apple's asset files.
+    Every number and chart on this page was generated from recorded
     runs by demo/build_demo.py.</p>
   </div>
 </footer>
+<script>
+(function () {
+  // Segmented toggles: switching the control swaps the panel it names.
+  document.querySelectorAll("[data-seg-group]").forEach(function (group) {
+    var name = group.getAttribute("data-seg-group");
+    var buttons = group.querySelectorAll("button[data-seg]");
+    var panels = document.querySelectorAll(
+      '[data-panel-group="' + name + '"]');
+    buttons.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        buttons.forEach(function (b) {
+          b.setAttribute("aria-pressed",
+            b === btn ? "true" : "false");
+        });
+        panels.forEach(function (p) {
+          p.hidden = p.getAttribute("data-panel") !==
+            btn.getAttribute("data-seg");
+        });
+        var tile = group.closest(".case");
+        if (tile && tile._selectFirst) tile._selectFirst();
+      });
+    });
+  });
+
+  // Case tiles: selecting a field shows its evidence and lights the
+  // transcript line it rests on. Hover selects too; the detail stays
+  // on the last selected field.
+  var CHIPCOLOR = {
+    confirmed: "var(--verified)", uncertain: "var(--label-2)",
+    unconfirmed: "var(--label-2)", conflicting: "var(--conflicting)"
+  };
+  var CHIPLABEL = {
+    confirmed: "Verified", uncertain: "Uncertain",
+    unconfirmed: "Unconfirmed", conflicting: "Conflicting"
+  };
+  document.querySelectorAll(".case").forEach(function (tile) {
+    var rows = tile.querySelectorAll(".frow");
+    var lines = tile.querySelectorAll(".tline");
+    var status = tile.querySelector(".dstatus");
+    var evidence = tile.querySelector(".devidence");
+    var reason = tile.querySelector(".dreason");
+    if (!rows.length || !status) return;
+    function select(row) {
+      rows.forEach(function (r) {
+        r.setAttribute("aria-pressed", r === row ? "true" : "false");
+      });
+      var st = row.getAttribute("data-status");
+      status.textContent = CHIPLABEL[st] || st;
+      status.style.color = CHIPCOLOR[st] || "";
+      var ev = row.getAttribute("data-evidence");
+      evidence.textContent = ev || "No span in the call supports a value.";
+      var rs = row.getAttribute("data-reason");
+      reason.textContent = rs || "";
+      reason.style.display = rs ? "" : "none";
+      var ts = row.getAttribute("data-ts");
+      lines.forEach(function (line) {
+        line.classList.toggle("hl",
+          !!ts && line.getAttribute("data-ts") === ts);
+      });
+    }
+    rows.forEach(function (row) {
+      row.addEventListener("click", function () { select(row); });
+      row.addEventListener("mouseenter", function () { select(row); });
+    });
+    tile._selectFirst = function () {
+      for (var i = 0; i < rows.length; i++) {
+        if (rows[i].offsetParent !== null) { select(rows[i]); return; }
+      }
+      select(rows[0]);
+    };
+    select(rows[0]);
+  });
+})();
+</script>
 </body>
 </html>
