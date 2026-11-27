@@ -212,6 +212,26 @@ def run_rows(run: dict, traces: list, docs_by_id: dict) -> tuple:
 
 # ------------------------------------------------------------------ database --
 
+def _jb(value):
+    """Wrap a value for a JSONB column. psycopg adapts a bare dict to
+    JSONB but a bare list to a Postgres ARRAY, whose dict elements it
+    then cannot adapt — so lists (dataset cases, unsupported claims)
+    must be wrapped explicitly, and dicts go through the same path
+    for uniformity."""
+    if value is None:
+        return None
+    from psycopg.types.json import Jsonb
+
+    return Jsonb(value)
+
+
+def _wrap(row: dict, *keys: str) -> dict:
+    out = dict(row)
+    for key in keys:
+        out[key] = _jb(out[key])
+    return out
+
+
 def _connect():
     import psycopg
     from psycopg.rows import dict_row
@@ -280,7 +300,7 @@ def _register_prompts(cur, records: list) -> None:
                 %(fingerprint)s)
             ON CONFLICT (name, version) DO NOTHING
             """,
-            row,
+            _wrap(row, "params"),
         )
         cur.execute(
             "SELECT fingerprint FROM eval_prompts "
@@ -308,7 +328,7 @@ def _register_datasets(cur) -> None:
                 %(cases)s, %(labels_status)s, now())
             ON CONFLICT (name, version) DO NOTHING
             """,
-            payload,
+            _wrap(payload, "cases"),
         )
         cur.execute(
             "SELECT content_hash FROM eval_datasets "
@@ -384,7 +404,7 @@ def insert_prompt(record: dict) -> dict:
                     %(user_text)s, %(notes)s, %(fingerprint)s)
                 ON CONFLICT (name, version) DO NOTHING
                 """,
-                row,
+                _wrap(row, "params"),
             )
             if cur.rowcount == 0:
                 raise FileExistsError(
@@ -421,7 +441,8 @@ def save_run(run: dict, traces: list, docs_by_id: dict) -> None:
                     %(labels_status)s, %(configuration)s, %(metrics)s,
                     %(error_log)s, %(record)s)
                 """,
-                run_row,
+                _wrap(run_row, "configuration", "metrics",
+                      "error_log", "record"),
             )
             for row in case_rows:
                 cur.execute(
@@ -431,7 +452,7 @@ def save_run(run: dict, traces: list, docs_by_id: dict) -> None:
                     VALUES (%(run_id)s, %(case_id)s, %(case_index)s,
                         %(taxonomy)s, %(input)s, %(gold)s)
                     """,
-                    row,
+                    _wrap(row, "input", "gold"),
                 )
             for row in result_rows:
                 cur.execute(
@@ -450,7 +471,9 @@ def save_run(run: dict, traces: list, docs_by_id: dict) -> None:
                         %(wall_latency_ms)s, %(provider_used)s,
                         %(fallback_used)s, %(error)s, %(trace)s)
                     """,
-                    row,
+                    _wrap(row, "raw_extraction", "parsed_output",
+                          "field_scores", "unsupported_claims",
+                          "evaluations", "usage", "trace"),
                 )
 
 

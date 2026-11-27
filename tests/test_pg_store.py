@@ -106,6 +106,25 @@ class TestPromptRowMapping(unittest.TestCase):
         self.assertEqual(pg_store.prompt_record(row), record)
 
 
+class TestJsonbWrapping(unittest.TestCase):
+    """psycopg adapts a bare list to a Postgres ARRAY, not JSONB, so
+    every JSONB parameter must be wrapped before execute. This pins
+    the mechanism the live failure (dataset registration) exposed."""
+
+    def test_wrap_produces_jsonb_for_dicts_and_lists(self):
+        from psycopg.types.json import Jsonb
+
+        row = {"cases": [{"id": 1}], "params": {"temperature": 0},
+               "name": "x", "error_log": None}
+        wrapped = pg_store._wrap(row, "cases", "params", "error_log")
+        self.assertIsInstance(wrapped["cases"], Jsonb)
+        self.assertIsInstance(wrapped["params"], Jsonb)
+        self.assertIsNone(wrapped["error_log"])
+        self.assertEqual(wrapped["name"], "x")
+        # The pure row builders stay unwrapped.
+        self.assertNotIsInstance(row["cases"], Jsonb)
+
+
 class TestDatasetPayload(unittest.TestCase):
     def test_splits_register_with_stable_hash_and_counts(self):
         expected = {"dev": 20, "heldout": 12, "campaign": 10, "all": 32}
